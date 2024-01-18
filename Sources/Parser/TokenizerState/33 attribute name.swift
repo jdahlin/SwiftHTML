@@ -1,11 +1,11 @@
 extension Tokenizer {
 
-  // 13.2.5.33 Attribute name state https://html.spec.whatwg.org/multipage/parsing.html#attribute-name-state
+  // 13.2.5.33 Attribute name state 
+  // https://html.spec.whatwg.org/multipage/parsing.html#attribute-name-state
   func handleAttributeNameState() {
+    
     // Consume the next input character:
-    let nextInputCharacter = self.consumeNextInputCharacter()
-
-    switch nextInputCharacter {
+    switch self.consumeNextInputCharacter() {
 
     // U+0009 CHARACTER TABULATION (tab)
     // U+000A LINE FEED (LF)
@@ -28,7 +28,7 @@ extension Tokenizer {
       // Append the lowercase version of the current input character (add 0x0020 to the character's code point)
       // to the current attribute's name.
       self.currentAttributeAppendToName(
-        String(UnicodeScalar(nextInputCharacter!.unicodeScalars.first!.value + 0x0020)!))
+        String(UnicodeScalar(char!.unicodeScalars.first!.value + 0x0020)!))
 
     // U+0000 NULL
     case "\0":
@@ -47,7 +47,7 @@ extension Tokenizer {
     // Anything else
     default:
       // Append the current input character to the current attribute's name.
-      self.currentAttributeAppendToName(String(nextInputCharacter!))
+      self.currentAttributeAppendToName(String(self.currentInputCharacter()!))
     }
   }
 

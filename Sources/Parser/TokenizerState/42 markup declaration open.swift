@@ -1,10 +1,12 @@
 extension Tokenizer {
 
-  // 13.2.5.42 Markup declaration open state https://html.spec.whatwg.org/multipage/parsing.html#markup-declaration-open-state
+  // 13.2.5.42 Markup declaration open state 
+  // https://html.spec.whatwg.org/multipage/parsing.html#markup-declaration-open-state
   func handleMarkupDeclarationOpenState() {
+    
     // If the next few characters are:
-    let nextInputCharacter = self.consumeNextInputCharacter()
-    switch nextInputCharacter {
+    switch self.consumeNextInputCharacter() {
+
     // U+002D HYPHEN-MINUS, U+002D HYPHEN-MINUS, U+003E GREATER-THAN SIGN (-->)
     case "-":
       if self.data.count > self.position + 1,
@@ -17,8 +19,9 @@ extension Tokenizer {
         self.state = .commentStart
         return
       }
+
+    // ASCII case-insensitive match for the word "DOCTYPE"
     case "D", "d":
-      // ASCII case-insensitive match for the word "DOCTYPE"
       if self.data.count > self.position + 6,
         self.data[self.position + 1] == UInt8(ascii: "O")
           || self.data[self.position + 1] == UInt8(ascii: "o"),
@@ -39,7 +42,8 @@ extension Tokenizer {
         return
       }
 
-    // The string "[CDATA[" (the five uppercase letters "CDATA" with a U+005B LEFT SQUARE BRACKET character before and after)
+    // The string "[CDATA[" (the five uppercase letters "CDATA" with a U+005B
+    // LEFT SQUARE BRACKET character before and after)
     case "[":
       if self.data.count > self.position + 6,
         self.data[self.position + 1] == UInt8(ascii: "C"),
@@ -49,9 +53,11 @@ extension Tokenizer {
         self.data[self.position + 5] == UInt8(ascii: "A"),
         self.data[self.position + 6] == UInt8(ascii: "[")
       {
-        // Consume those characters. If there is an adjusted current node and it is not an element in the HTML namespace,
-        // then switch to the CDATA section state. Otherwise, this is a cdata-in-html-content parse error.
-        // Create a comment token whose data is the "[CDATA[" string. Switch to the bogus comment state.
+        // Consume those characters. If there is an adjusted current node and it
+        // is not an element in the HTML namespace, then switch to the CDATA
+        // section state. Otherwise, this is a cdata-in-html-content parse
+        // error. Create a comment token whose data is the "[CDATA[" string.
+        // Switch to the bogus comment state.
         self.position += 6
         // FIXME: if let adjustedCurrentNode = self.adjustedCurrentNode, !adjustedCurrentNode.isHTMLElement() {
         //           self.state = .cdataSection
@@ -65,7 +71,9 @@ extension Tokenizer {
     }
 
     // Anything else
-    // This is an incorrectly-opened-comment parse error. Create a comment token whose data is the empty string. Switch to the bogus comment state (don't consume anything in the current state).
+    // This is an incorrectly-opened-comment parse error. Create a comment token
+    // whose data is the empty string. Switch to the bogus comment state (don't
+    // consume anything in the current state).
     self.currentToken = .comment("")
     self.state = .bogusComment
   }

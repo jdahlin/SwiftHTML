@@ -1,10 +1,11 @@
 extension Tokenizer {
 
-  // 13.2.5.1 Data state https://html.spec.whatwg.org/multipage/parsing.html#data-state
+  // 13.2.5.1 Data state 
+  // https://html.spec.whatwg.org/multipage/parsing.html#data-state
   func handleDataState() {
+
     // Consume the next input character:
-    let nextInputCharacter = self.consumeNextInputCharacter()
-    switch nextInputCharacter {
+    switch self.consumeNextInputCharacter() {
 
     // U+0026 AMPERSAND (&)
     case "&":

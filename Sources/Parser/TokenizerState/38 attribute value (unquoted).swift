@@ -1,11 +1,11 @@
 extension Tokenizer {
   
   // 13.2.5.38 Attribute value (unquoted) state
+  // https://html.spec.whatwg.org/multipage/parsing.html#attribute-value-(unquoted)-state
   func handleAttributeValueUnquotedState() {
+    
     // Consume the next input character:
-    let nextInputCharacter = self.consumeNextInputCharacter()
-
-    switch nextInputCharacter {
+    switch self.consumeNextInputCharacter() {
 
     // U+0009 CHARACTER TABULATION (tab)
     // U+000A LINE FEED (LF)
@@ -53,7 +53,7 @@ extension Tokenizer {
     // Anything else
     default:
       // Append the current input character to the current attribute's value.
-      self.currentAttributeAppendToValue(String(nextInputCharacter!))
+      self.currentAttributeAppendToValue(String(self.currentInputCharacter()!))
     }
   }
 

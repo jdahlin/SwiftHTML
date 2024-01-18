@@ -1,11 +1,12 @@
   extension Tokenizer {
     
-  // 13.2.5.7 End tag open state https://html.spec.whatwg.org/multipage/parsing.html#end-tag-open-state
+  // 13.2.5.7 End tag open state 
+  // https://html.spec.whatwg.org/multipage/parsing.html#end-tag-open-state
   func handleEndTagOpenState() {
+    
     // Consume the next input character:
-    let nextInputCharacter = self.consumeNextInputCharacter()
+    switch self.consumeNextInputCharacter() {
 
-    switch nextInputCharacter {
     // ASCII alpha
     // Create a new end tag token, set its tag name to the empty string. Reconsume in the tag name state.
     case let char where char!.isLetter:

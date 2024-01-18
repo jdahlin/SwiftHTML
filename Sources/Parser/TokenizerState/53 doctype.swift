@@ -1,10 +1,11 @@
 extension Tokenizer {
-  
-    // 13.2.5.53 DOCTYPE state https://html.spec.whatwg.org/multipage/parsing.html#doctype-state
+
+  // 13.2.5.53 DOCTYPE state
+  // https://html.spec.whatwg.org/multipage/parsing.html#doctype-state
   func handleDoctypeState() {
+    
     // Consume the next input character:
-    let nextInputCharacter = self.consumeNextInputCharacter()
-    switch nextInputCharacter {
+    switch self.consumeNextInputCharacter() {
 
     // U+0009 CHARACTER TABULATION (tab)
     // U+000A LINE FEED (LF)

@@ -1,15 +1,15 @@
 extension Tokenizer {
 
-  // 13.2.5.72 Character reference state https://html.spec.whatwg.org/multipage/parsing.html#character-reference-state
+  // 13.2.5.72 Character reference state 
+  // https://html.spec.whatwg.org/multipage/parsing.html#character-reference-state
   func handleCharacterReferenceState() {
+    
     // Set the temporary buffer to the empty string.
     // Append a U+0026 AMPERSAND (&) character to the temporary buffer.
     self.temporaryBuffer = "&"
 
     // Consume the next input character:
-    let nextInputCharacter = self.consumeNextInputCharacter()
-
-    switch nextInputCharacter {
+    switch self.consumeNextInputCharacter() {
 
     // ASCII alphanumeric
     case let char where char?.isASCIIAlphanumeric == true:

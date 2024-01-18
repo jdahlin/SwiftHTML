@@ -1,12 +1,11 @@
 extension Tokenizer {
 
-  // 13.2.5.32 Before attribute name state https://html.spec.whatwg.org/multipage/parsing.html#before-attribute-name-state
+  // 13.2.5.32 Before attribute name state 
+  // https://html.spec.whatwg.org/multipage/parsing.html#before-attribute-name-state
   func handleBeforeAttributeNameState() {
-
+    
     // Consume the next input character:
-    let nextInputCharacter = self.consumeNextInputCharacter()
-
-    switch nextInputCharacter {
+    switch self.consumeNextInputCharacter() {
 
     // U+0009 CHARACTER TABULATION (tab)
     // U+000A LINE FEED (LF)
@@ -28,7 +27,7 @@ extension Tokenizer {
       // This is an unexpected-equals-sign-before-attribute-name parse error.
       // Start a new attribute in the current tag token.
       // Set that attribute's name to the current input character, and its value to the empty string.
-      createAttribute(name: String(nextInputCharacter!))
+      createAttribute(name: String(self.currentInputCharacter()!))
 
       // Switch to the attribute name state.
       self.state = .attributeName

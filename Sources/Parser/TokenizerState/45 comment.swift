@@ -1,10 +1,11 @@
 extension Tokenizer {
-  
-    // 13.2.5.45 Comment state https://html.spec.whatwg.org/multipage/parsing.html#comment-state
+
+  // 13.2.5.45 Comment state
+  //https://html.spec.whatwg.org/multipage/parsing.html#comment-state
   func handleCommentState() {
+    
     // Consume the next input character:
-    let nextInputCharacter = self.consumeNextInputCharacter()
-    switch nextInputCharacter {
+    switch self.consumeNextInputCharacter() {
 
     // U+003C LESS-THAN SIGN (<)
     case "<":

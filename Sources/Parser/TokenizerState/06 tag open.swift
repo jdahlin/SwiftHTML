@@ -1,10 +1,11 @@
 extension Tokenizer {
 
-  // 13.2.5.6 Tag open state https://html.spec.whatwg.org/multipage/parsing.html#tag-open-state
+  // 13.2.5.6 Tag open state 
+  // https://html.spec.whatwg.org/multipage/parsing.html#tag-open-state
   func handleTagOpenState() {
     // Consume the next input character:
-    let nextInputCharacter = self.consumeNextInputCharacter()
-    switch nextInputCharacter {
+    switch self.consumeNextInputCharacter() {
+
     // U+0021 EXCLAMATION MARK (!)
     case "!":
       // Switch to the markup declaration open state.

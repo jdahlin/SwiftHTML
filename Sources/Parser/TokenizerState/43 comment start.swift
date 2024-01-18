@@ -1,10 +1,11 @@
 extension Tokenizer {
-  
-    // 13.2.5.43 Comment start state https://html.spec.whatwg.org/multipage/parsing.html#comment-start-state
+
+  // 13.2.5.43 Comment start state 
+  // https://html.spec.whatwg.org/multipage/parsing.html#comment-start-state
   func handleCommentStartState() {
+    
     // Consume the next input character:
-    let nextInputCharacter = self.consumeNextInputCharacter()
-    switch nextInputCharacter {
+    switch self.consumeNextInputCharacter() {
 
     // U+002D HYPHEN-MINUS (-)
     case "-":

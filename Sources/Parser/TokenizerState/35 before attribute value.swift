@@ -1,11 +1,11 @@
 extension Tokenizer {
 
-  // 13.2.5.35 Before attribute value state https://html.spec.whatwg.org/multipage/parsing.html#before-attribute-value-state
+  // 13.2.5.35 Before attribute value state 
+  // https://html.spec.whatwg.org/multipage/parsing.html#before-attribute-value-state
   func handleBeforeAttributeValueState() {
+    
     // Consume the next input character:
-    let nextInputCharacter = self.consumeNextInputCharacter()
-
-    switch nextInputCharacter {
+    switch self.consumeNextInputCharacter() {
 
     // U+0009 CHARACTER TABULATION (tab)
     // U+000A LINE FEED (LF)

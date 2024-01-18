@@ -1,11 +1,11 @@
 extension Tokenizer {
   
-  // 13.2.5.39 After attribute value (quoted) state https://html.spec.whatwg.org/multipage/parsing.html#after-attribute-value-(quoted)-state
+  // 13.2.5.39 After attribute value (quoted) state 
+  // https://html.spec.whatwg.org/multipage/parsing.html#after-attribute-value-(quoted)-state
   func handleAfterAttributeValueQuotedState() {
+    
     // Consume the next input character:
-    let nextInputCharacter = self.consumeNextInputCharacter()
-
-    switch nextInputCharacter {
+    switch self.consumeNextInputCharacter() {
 
     // U+0009 CHARACTER TABULATION (tab)
     // U+000A LINE FEED (LF)

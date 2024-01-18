@@ -1,10 +1,11 @@
 extension Tokenizer {
-  
-    // 13.2.5.51 Comment end state https://html.spec.whatwg.org/multipage/parsing.html#comment-end-state
+
+  // 13.2.5.51 Comment end state
+  // https://html.spec.whatwg.org/multipage/parsing.html#comment-end-state
   func handleCommentEndState() {
+    
     // Consume the next input character:
-    let nextInputCharacter = self.consumeNextInputCharacter()
-    switch nextInputCharacter {
+    switch self.consumeNextInputCharacter() {
 
     // U+003E GREATER-THAN SIGN (>)
     // Switch to the data state. Emit the current comment token.

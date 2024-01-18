@@ -1,11 +1,12 @@
 extension Tokenizer {
 
-  // 13.2.5.8 Tag name state https://html.spec.whatwg.org/multipage/parsing.html#tag-name-state
+  // 13.2.5.8 Tag name state 
+  // https://html.spec.whatwg.org/multipage/parsing.html#tag-name-state
   func handleTagNameState() {
+    
     // Consume the next input character:
-    let nextInputCharacter = self.consumeNextInputCharacter()
+    switch self.consumeNextInputCharacter() {
 
-    switch nextInputCharacter {
     // U+0009 CHARACTER TABULATION (tab)
     // U+000A LINE FEED (LF)
     // U+000C FORM FEED (FF)

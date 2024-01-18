@@ -1,10 +1,11 @@
 extension Tokenizer {
   
-  // 13.2.5.41 Bogus comment state https://html.spec.whatwg.org/multipage/parsing.html#bogus-comment-state
+  // 13.2.5.41 Bogus comment state 
+  // https://html.spec.whatwg.org/multipage/parsing.html#bogus-comment-state
   func handleBogusCommentState() {
+    
     // Consume the next input character:
-    let nextInputCharacter = self.consumeNextInputCharacter()
-    switch nextInputCharacter {
+    switch self.consumeNextInputCharacter() {
 
     // U+003E GREATER-THAN SIGN (>)
     // Switch to the data state. Emit the current comment token.

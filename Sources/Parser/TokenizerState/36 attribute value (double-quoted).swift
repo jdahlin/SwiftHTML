@@ -1,11 +1,11 @@
 extension Tokenizer {
   
-  // 13.2.5.36 Attribute value (double-quoted) state https://html.spec.whatwg.org/multipage/parsing.html#attribute-value-(double-quoted)-state
+  // 13.2.5.36 Attribute value (double-quoted) state
+  //  https://html.spec.whatwg.org/multipage/parsing.html#attribute-value-(double-quoted)-state
   func handleAttributeValueDoubleQuotedState() {
+    
     // Consume the next input character:
-    let nextInputCharacter = self.consumeNextInputCharacter()
-
-    switch nextInputCharacter {
+    switch self.consumeNextInputCharacter() {
 
     // U+0022 QUOTATION MARK (")
     case "\"":
@@ -35,7 +35,7 @@ extension Tokenizer {
     // Anything else
     default:
       // Append the current input character to the current attribute's value.
-      self.currentAttributeAppendToValue(String(nextInputCharacter!))
+      self.currentAttributeAppendToValue(String(self.currentInputCharacter()!))
     }
   }
 
