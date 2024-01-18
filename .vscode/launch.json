@@ -1,0 +1,29 @@
+{
+    "configurations": [
+        
+        {
+            "type": "lldb",
+            "request": "launch",
+            "sourceLanguages": [
+                "swift"
+            ],
+            "args": [],
+            "cwd": "${workspaceFolder:SwiftHTML}",
+            "name": "Debug SwiftHTML",
+            "program": "${workspaceFolder:SwiftHTML}/.build/debug/SwiftHTML",
+            "preLaunchTask": "swift: Build Debug SwiftHTML"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "sourceLanguages": [
+                "swift"
+            ],
+            "args": [],
+            "cwd": "${workspaceFolder:SwiftHTML}",
+            "name": "Release SwiftHTML",
+            "program": "${workspaceFolder:SwiftHTML}/.build/release/SwiftHTML",
+            "preLaunchTask": "swift: Build Release SwiftHTML"
+        }
+    ]
+}
