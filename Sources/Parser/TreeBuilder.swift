@@ -62,13 +62,12 @@ class TreeBuilder: TokenReceiver {
     }
 
     func didReceiveToken(_ token: Token) {
-        print("\(#function): \(insertionMode) \(token)")
         handleToken(token)
     }
 
     // https://html.spec.whatwg.org/multipage/parsing.html#current-node
-    var currentNode: Node {
-        return stack.last!
+    var currentNode: Node? {
+        return stack.last
     }
 
     // https://html.spec.whatwg.org/multipage/parsing.html#appropriate-place-for-inserting-a-node
@@ -112,10 +111,11 @@ class TreeBuilder: TokenReceiver {
         if fosterParenting {
             print("FIXME: foster parenting not implemented")
         }
+
         // Otherwise
         // Let adjusted insertion location be inside target, after its last child (if any).
         let adjustedInsertionLocation = AdjustedInsertionLocation(
-            node: target, afterSibling: target!.lastChild
+            node: target, afterSibling: target?.lastChild
         )
 
         // FIXME: 3. If the adjusted insertion location is inside a template element,
@@ -228,7 +228,12 @@ class TreeBuilder: TokenReceiver {
     func reconstructActiveFormattingElements() {}
     func acknowledgeTokenSelfClosingFlag() {}
 
+    func reprocessToken(_ token: Token) {
+        handleToken(token)
+    }
+
     func handleToken(_ token: Token) {
+        print("\(#function): \(insertionMode) \(token)")
         // Handle the token
         switch insertionMode {
         case .initial:

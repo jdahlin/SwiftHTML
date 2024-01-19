@@ -83,24 +83,24 @@ public class Node: EventTarget {
     // readonly attribute unsigned short nodeType;
     // https://dom.spec.whatwg.org/#dom-node-nodetype
     var nodeType: UInt16 {
-        switch type(of: self) {
-        case is DocumentType.Type:
+        switch self {
+        case is DocumentType:
             return NodeType.DOCUMENT_TYPE_NODE.rawValue
-        case is Element.Type:
+        case is Element:
             return NodeType.ELEMENT_NODE.rawValue
-        case is Attr.Type:
+        case is Attr:
             return NodeType.ATTRIBUTE_NODE.rawValue
-        case is Text.Type:
+        case is Text:
             return NodeType.TEXT_NODE.rawValue
-        // case is CDATASection.Type:
+        // case is CDATASection:
         //     return .CDATA_SECTION_NODE
-        // case is ProcessingInstruction.Type:
+        // case is ProcessingInstruction:
         //     return .PROCESSING_INSTRUCTION_NODE
-        case is Comment.Type:
+        case is Comment:
             return NodeType.COMMENT_NODE.rawValue
-        case is Document.Type:
+        case is Document:
             return NodeType.DOCUMENT_NODE.rawValue
-        // case is DocumentFragment.Type:
+        // case is DocumentFragment:
         //     return .DOCUMENT_FRAGMENT_NODE
         default:
             print("\(#function): \(type(of: self)): not implemented")
@@ -112,21 +112,19 @@ public class Node: EventTarget {
     // readonly attribute DOMString nodeName;
     // https://dom.spec.whatwg.org/#dom-node-nodename
     var nodeName: DOMString? {
-        switch type(of: self) {
+        switch self {
         // Element
-        case is Element.Type:
-            let element = self as! Element
+        case let element as Element:
             // Its HTML-uppercased qualified name.
             return element.qualifiedName.uppercased()
 
         // Attr
-        case is Attr.Type:
-            let attr = self as! Attr
+        case let attr as Attr:
             // Its qualified name.
             return attr.qualifiedName
 
         // An exclusive Text node
-        case is Text.Type /* , is !CDATASection.Type */:
+        case is Text /* , is !CDATASection.Type */:
             return "#text"
 
     // CDATASection
@@ -136,19 +134,19 @@ public class Node: EventTarget {
     //   Its target.
 
         // Comment
-        case is Comment.Type:
+        case is Comment:
             return "#comment"
 
         // Document
-        case is Document.Type:
+        case is Document:
             return "#document"
 
         // DocumentType
-        case is DocumentType.Type:
+        case is DocumentType:
             return "#document"
 
         // DocumentFragment
-        case is DocumentFragment.Type:
+        case is DocumentFragment:
             return "#document-fragment"
 
         default:
@@ -221,41 +219,38 @@ extension Node: Equatable {
         }
 
         // The following are equal, switching on the interface A implements:
-        switch type(of: a) {
+        switch (a, b) {
+
         // DocumentType
-        case is DocumentType.Type:
+        case let (a, b) as (DocumentType, DocumentType):
             // Its name, public ID, and system ID.
-            let a = a as! DocumentType
-            let b = b as! DocumentType
             return a.name == b.name && a.publicId == b.publicId && a.systemId == b.systemId
+
         // Element
-        case is Element.Type:
+        case let (a, b) as (Element, Element):
             // Its namespace, namespace prefix, local name, and its attribute list’s size.
-            let a = a as! Element
-            let b = b as! Element
             return a.namespaceURI == b.namespaceURI
                 && /* a.prefix == b.prefix && a.localName == b.localName && */ a.attributes.length
                 == b.attributes.length
+
         // Attr
-        case is Attr.Type:
+        case let (a, b) as (Attr, Attr):
             // Its namespace, namespace prefix, local name, and value.
-            let a = a as! Attr
-            let b = b as! Attr
             return a.namespaceURI == b.namespaceURI
                 && /* a.prefix == b.prefix && a.localName == b.localName && */ a.value == b.value
+
         // ProcessingInstruction
+
         // Its target and data.
+
         // Text
-        case is Text.Type:
+        case let (a, b) as (Text, Text):
             // Its data.
-            let a = a as! Text
-            let b = b as! Text
             return a.data == b.data
+
         // Comment
-        case is Comment.Type:
+        case let (a, b) as (Comment, Comment):
             // Its data.
-            let a = a as! Comment
-            let b = b as! Comment
             return a.data == b.data
 
         // Otherwise
