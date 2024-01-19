@@ -4,6 +4,25 @@
 import Foundation
 import JavaScriptCore
 
+func FIXME(
+    _ message: String? = nil,
+    function: String = #function,
+    file: String = #fileID,
+    line: Int = #line
+) {
+    print("FIXME: \(message ?? "") in \(function) at \(file):\(line)")
+}
+
+func DIE(
+    _ message: String? = nil,
+    function: String = #function,
+    file: String = #fileID,
+    line: Int = #line
+) -> Never {
+    print("DIE: \(message ?? "") in \(function) at \(file):\(line)")
+    exit(1)
+}
+
 func parseHTML(_ data: inout Data) -> Document {
     // let context = JSContext()
     // if let globalObject = context?.evaluateScript("this") {
@@ -36,7 +55,15 @@ func printDOMTree(_ node: Node, _ indent: String = "") {
             print(indent + text.data.debugDescription)
         default:
             let nodeName = child.nodeName ?? "nil"
-            print(indent + "<\(nodeName)>")
+            var extra = ""
+            if let element = child as? Element, element.attributes.length > 0 {
+                for i in 0 ..< element.attributes.length {
+                    if let attr = element.attributes.item(i) {
+                        extra += " \(attr.name)=\"\(attr.value)\""
+                    }
+                }
+            }
+            print(indent + "<\(nodeName)\(extra)>")
             printDOMTree(child, indent + "  ")
             print(indent + "</\(nodeName)>")
         }
@@ -46,7 +73,7 @@ func printDOMTree(_ node: Node, _ indent: String = "") {
 // let html =
 //     "<!doctype html><html><head><title>Test</title></head><body double=\"one\" single='two' unquoted=three><p>Hello, world!</p><!-- foo --></body></html>\r\n"
 let html =
-    "<html><head></head><body>1<div>2</div>3</body></html>"
+    "<html><head></head><body>1<div class=foo>2</div>3</body></html>"
 var data = Data(html.utf8)
 let document = parseHTML(&data)
 let post = String(decoding: data, as: UTF8.self)

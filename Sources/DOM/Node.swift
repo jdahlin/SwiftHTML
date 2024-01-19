@@ -103,8 +103,7 @@ public class Node: EventTarget {
         // case is DocumentFragment:
         //     return .DOCUMENT_FRAGMENT_NODE
         default:
-            print("\(#function): \(type(of: self)): not implemented")
-            assertionFailure()
+            DIE("\(type(of: self)): not implemented")
             return NodeType.ELEMENT_NODE.rawValue
         }
     }
@@ -150,8 +149,7 @@ public class Node: EventTarget {
             return "#document-fragment"
 
         default:
-            print("\(#function): \(type(of: self)): not implemented")
-            assertionFailure()
+            DIE("\(type(of: self)): not implemented")
             return "nil"
         }
     }
@@ -347,7 +345,7 @@ func ensurePreInsertValidation(node: Node, parent: Node, child: Node?) throws {
         switch node {
         // DocumentFragment
         case is DocumentFragment:
-            print("\(#function): DocumentFragment not implemented")
+            DIE("DocumentFragment not implemented")
     // If node has more than one element child or has a Text node child.
     // Otherwise, if node has one element child and either parent has an
     // element child, child is a doctype, or child is non-null and a doctype
@@ -363,7 +361,7 @@ func ensurePreInsertValidation(node: Node, parent: Node, child: Node?) throws {
             }
         // DocumentType
         case is DocumentType:
-            print("\(#function): DocumentType not implemented")
+            DIE("DocumentType not implemented")
         default:
             break
         }

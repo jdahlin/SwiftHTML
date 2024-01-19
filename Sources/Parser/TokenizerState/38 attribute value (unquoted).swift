@@ -39,7 +39,7 @@ extension Tokenizer {
         // U+0060 GRAVE ACCENT (`)
         // This is an unexpected-character-in-unquoted-attribute-value parse error. Treat it as per the "anything else" entry below.
         case "\"", "'", "<", "=", "`":
-            print("Unexpected character in unquoted attribute value")
+            FIXME("Unexpected character in unquoted attribute value")
             fallthrough
 
         // EOF

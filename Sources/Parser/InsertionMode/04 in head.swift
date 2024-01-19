@@ -50,14 +50,14 @@ extension TreeBuilder {
 
             // If the active speculative HTML parser is null, then:
             if activeSpeculativeHTMLParser != nil {
-                print("\(#function): activeSpeculativeHTMLParser not implemented")
+                FIXME("activeSpeculativeHTMLParser not implemented")
             }
 
             // If the element has a charset attribute, and getting an encoding from
             // its value results in an encoding, and the confidence is currently
             // tentative, then change the encoding to the resulting encoding.
             if element.hasAttribute("charset") {
-                print("\(#function): charset not implemented")
+                FIXME("charset not implemented")
                 // Otherwise, if the element has an http-equiv attribute whose value is an
                 // ASCII case-insensitive match for the string "Content-Type", and the
                 // element has a content attribute, and applying the algorithm for
@@ -69,23 +69,23 @@ extension TreeBuilder {
             } else if element.hasAttribute("http-equiv"),
                       element.getAttribute("http-equiv") == "Content-Type", element.hasAttribute("content")
             {
-                print("\(#function): FIXME: http-equiv not implemented")
+                FIXME("http-equiv not implemented")
             }
 
         // A start tag whose tag name is "title"
         case .startTag("title", attributes: _, _):
             // Follow the generic RCDATA element parsing algorithm.
-            print("\(#function): FIXME: title not implemented")
+            FIXME("title not implemented")
 
         // A start tag whose tag name is "noscript", if the scripting flag is enabled
         case .startTag("noscript", attributes: _, _) where scriptingFlag:
             // Follow the generic raw text element parsing algorithm.
-            print("\(#function): FIXME: noscript not implemented")
+            FIXME("noscript not implemented")
 
         // A start tag whose tag name is one of: "noframes", "style"
         case .startTag(let tagName, attributes: _, _) where tagName == "noframes" || tagName == "style":
             // Follow the generic raw text element parsing algorithm.
-            print("\(#function): FIXME: \(tagName) not implemented")
+            FIXME("\(tagName) not implemented")
 
         // A start tag whose tag name is "noscript", if the scripting flag is disabled
         case .startTag("noscript", attributes: _, _) where !scriptingFlag:
@@ -95,7 +95,7 @@ extension TreeBuilder {
             // Switch the insertion mode to "in head noscript".
             insertionMode = .inHeadNoscript
 
-            print("\(#function): FIXME: noscript not implemented")
+            FIXME("noscript not implemented")
 
         // A start tag whose tag name is "script"
         case .startTag("script", _, _):

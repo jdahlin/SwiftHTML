@@ -16,7 +16,7 @@ extension TreeBuilder {
         namespace: DOMString,
         intendedParent: Node
     ) -> Element {
-        guard case let .startTag(tagName, attributes, _) = token else {
+        guard case let .startTag(tagName, attributes: attributes, _) = token else {
             fatalError("\(#function): unexpected tag: \(token)")
         }
 
@@ -85,6 +85,9 @@ extension TreeBuilder {
         //       blown away.
 
         // 10. Append each attribute in the given token to element.
+        for attribute in attributes {
+            element.attributes.attributes[attribute.name] = attribute.value
+        }
 
         // Note: This can enqueue a custom element callback reaction for the
         //       attributeChangedCallback, which might run immediately (in the next

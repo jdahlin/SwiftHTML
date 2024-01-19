@@ -20,11 +20,11 @@ protocol ChildNode {
 // Element includes ChildNode;
 extension Element: ChildNode {
     func before(_: Node...) {
-        print("\(#function): not implemented")
+        FIXME("not implemented")
     }
 
     func before(_: DOMString...) {
-        print("\(#function): not implemented")
+        FIXME("not implemented")
     }
 
     func after(_ nodes: Node...) {
@@ -40,30 +40,30 @@ extension Element: ChildNode {
     }
 
     func after(_: DOMString...) {
-        print("\(#function): not implemented")
+        FIXME("not implemented")
     }
 
     func replaceWith(_: Node...) {
-        print("\(#function): not implemented")
+        FIXME("not implemented")
     }
 
     func replaceWith(_: DOMString...) {
-        print("\(#function): not implemented")
+        FIXME("not implemented")
     }
 
     func remove() {
-        print("\(#function): not implemented")
+        FIXME("not implemented")
     }
 }
 
 // CharacterData includes ChildNode;
 extension CharacterData: ChildNode {
     func before(_: Node...) {
-        print("\(#function): not implemented")
+        FIXME("not implemented")
     }
 
     func before(_: DOMString...) {
-        print("\(#function): not implemented")
+        FIXME("not implemented")
     }
 
     func after(_ nodes: Node...) {
@@ -79,18 +79,18 @@ extension CharacterData: ChildNode {
     }
 
     func after(_: DOMString...) {
-        print("\(#function): not implemented")
+        FIXME("not implemented")
     }
 
     func replaceWith(_: Node...) {
-        print("\(#function): not implemented")
+        FIXME("not implemented")
     }
 
     func replaceWith(_: DOMString...) {
-        print("\(#function): not implemented")
+        FIXME("not implemented")
     }
 
     func remove() {
-        print("\(#function): not implemented")
+        FIXME("not implemented")
     }
 }

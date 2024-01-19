@@ -29,9 +29,7 @@ extension TreeBuilder {
             // system ID set to the system identifier given in the DOCTYPE token, or the
             // empty string if the system identifier was missing.
             guard name == "html" else {
-                print("doctype: non html not implemented")
-                exit(0)
-                break
+                DIE("doctype: non html not implemented")
             }
             let doctypeNode = DocumentType(name: name, publicId: publicId, systemId: systemId)
             document.appendChild(doctypeNode)

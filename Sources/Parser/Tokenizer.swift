@@ -265,8 +265,7 @@ class Tokenizer {
         case let .comment(name):
             currentToken = .comment(name + String(character))
         default:
-            print("Implement me: \(currentToken!)")
-            exit(0)
+            DIE("Implement me: \(currentToken!)")
         }
     }
 
@@ -474,8 +473,7 @@ class Tokenizer {
     // 13.2.5.80 Numeric character reference end state
 
         default:
-            print("Implement me, \(state)")
-            exit(0)
+            DIE("state: \(state) is not implemented")
         }
     }
 }

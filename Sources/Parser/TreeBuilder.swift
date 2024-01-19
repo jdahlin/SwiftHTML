@@ -110,13 +110,13 @@ class TreeBuilder: TokenReceiver {
         // 2.7 Let adjusted insertion location be inside previous element, after its last child (if any).
 
         if fosterParenting {
-            print("FIXME: foster parenting not implemented")
+            FIXME("foster parenting not implemented")
         }
 
         // Otherwise
         // Let adjusted insertion location be inside target, after its last child (if any).
         let adjustedInsertionLocation = AdjustedInsertionLocation(
-            node: target, 
+            node: target,
             afterSibling: target?.lastChild
         )
 
@@ -168,7 +168,7 @@ class TreeBuilder: TokenReceiver {
         //    position. Otherwise, let adjusted insertion location be the appropriate place
         //    for inserting a node.
         if position != nil {
-            print("\(#function): position not implemented")
+            FIXME("position not implemented")
         }
         let adjustedInsertionLocation = appropriatePlaceForInsertingANode()
 
@@ -235,7 +235,7 @@ class TreeBuilder: TokenReceiver {
     }
 
     func handleToken(_ token: Token) {
-        print("\(#function): \(insertionMode) \(token)")
+        // print("\(#function): \(insertionMode) \(token)")
         // Handle the token
         switch insertionMode {
         case .initial:
@@ -257,8 +257,7 @@ class TreeBuilder: TokenReceiver {
         case .undefined:
             fallthrough
         default:
-            print("Unknown insertion mode: \(insertionMode)")
-            exit(0)
+            DIE("Unknown insertion mode: \(insertionMode)")
         }
     }
 

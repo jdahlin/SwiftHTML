@@ -137,9 +137,18 @@ extension TreeBuilder {
 
         // An end tag whose tag name is "html"
         case .endTag("html", _, _):
-            print("endTag html")
-            // If the stack of open elements does not have a body element in scope, this is a parse error; ignore the token.
-            // Otherwise, if there is a node in the stack of open elements that is not either a dd element, a dt element, an li element, an optgroup element, an option element, a p element, an rb element, an rp element, an rt element, an rtc element, a tbody element, a td element, a tfoot element, a th element, a thead element, a tr element, the body element, or the html element, then this is a parse error.
+            FIXME("endTag html")
+            // If the stack of open elements does not have a body element in
+            // scope, this is a parse error; ignore the token.
+
+            // Otherwise, if there is a node in the stack of open elements that
+            // is not either a dd element, a dt element, an li element, an
+            // optgroup element, an option element, a p element, an rb element,
+            // an rp element, an rt element, an rtc element, a tbody element, a
+            // td element, a tfoot element, a th element, a thead element, a tr
+            // element, the body element, or the html element, then this is a
+            // parse error.
+
             // Switch the insertion mode to "after body".
             insertionMode = .afterBody
 
@@ -246,7 +255,7 @@ extension TreeBuilder {
             }
 
             // Close a p element.
-            print("\(#function) FIXME: closePElement()")
+            FIXME("close a p element")
 
     // An end tag whose tag name is "li"
     // If the stack of open elements does not have an li element in list item scope, then this is a parse error; ignore the token.
@@ -416,10 +425,7 @@ extension TreeBuilder {
             let node = currentNode
 
             // Loop: If node is an HTML element with the same tag name as the token, then:
-            while stack.count > 0 {
-                guard node is Element else { break }
-                let element = node as! Element
-
+            while let element = node as? Element, element.localName == tagName {
                 // Generate implied end tags, except for HTML elements with the same tag name as the token.
                 // generateImpliedEndTags(exceptFor: token.tagName)
 
