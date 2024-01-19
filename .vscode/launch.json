@@ -1,6 +1,5 @@
 {
     "configurations": [
-        
         {
             "type": "lldb",
             "request": "launch",
@@ -9,9 +8,9 @@
             ],
             "args": [],
             "cwd": "${workspaceFolder:SwiftHTML}",
-            "name": "Debug SwiftHTML",
-            "program": "${workspaceFolder:SwiftHTML}/.build/debug/SwiftHTML",
-            "preLaunchTask": "swift: Build Debug SwiftHTML"
+            "name": "Debug Browser",
+            "program": "${workspaceFolder:SwiftHTML}/.build/debug/Browser",
+            "preLaunchTask": "swift: Build Debug Browser"
         },
         {
             "type": "lldb",
@@ -21,9 +20,33 @@
             ],
             "args": [],
             "cwd": "${workspaceFolder:SwiftHTML}",
-            "name": "Release SwiftHTML",
-            "program": "${workspaceFolder:SwiftHTML}/.build/release/SwiftHTML",
-            "preLaunchTask": "swift: Build Release SwiftHTML"
+            "name": "Release Browser",
+            "program": "${workspaceFolder:SwiftHTML}/.build/release/Browser",
+            "preLaunchTask": "swift: Build Release Browser"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "sourceLanguages": [
+                "swift"
+            ],
+            "args": [],
+            "cwd": "${workspaceFolder:SwiftHTML}",
+            "name": "Debug HTML",
+            "program": "${workspaceFolder:SwiftHTML}/.build/debug/Browser",
+            "preLaunchTask": "swift: Build Debug Browser"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "sourceLanguages": [
+                "swift"
+            ],
+            "args": [],
+            "cwd": "${workspaceFolder:SwiftHTML}",
+            "name": "Release Browser",
+            "program": "${workspaceFolder:SwiftHTML}/.build/release/Browser",
+            "preLaunchTask": "swift: Build Release Browser"
         }
     ]
 }

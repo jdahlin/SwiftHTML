@@ -46,7 +46,7 @@ struct ElementCreationOptions {
 
 struct BrowsingContext {}
 
-class Document: Node {
+public class Document: Node {
     var mode: DocumentMode = .noQuirks
 
     var browsingContext: BrowsingContext?

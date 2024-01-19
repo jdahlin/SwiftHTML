@@ -5,10 +5,15 @@ import PackageDescription
 
 let package = Package(
     name: "SwiftHTML",
+    products: [
+        .library(name: "CSS", targets: ["CSS"]),
+        .library(name: "HTML", targets: ["HTML"])
+    ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
-        .executableTarget(
-            name: "SwiftHTML"),
+        .target(name: "CSS", path: "Sources/CSS"),
+        .target(name: "HTML", path: "Sources/HTML"),
+        .executableTarget(name: "Browser", dependencies: ["HTML", "CSS"], path: "Sources/Browser")
     ]
 )

@@ -1,8 +1,4 @@
-// The Swift Programming Language
-// https://docs.swift.org/swift-book
-
 import Foundation
-import JavaScriptCore
 
 func FIXME(
     _ message: String? = nil,
@@ -23,7 +19,7 @@ func DIE(
     exit(1)
 }
 
-func parseHTML(_ data: inout Data) -> Document {
+public func parseHTML(_ data: inout Data) -> Document {
     // let context = JSContext()
     // if let globalObject = context?.evaluateScript("this") {
     //   print(type(of: globalObject))
@@ -47,7 +43,7 @@ func parseHTML(_ data: inout Data) -> Document {
     return treeBuilder.document
 }
 
-func printDOMTree(_ node: Node, _ indent: String = "") {
+public func printDOMTree(_ node: Node, _ indent: String = "") {
     for child in node.childNodes {
         switch child {
         case is Text:
@@ -69,13 +65,3 @@ func printDOMTree(_ node: Node, _ indent: String = "") {
         }
     }
 }
-
-// let html =
-//     "<!doctype html><html><head><title>Test</title></head><body double=\"one\" single='two' unquoted=three><p>Hello, world!</p><!-- foo --></body></html>\r\n"
-let html =
-    "<html><head></head><body>1<div class=foo>2</div>3</body></html>"
-var data = Data(html.utf8)
-let document = parseHTML(&data)
-let post = String(decoding: data, as: UTF8.self)
-print(post)
-printDOMTree(document)

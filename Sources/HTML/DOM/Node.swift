@@ -104,7 +104,6 @@ public class Node: EventTarget {
         //     return .DOCUMENT_FRAGMENT_NODE
         default:
             DIE("\(type(of: self)): not implemented")
-            return NodeType.ELEMENT_NODE.rawValue
         }
     }
 
@@ -150,7 +149,6 @@ public class Node: EventTarget {
 
         default:
             DIE("\(type(of: self)): not implemented")
-            return "nil"
         }
     }
 
