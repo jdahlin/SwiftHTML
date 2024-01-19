@@ -1,12 +1,12 @@
 struct AdjustedInsertionLocation {
     var node: Node?
-    var afterSibling: Node? = nil
+    var afterSibling: Element? = nil
 
     func insert(_ child: Node) {
         if let afterSibling = afterSibling {
-            node?.insertBefore(child, before: afterSibling)
+            afterSibling.after(child)
         } else {
-            node?.appendChild(child)
+            node!.appendChild(child)
         }
     }
 }

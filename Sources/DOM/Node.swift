@@ -72,7 +72,7 @@ public class Node: EventTarget {
     var ownerDocument: Document?
 
     // readonly attribute Node? parentNode;
-    let parentNode: Node?
+    var parentNode: Node?
 
     init(ownerDocument: Document? = nil, parentNode _: Node? = nil) {
         self.ownerDocument = ownerDocument
@@ -199,6 +199,7 @@ public class Node: EventTarget {
         } else {
             childNodes.array.append(node)
         }
+        node.parentNode = self
     }
 
     // [CEReactions] Node appendChild(Node node);
@@ -206,6 +207,7 @@ public class Node: EventTarget {
     // [CEReactions] Node removeChild(Node child);
     func appendChild(_ node: Node) {
         childNodes.array.append(node)
+        node.parentNode = self
     }
 }
 
