@@ -66,8 +66,16 @@ extension CharacterData: ChildNode {
         print("\(#function): not implemented")
     }
 
-    func after(_: Node...) {
-        print("\(#function): not implemented")
+    func after(_ nodes: Node...) {
+        // Inserts nodes just after node, while replacing strings in nodes with
+        // equivalent Text nodes.
+        for child in nodes {
+            if let parent = parentNode {
+                let index = parent.childNodes.array.firstIndex(of: self)
+                parent.childNodes.array.insert(child, at: index! + 1)
+                child.parentNode = parent
+            }
+        }
     }
 
     func after(_: DOMString...) {

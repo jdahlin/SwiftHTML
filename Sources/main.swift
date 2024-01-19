@@ -4,7 +4,7 @@
 import Foundation
 import JavaScriptCore
 
-func parseHTML(_ data: inout Data) {
+func parseHTML(_ data: inout Data) -> Document {
     // let context = JSContext()
     // if let globalObject = context?.evaluateScript("this") {
     //   print(type(of: globalObject))
@@ -25,7 +25,7 @@ func parseHTML(_ data: inout Data) {
 
     tokenizer.tokenize()
 
-    printDOMTree(treeBuilder.document)
+    return treeBuilder.document
 }
 
 func printDOMTree(_ node: Node, _ indent: String = "") {
@@ -46,8 +46,9 @@ func printDOMTree(_ node: Node, _ indent: String = "") {
 // let html =
 //     "<!doctype html><html><head><title>Test</title></head><body double=\"one\" single='two' unquoted=three><p>Hello, world!</p><!-- foo --></body></html>\r\n"
 let html =
-    "<html><head></head><body><a></a></body></html>"
+    "<html><head></head><body>1<div>2</div>3</body></html>"
 var data = Data(html.utf8)
-parseHTML(&data)
+let document = parseHTML(&data)
 let post = String(decoding: data, as: UTF8.self)
 print(post)
+printDOMTree(document)

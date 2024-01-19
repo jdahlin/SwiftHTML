@@ -117,7 +117,7 @@ class TreeBuilder: TokenReceiver {
         // Let adjusted insertion location be inside target, after its last child (if any).
         let adjustedInsertionLocation = AdjustedInsertionLocation(
             node: target, 
-            afterSibling: target?.lastChild as! Element?
+            afterSibling: target?.lastChild
         )
 
         // FIXME: 3. If the adjusted insertion location is inside a template element,
