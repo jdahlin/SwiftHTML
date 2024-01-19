@@ -57,7 +57,7 @@ extension TreeBuilder {
             // parse error; if the parser cannot change the mode flag is false, set
             // the Document to quirks mode.
 
-            // In any case, switch the insertion mode to "before html", 
+            // In any case, switch the insertion mode to "before html",
             insertionMode = .beforeHTML
 
             // then reprocess the token.

@@ -135,12 +135,16 @@ extension TreeBuilder {
             // Switch the insertion mode to "after body".
             insertionMode = .afterBody
 
-    
-    // An end tag whose tag name is "html"
-    // If the stack of open elements does not have a body element in scope, this is a parse error; ignore the token.
-    // Otherwise, if there is a node in the stack of open elements that is not either a dd element, a dt element, an li element, an optgroup element, an option element, a p element, an rb element, an rp element, an rt element, an rtc element, a tbody element, a td element, a tfoot element, a th element, a thead element, a tr element, the body element, or the html element, then this is a parse error.
-    // Switch the insertion mode to "after body".
-    // Reprocess the token.
+        // An end tag whose tag name is "html"
+        case .endTag("html", _, _):
+            print("endTag html")
+            // If the stack of open elements does not have a body element in scope, this is a parse error; ignore the token.
+            // Otherwise, if there is a node in the stack of open elements that is not either a dd element, a dt element, an li element, an optgroup element, an option element, a p element, an rb element, an rp element, an rt element, an rtc element, a tbody element, a td element, a tfoot element, a th element, a thead element, a tr element, the body element, or the html element, then this is a parse error.
+            // Switch the insertion mode to "after body".
+            insertionMode = .afterBody
+
+            // Reprocess the token.
+            reprocessToken(token)
 
     // A start tag whose tag name is one of: "address", "article", "aside", "blockquote", "center", "details", "dialog", "dir", "div", "dl", "fieldset", "figcaption", "figure", "footer", "header", "hgroup", "main", "menu", "nav", "ol", "p", "search", "section", "summary", "ul"
     // If the stack of open elements has a p element in button scope, then close a p element.
@@ -232,9 +236,17 @@ extension TreeBuilder {
     // If the current node is not a form element, then this is a parse error.
     // Pop elements from the stack of open elements until a form element has been popped from the stack.
 
-    // An end tag whose tag name is "p"
-    // If the stack of open elements does not have a p element in button scope, then this is a parse error; insert an HTML element for a "p" start tag token with no attributes.
-    // Close a p element.
+        // An end tag whose tag name is "p"
+        case .endTag("p", _, _):
+            // If the stack of open elements does not have a p element in button
+            // scope, then this is a parse error; insert an HTML element for a "p"
+            // start tag token with no attributes.
+            if !stack.contains(where: { $0.tagName == "p" }) {
+                insertHTMLElement(Token.startTag("p", attributes: []))
+            }
+
+            // Close a p element.
+            print("\(#function) FIXME: closePElement()")
 
     // An end tag whose tag name is "li"
     // If the stack of open elements does not have an li element in list item scope, then this is a parse error; ignore the token.
@@ -399,7 +411,7 @@ extension TreeBuilder {
     // scripting flag is disabled, it can also be a noscript element.
 
         // Any other end tag
-        case .endTag(let tagName, _, _):
+        case let .endTag(tagName, _, _):
             // Initialize node to be the current node (the bottommost node of the stack).
             let node = currentNode
 
@@ -409,7 +421,7 @@ extension TreeBuilder {
                 let element = node as! Element
 
                 // Generate implied end tags, except for HTML elements with the same tag name as the token.
-                //generateImpliedEndTags(exceptFor: token.tagName)
+                // generateImpliedEndTags(exceptFor: token.tagName)
 
                 // If node is not the current node, then this is a parse error.
                 if node != currentNode {
@@ -418,7 +430,7 @@ extension TreeBuilder {
                 }
 
                 // Pop elements from the stack of open elements until node has been popped from the stack.
-                var removedNode: Node? = nil
+                var removedNode: Node?
                 while removedNode != node {
                     removedNode = stack.removeLast()
                 }

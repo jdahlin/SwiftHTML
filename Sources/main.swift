@@ -43,8 +43,10 @@ func printDOMTree(_ node: Node, _ indent: String = "") {
     }
 }
 
+// let html =
+//     "<!doctype html><html><head><title>Test</title></head><body double=\"one\" single='two' unquoted=three><p>Hello, world!</p><!-- foo --></body></html>\r\n"
 let html =
-    "<!doctype html><html><head><title>Test</title></head><body double=\"one\" single='two' unquoted=three><p>Hello, world!</p><!-- foo --></body></html>\r\n"
+    "<html><head></head></html>"
 var data = Data(html.utf8)
 parseHTML(&data)
 let post = String(decoding: data, as: UTF8.self)

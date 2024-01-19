@@ -220,7 +220,6 @@ extension Node: Equatable {
 
         // The following are equal, switching on the interface A implements:
         switch (a, b) {
-
         // DocumentType
         case let (a, b) as (DocumentType, DocumentType):
             // Its name, public ID, and system ID.

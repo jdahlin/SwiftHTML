@@ -24,6 +24,7 @@ enum InsertionMode {
     case afterFrameset
     case afterAfterBody
     case afterAfterFrameset
+    case undefined
 }
 
 enum DocumentMode {
@@ -248,9 +249,126 @@ class TreeBuilder: TokenReceiver {
             handleInHead(token)
         case .inBody:
             handleInBody(token)
+        case .afterBody:
+            handleAfterBody(token)
+        case .afterAfterBody:
+            handleAfterAfterBody(token)
+        case .undefined:
+            fallthrough
         default:
             print("Unknown insertion mode: \(insertionMode)")
             exit(0)
         }
+    }
+
+    // https://html.spec.whatwg.org/multipage/parsing.html#stop-parsing
+    func stopParsing() {
+        // 1. If the active speculative HTML parser is not null, then stop the
+        //    speculative HTML parser and return.
+
+        // 2. Set the insertion point to undefined.
+        insertionMode = .undefined
+
+        // 3. Update the current document readiness to "interactive".
+
+        // 4. Pop all the nodes off the stack of open elements.
+
+        // 5. While the list of scripts that will execute when the document has
+        //    finished parsing is not empty:
+
+        // 5.1. Spin the event loop until the first script in the list of scripts
+        //      that will execute when the document has finished parsing has its
+        //      ready to be parser-executed set to true and the parser's Document
+        //      has no style sheet that is blocking scripts.
+
+        // 5.2. Execute the script element given by the first script in the list
+        //      of scripts that will execute when the document has finished parsing.
+
+        // 5.3. Remove the first script element from the list of scripts that
+        //      will execute when the document has finished parsing (i.e. shift
+        //      out the first entry in the list).
+
+        // 6. Queue a global task on the DOM manipulation task source given the
+        //    Document's relevant global object to run the following substeps:
+
+        // 6.1. Set the Document's load timing info's DOM content loaded event
+        //      start time to the current high resolution time given the
+        //      Document's relevant global object.
+
+        // 6.2. Fire an event named DOMContentLoaded at the Document object,
+        //      with its bubbles attribute initialized to true.
+
+        // 6.3. Set the Document's load timing info's DOM content loaded event
+        //      end time to the current high resolution time given the Document's
+        //      relevant global object.
+
+        // 6.4 Enable the client message queue of the ServiceWorkerContainer
+        //     object whose associated service worker client is the Document
+        //     object's relevant settings object.
+
+        // 6.5 Invoke WebDriver BiDi DOM content loaded with the Document's
+        //     browsing context, and a new WebDriver BiDi navigation status
+        //     whose id is the Document object's during-loading navigation ID
+        //     for WebDriver BiDi, status is "pending", and url is the Document
+        //     object's URL.
+
+        // 7. Spin the event loop until the set of scripts that will execute as
+        //    soon as possible and the list of scripts that will execute in
+        //    order as soon as possible are empty.
+
+        // 8. Spin the event loop until there is nothing that delays the load
+        //    event in the Document.
+
+        // 9. Queue a global task on the DOM manipulation task source given the
+        //    Document's relevant global object to run the following steps:
+
+        // 9.1. Update the current document readiness to "complete".
+
+        // 9.2. If the Document object's browsing context is null, then abort these steps.
+
+        // 9.3. Let window be the Document's relevant global object.
+
+        // 9.4. Set the Document's load timing info's load event start time to
+        //      the current high resolution time given window.
+
+        // 9.5. Fire an event named load at window, with legacy target override flag set.
+
+        // 9.6. Invoke WebDriver BiDi load complete with the Document's browsing
+        //      context, and a new WebDriver BiDi navigation status whose id is
+        //      the Document object's during-loading navigation ID for WebDriver
+        //      BiDi, status is "complete", and url is the Document object's URL.
+
+        // 9.7. Set the Document object's during-loading navigation ID for WebDriver BiDi to null.
+
+        // 9.8. Set the Document's load timing info's load event end time to the
+        //      current high resolution time given window.
+
+        // 9.9. Assert: Document's page showing is false.
+
+        // 9.10. Set the Document's page showing flag to true.
+
+        // 9.11. Fire a page transition event named pageshow at window with false.
+
+        // 9.12. Completely finish loading the Document.
+
+        // 9.13. Queue the navigation timing entry for the Document.
+
+        // 10. If the Document's print when loaded flag is set, then run the printing steps.
+
+        // 11. The Document is now ready for post-load tasks.
+    }
+
+    // https://html.spec.whatwg.org/multipage/parsing.html#abort-a-parser
+    func abortParser() {
+        // 1. Throw away any pending content in the input stream, and discard
+        //    any future content that would have been added to it.
+
+        // 2. Stop the speculative HTML parser for this HTML parser.
+
+        // 3. Update the current document readiness to "interactive".
+
+        // 4. Pop all the nodes off the stack of open elements.
+
+        // 5. Update the current document readiness to "complete".
     }
 }
