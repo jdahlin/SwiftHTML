@@ -20,7 +20,7 @@ extension TreeBuilder {
     // A comment token
     case .comment(let comment):
       // Insert a comment as the last child of the Document object.
-      self.insertAComment(comment)
+      insertAComment(comment)
 
     // A DOCTYPE token
     case .doctype(let name, let publicId, let systemId, _):
@@ -61,7 +61,7 @@ extension TreeBuilder {
       // the Document to quirks mode.
       // In any case, switch the insertion mode to "before html", then
       // reprocess the token.
-      self.insertionMode = .beforeHTML
+      insertionMode = .beforeHTML
     }
   }
 

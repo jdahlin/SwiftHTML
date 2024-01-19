@@ -189,7 +189,7 @@ class Tokenizer {
     } else {
       position += 1
     }
-    let char = self.currentInputCharacter()
+    let char = currentInputCharacter()
     return char
   }
 
@@ -202,25 +202,25 @@ class Tokenizer {
   }
 
   func emitCharacterToken(_ character: Character) {
-    self.delegate?.didReceiveToken(.character(character))
+    delegate?.didReceiveToken(.character(character))
   }
 
   func emitEndOfFileToken() {
-    self.delegate?.didReceiveToken(.eof)
+    delegate?.didReceiveToken(.eof)
   }
 
   func emitCurrentToken() {
-    guard let token = self.currentToken else {
+    guard let token = currentToken else {
       assertionFailure()
       return
     }
-    self.delegate?.didReceiveToken(token)
+    delegate?.didReceiveToken(token)
   }
 
   func createAttribute(name: String = "", value: String = "") {
-    switch self.currentToken {
+    switch currentToken {
     case .startTag(let tag, let attributes, let isSelfClosing):
-      self.currentToken = .startTag(tag, attributes: attributes + [Attr(name: name, value: value)], isSelfClosing: isSelfClosing)
+      currentToken = .startTag(tag, attributes: attributes + [Attr(name: name, value: value)], isSelfClosing: isSelfClosing)
     default:
       assertionFailure()
       exit(0)
@@ -228,7 +228,7 @@ class Tokenizer {
   }
 
   func currentAttributeAppendToName(_ name: String) {
-    guard case .startTag(let tag, var attributes, let isSelfClosing) = self.currentToken else {
+    guard case .startTag(let tag, var attributes, let isSelfClosing) = currentToken else {
       assertionFailure()
       return
     }
@@ -239,18 +239,18 @@ class Tokenizer {
       )
     }
 
-    self.currentToken = .startTag(tag, attributes: attributes, isSelfClosing: isSelfClosing)
+    currentToken = .startTag(tag, attributes: attributes, isSelfClosing: isSelfClosing)
   }
 
   func currentAttributeAppendToValue(_ value: String) {
-    switch self.currentToken {
+    switch currentToken {
     case .startTag(let tag, var attributes, let isSelfClosing):
       if let lastAttribute = attributes.last {
         attributes[attributes.count - 1] = Attr(
           name: lastAttribute.name, value: lastAttribute.value + value
         )
       }
-      self.currentToken = .startTag(tag, attributes: attributes, isSelfClosing: isSelfClosing)
+      currentToken = .startTag(tag, attributes: attributes, isSelfClosing: isSelfClosing)
     default:
       assertionFailure()
       return
@@ -258,23 +258,23 @@ class Tokenizer {
   }
 
   func appendCurrenTagTokenName(_ character: Character) {
-    switch self.currentToken {
+    switch currentToken {
     case .startTag(let name, let attributes, let isSelfClosing):
-      self.currentToken = .startTag(name + String(character), attributes: attributes, isSelfClosing: isSelfClosing)
+      currentToken = .startTag(name + String(character), attributes: attributes, isSelfClosing: isSelfClosing)
     case .endTag(let name, let attributes, let isSelfClosing):
-      self.currentToken = .endTag(name + String(character), attributes: attributes, isSelfClosing: isSelfClosing)
+      currentToken = .endTag(name + String(character), attributes: attributes, isSelfClosing: isSelfClosing)
     case .comment(let name):
-      self.currentToken = .comment(name + String(character))
+      currentToken = .comment(name + String(character))
     default:
-      print("Implement me: \(self.currentToken!)")
+      print("Implement me: \(currentToken!)")
       exit(0)
     }
   }
 
   func currentDocTypeAppendToName(_ s: String) {
-    switch self.currentToken {
+    switch currentToken {
     case .doctype(let name, let publicId, let systemId, let forceQuirks):
-      self.currentToken = .doctype(
+      currentToken = .doctype(
         name: name + s, publicId: publicId, systemId: systemId,
         forceQuirks: forceQuirks)
     default:
@@ -284,9 +284,9 @@ class Tokenizer {
   }
 
   func currentDocTypeSetForceQuirksFlag(_ forceQuirks: Bool) {
-    switch self.currentToken {
+    switch currentToken {
     case .doctype(let name, let publicId, let systemId, _):
-      self.currentToken = .doctype(
+      currentToken = .doctype(
         name: name, publicId: publicId, systemId: systemId,
         forceQuirks: forceQuirks)
     default:
@@ -296,7 +296,7 @@ class Tokenizer {
   }
 
   func reconsume(_ state: TokenizerState) {
-    self.reconsumeNext = true
+    reconsumeNext = true
     self.state = state
   }
 
@@ -306,21 +306,21 @@ class Tokenizer {
     // in the temporary buffer (in the order they were added to the buffer) user agent must append the code point
     // from the buffer to the current attribute's value if the character reference was consumed as part of an attribute,
     //  or emit the code point as a character token otherwise.
-    for char in self.temporaryBuffer {
-      if case .attribute = self.currentToken,
+    for char in temporaryBuffer {
+      if case .attribute = currentToken,
         [.attributeValueDoubleQuoted, .attributeValueSingleQuoted, .attributeValueUnquoted]
-          .contains(self.returnState)
+          .contains(returnState)
       {
-        self.currentAttributeAppendToValue(String(char))
+        currentAttributeAppendToValue(String(char))
       } else {
-        self.emitCharacterToken(char)
+        emitCharacterToken(char)
       }
     }
   }
 
   func tokenize() {
-    while !self.isEOF() {
-      self.nextToken()
+    while !isEOF() {
+      nextToken()
     }
   }
 

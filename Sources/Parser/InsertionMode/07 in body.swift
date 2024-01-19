@@ -16,21 +16,21 @@ extension TreeBuilder {
       || c == "\u{0020}":
       // Reconstruct the active formatting elements, if any.
       // Insert the token's character.
-      self.insertACharachter([c])
+      insertACharachter([c])
 
     // Any other character token
     case .character(let c):
       // Reconstruct the active formatting elements, if any.
       // Insert the token's character.
-      self.insertACharachter([c])
+      insertACharachter([c])
 
       // Set the frameset-ok flag to "not ok".
-      self.framesetOkFlag = .notOk
+      framesetOkFlag = .notOk
 
     // A comment token
     case .comment(let comment):
       // Insert a comment.
-      self.insertAComment(comment)
+      insertAComment(comment)
 
     // A DOCTYPE token
     case .doctype:
@@ -54,12 +54,12 @@ extension TreeBuilder {
       || tagName == "meta" || tagName == "noframes" || tagName == "script" || tagName == "style"
       || tagName == "template" || tagName == "title":
       // Process the token using the rules for the "in head" insertion mode.
-      self.handleInHead(token)
+      handleInHead(token)
 
     // An end tag whose tag name is "template"
     case .endTag("template", _, _):
       // Process the token using the rules for the "in head" insertion mode.
-      self.handleInHead(token)
+      handleInHead(token)
 
     // A start tag whose tag name is "body"
     case .startTag("body", let attributes, _):
@@ -68,7 +68,7 @@ extension TreeBuilder {
       // element, if the stack of open elements has only one node on it, or if
       // there is a template element on the stack of open elements, then ignore
       // the token. (fragment case or there is a template element on the stack)
-      let openElements = self.stack
+      let openElements = stack
       if openElements.count > 1 && openElements[1].tagName != "body"
         && !openElements.contains(where: { $0.tagName == "template" })
       {
@@ -111,7 +111,7 @@ extension TreeBuilder {
     // An end tag whose tag name is "body"
     case .endTag("body", _, _):
       // If the stack of open elements does not have a body element in scope, this
-      guard self.stack.contains(where: { $0.tagName == "body" }) else {
+      guard stack.contains(where: { $0.tagName == "body" }) else {
         // is a parse error; ignore the token.
         break
       }
@@ -126,14 +126,14 @@ extension TreeBuilder {
         "dd", "dt", "li", "optgroup", "option", "p", "rb", "rp", "rt", "rtc", 
         "tbody", "td", "tfoot", "th", "thead", "tr", "body", "html"
       ]
-      guard self.stack.contains(where: { element in
+      guard stack.contains(where: { element in
         return validElements.contains(element.tagName)
       }) else {
         // This is a parse error.
         break
       }
         // Switch the insertion mode to "after body".
-        self.insertionMode = .afterBody
+        insertionMode = .afterBody
 
     // An end tag whose tag name is "html"
     // If the stack of open elements does not have a body element in scope, this is a parse error; ignore the token.
@@ -386,13 +386,13 @@ extension TreeBuilder {
     // Any other start tag
     case .startTag(_, _, let isSelfClosing):
       // Reconstruct the active formatting elements, if any.
-      self.reconstructActiveFormattingElements()
+      reconstructActiveFormattingElements()
       // Insert an HTML element for the token.
-      self.insertHTMLElement(token)
+      insertHTMLElement(token)
       // If the token has its self-closing flag set, pop the current node off the stack of open elements and acknowledge the token's self-closing flag.
       if isSelfClosing {
-        self.stack.removeLast()
-        self.acknowledgeTokenSelfClosingFlag()
+        stack.removeLast()
+        acknowledgeTokenSelfClosingFlag()
       }
     // This element will be an ordinary element. With one exception: if the
     // scripting flag is disabled, it can also be a noscript element.

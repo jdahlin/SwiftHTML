@@ -24,7 +24,7 @@ extension TreeBuilder {
     //    result of creating a speculative mock element given given namespace,
     //    the tag name of the given token, and the attributes of the given
     //    token.
-    let result = if self.activeSpeculativeHTMLParser != nil {
+    let result = if activeSpeculativeHTMLParser != nil {
       SpeculativeMockElement(namespace: HTML_NS, tagName: tagName, attributes: attributes)
     // 2. Otherwise, optionally create a speculative mock element given given
     //    namespace, the tag name of the given token, and the attributes of the
@@ -57,7 +57,7 @@ extension TreeBuilder {
     //    true. Otherwise, let it be false.
 
     // 8. If will execute script is true, then:
-    if self.scriptingFlag {
+    if scriptingFlag {
         // 8.1. Increment document's throw-on-dynamic-markup-insertion counter.
 
         // 8.2 If the JavaScript execution context stack is empty, then perform a

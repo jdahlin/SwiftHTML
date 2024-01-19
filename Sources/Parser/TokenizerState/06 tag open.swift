@@ -4,30 +4,30 @@ extension Tokenizer {
   // https://html.spec.whatwg.org/multipage/parsing.html#tag-open-state
   func handleTagOpenState() {
     // Consume the next input character:
-    switch self.consumeNextInputCharacter() {
+    switch consumeNextInputCharacter() {
 
     // U+0021 EXCLAMATION MARK (!)
     case "!":
       // Switch to the markup declaration open state.
-      self.state = .markupDeclarationOpen
+      state = .markupDeclarationOpen
 
     // U+002F SOLIDUS (/)
     case "/":
       // Switch to the end tag open state.
-      self.state = .endTagOpen
+      state = .endTagOpen
 
     // ASCII alpha
     case let char where char!.isLetter:
       // Create a new start tag token, set its tag name to the empty string.
-      self.currentToken = .startTag("")
+      currentToken = .startTag("")
       // Reconsume in the tag name state.
-      self.reconsume(.tagName)
+      reconsume(.tagName)
 
     // U+003F QUESTION MARK (?)
     case "?":
       // This is an unexpected-question-mark-instead-of-tag-name parse error. Create a comment token whose data is the empty string. Reconsume in the bogus comment state.
-      self.currentToken = .comment("")
-      self.reconsume(.bogusComment)
+      currentToken = .comment("")
+      reconsume(.bogusComment)
 
     // EOF
     case nil:
@@ -39,7 +39,7 @@ extension Tokenizer {
     default:
       // This is an invalid-first-character-of-tag-name parse error. Emit a U+003C LESS-THAN SIGN character token. Reconsume in the data state.
       emitCharacterToken("<")
-      self.reconsume(.data)
+      reconsume(.data)
     }
   }
 

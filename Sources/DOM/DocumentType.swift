@@ -13,7 +13,7 @@ class DocumentType: Node {
         self.name = name
         self.publicId = publicId
         self.systemId = systemId
-        super.init(nodeName: "doctype")
+        super.init()
     }
 
 }

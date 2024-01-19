@@ -65,9 +65,6 @@ enum DocumentPosition: UInt16 {
 // };
 
 public class Node: EventTarget {
-  // readonly attribute DOMString nodeName;
-  let nodeName: DOMString?
-
   // [SameObject] readonly attribute NodeList childNodes;
   let childNodes: NodeList<Node> = NodeList<Node>()
 
@@ -77,14 +74,14 @@ public class Node: EventTarget {
   // readonly attribute Node? parentNode;
   let parentNode: Node?
 
-  init(nodeName: DOMString? = nil, ownerDocument: Document? = nil, parentNode: Node? = nil) {
-    self.nodeName = nodeName
+  init(ownerDocument: Document? = nil, parentNode: Node? = nil) {
     self.ownerDocument = ownerDocument
     self.parentNode = nil
     super.init()
   }
 
   // readonly attribute unsigned short nodeType;
+  // https://dom.spec.whatwg.org/#dom-node-nodetype
   var nodeType: UInt16 {
     switch type(of: self) {
     case is DocumentType.Type:
@@ -109,6 +106,56 @@ public class Node: EventTarget {
       print("\(#function): \(type(of: self)): not implemented")
       assertionFailure()
       return NodeType.ELEMENT_NODE.rawValue
+    }
+  }
+
+  // readonly attribute DOMString nodeName;
+  // https://dom.spec.whatwg.org/#dom-node-nodename
+  var nodeName: DOMString? {
+    switch type(of: self) {
+
+    // Element
+    case is Element.Type:
+      let element = self as! Element
+      // Its HTML-uppercased qualified name.
+      return element.qualifiedName.uppercased()
+
+    // Attr
+    case is Attr.Type:
+      let attr = self as! Attr
+      // Its qualified name.
+      return attr.qualifiedName
+
+    // An exclusive Text node
+    case is Text.Type /*, is !CDATASection.Type */:
+      return "#text"
+
+    // CDATASection
+    //   "#cdata-section".
+
+    // ProcessingInstruction
+    //   Its target.
+
+    // Comment
+    case is Comment.Type:
+      return "#comment"
+
+    // Document
+    case is Document.Type:
+      return "#document"
+
+    // DocumentType
+    case is DocumentType.Type:
+      return "#document"
+
+    // DocumentFragment
+    case is DocumentFragment.Type:
+      return "#document-fragment"
+
+    default:
+      print("\(#function): \(type(of: self)): not implemented")
+      assertionFailure()
+      return "nil"
     }
   }
 
@@ -221,47 +268,47 @@ extension Node: Equatable {
 }
 
 func isInclusiveAncestor(node: Node, ancestor: Node) -> Bool {
-    // An inclusive ancestor is an object or one of its ancestors.
-    let parent = node.parentNode
-    if parent == nil {
-        return false
-    }
-    if parent == ancestor {
-        return true
-    }
-    while let parent = parent {
-        if parent == ancestor {
-            return true
-        }
-    }
+  // An inclusive ancestor is an object or one of its ancestors.
+  let parent = node.parentNode
+  if parent == nil {
     return false
+  }
+  if parent == ancestor {
+    return true
+  }
+  while let parent = parent {
+    if parent == ancestor {
+      return true
+    }
+  }
+  return false
 }
 
 func rootOf(node: Node) -> Node {
-    // The root of an object is itself, if its parent is null, or else it is the
-    // root of its parent. The root of a tree is any object participating in
-    // that tree whose parent is null.
-    var currentNode = node
-    while let parent = currentNode.parentNode {
-        currentNode = parent
-    }
-    return currentNode
+  // The root of an object is itself, if its parent is null, or else it is the
+  // root of its parent. The root of a tree is any object participating in
+  // that tree whose parent is null.
+  var currentNode = node
+  while let parent = currentNode.parentNode {
+    currentNode = parent
+  }
+  return currentNode
 }
 
 func isHostIncludingInclusiveAncestor(a: Node, b: Node) -> Bool {
-    // An object A is a host-including inclusive ancestor of an object B, if either
-    // A is an inclusive ancestor of B, or if B’s root has a non-null host and A is
-    // a host-including inclusive ancestor of B’s root’s host.
-    
-    if isInclusiveAncestor(node: a, ancestor: b) {
-        return true
-    }
-    
-    // if let bRoot = rootOf(node: b), let bRootHost: Node? = nil {
-    //     return isHostIncludingInclusiveAncestor(a: a, b: bRootHost)
-    // }
-    
-    return false
+  // An object A is a host-including inclusive ancestor of an object B, if either
+  // A is an inclusive ancestor of B, or if B’s root has a non-null host and A is
+  // a host-including inclusive ancestor of B’s root’s host.
+
+  if isInclusiveAncestor(node: a, ancestor: b) {
+    return true
+  }
+
+  // if let bRoot = rootOf(node: b), let bRootHost: Node? = nil {
+  //     return isHostIncludingInclusiveAncestor(a: a, b: bRootHost)
+  // }
+
+  return false
 }
 // https://dom.spec.whatwg.org/#concept-node-ensure-pre-insertion-validity
 func ensurePreInsertValidation(node: Node, parent: Node, child: Node?) throws {
@@ -304,24 +351,23 @@ func ensurePreInsertValidation(node: Node, parent: Node, child: Node?) throws {
     switch node {
     // DocumentFragment
     case is DocumentFragment:
-        print("\(#function): DocumentFragment not implemented")
-        // If node has more than one element child or has a Text node child.
-        // Otherwise, if node has one element child and either parent has an
-        // element child, child is a doctype, or child is non-null and a doctype
-        // is following child.
+      print("\(#function): DocumentFragment not implemented")
+    // If node has more than one element child or has a Text node child.
+    // Otherwise, if node has one element child and either parent has an
+    // element child, child is a doctype, or child is non-null and a doctype
+    // is following child.
 
     // Element
     case is Element:
-        // parent has an element child, child is a doctype, or child is non-null
-        // and a doctype is following child.
-        if parent.childNodes.array.allSatisfy({ $0 is Element }), child is DocumentType
-            /* || (child != nil && parent.hasFollowingDoctype(child!) )*/
-        {
-            throw DOMException.hierarchyRequestError
-        }
+      // parent has an element child, child is a doctype, or child is non-null
+      // and a doctype is following child.
+      if parent.childNodes.array.allSatisfy({ $0 is Element }), child is DocumentType/* || (child != nil && parent.hasFollowingDoctype(child!) )*/
+      {
+        throw DOMException.hierarchyRequestError
+      }
     // DocumentType
     case is DocumentType:
-       print("\(#function): DocumentType not implemented")
+      print("\(#function): DocumentType not implemented")
     default:
       break
     }

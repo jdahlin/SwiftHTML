@@ -5,23 +5,23 @@ extension Tokenizer {
   func handleCommentStartState() {
     
     // Consume the next input character:
-    switch self.consumeNextInputCharacter() {
+    switch consumeNextInputCharacter() {
 
     // U+002D HYPHEN-MINUS (-)
     case "-":
       // Switch to the comment start dash state.
-      self.state = .commentStartDash
+      state = .commentStartDash
 
     // U+003E GREATER-THAN SIGN (>)
     case ">":
       // This is an abrupt-closing-of-empty-comment parse error. Switch to the data state. Emit the current comment token.
-      self.state = .data
-      self.emitCurrentToken()
+      state = .data
+      emitCurrentToken()
 
     // Anything else
     default:
       // Reconsume in the comment state.
-      self.reconsume(.comment)
+      reconsume(.comment)
     }
   }
 

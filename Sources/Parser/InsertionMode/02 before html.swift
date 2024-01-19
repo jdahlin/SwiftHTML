@@ -13,7 +13,7 @@ extension TreeBuilder {
     // A comment token
     case .comment(let comment):
       // Insert a comment as the last child of the Document object.
-      self.insertAComment(comment)
+      insertAComment(comment)
 
     // A character token that is one of
     // - U+0009 CHARACTER TABULATION,
@@ -40,7 +40,7 @@ extension TreeBuilder {
       stack.append(element)
 
       // Switch the insertion mode to "before head".
-      self.insertionMode = .beforeHead
+      insertionMode = .beforeHead
 
     // An end tag whose tag name is one of: "head", "body", "html", "br"
     case .endTag(let tagName, _, _):
@@ -65,7 +65,7 @@ extension TreeBuilder {
       stack.append(element)
 
       // Switch the insertion mode to "before head", then reprocess the token.
-      self.insertionMode = .beforeHead
+      insertionMode = .beforeHead
 
     }
 

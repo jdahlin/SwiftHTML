@@ -33,13 +33,13 @@ extension SpeculativeMockElement {
         self.namespace = namespace
 
         // Set element's local name to tagName.
-        self.localName = tagName
+        localName = tagName
 
         // Set element's attribute list to attributes.
         self.attributes = attributes
 
         // Set element's children to a new empty list.
-        self.children = []
+        children = []
 
         // Optionally, perform a speculative fetch for element.
 

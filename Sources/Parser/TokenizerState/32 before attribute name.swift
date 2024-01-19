@@ -5,7 +5,7 @@ extension Tokenizer {
   func handleBeforeAttributeNameState() {
     
     // Consume the next input character:
-    switch self.consumeNextInputCharacter() {
+    switch consumeNextInputCharacter() {
 
     // U+0009 CHARACTER TABULATION (tab)
     // U+000A LINE FEED (LF)
@@ -20,26 +20,26 @@ extension Tokenizer {
     // EOF
     case "/", ">", nil:
       // Reconsume in the after attribute name state.
-      self.reconsume(.afterAttributeName)
+      reconsume(.afterAttributeName)
 
     // U+003D EQUALS SIGN (=)
     case "=":
       // This is an unexpected-equals-sign-before-attribute-name parse error.
       // Start a new attribute in the current tag token.
       // Set that attribute's name to the current input character, and its value to the empty string.
-      createAttribute(name: String(self.currentInputCharacter()!))
+      createAttribute(name: String(currentInputCharacter()!))
 
       // Switch to the attribute name state.
-      self.state = .attributeName
+      state = .attributeName
 
     // Anything else
     default:
       // Start a new attribute in the current tag token.
       // Set that attribute name and value to the empty string.
-      self.createAttribute()
+      createAttribute()
 
       // Reconsume in the attribute name state.
-      self.reconsume(.attributeName)
+      reconsume(.attributeName)
     }
   }
 }

@@ -68,11 +68,11 @@ public class Element: Node {
   
   // readonly attribute DOMString tagName; 
   var tagName: DOMString {
-    let name = self.localName.uppercased()
-    return if self.prefix == nil {
+    let name = localName.uppercased()
+    return if prefix == nil {
       name
     } else {
-      "\(self.prefix!):\(name)"
+      "\(prefix!):\(name)"
     }
   }
 
@@ -90,20 +90,31 @@ public class Element: Node {
     self.attributes = NamedNodeMap(attributes: attributes)
     self.namespaceURI = namespace
     self.localName = localName
-    super.init(nodeName: localName, ownerDocument: nodeDocument, parentNode: parentNode)
+    super.init(ownerDocument: nodeDocument, parentNode: parentNode)
     self.attributes.ownerElement = self
+  }
+
+  // An element’s qualified name is its local name if its namespace prefix is
+  // null; otherwise its namespace prefix, followed by ":", followed by its
+  // local name.
+  var qualifiedName: DOMString {
+    var qualifiedName = localName
+    if let prefix = prefix {
+      qualifiedName = "\(prefix):\(qualifiedName)"
+    }
+    return qualifiedName
   }
 
   // Element interface
   func hasAttribute(_ qualifiedName: DOMString) -> Bool {
-    return self.attributes.getNamedItem(qualifiedName) != nil
+    return attributes.getNamedItem(qualifiedName) != nil
   }
 
   func getAttribute(_ qualifiedName: DOMString) -> DOMString? {
-    return self.attributes.getNamedItem(qualifiedName)?.value
+    return attributes.getNamedItem(qualifiedName)?.value
   }
 
   func setAttribute(_ qualifiedName: DOMString, _ value: DOMString) {
-    self.attributes.setNamedItem(Attr(name: qualifiedName, value: value))
+    attributes.setNamedItem(Attr(name: qualifiedName, value: value))
   }
 }

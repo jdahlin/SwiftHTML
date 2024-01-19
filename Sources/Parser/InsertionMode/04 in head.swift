@@ -15,13 +15,13 @@ extension TreeBuilder {
     where c == "\u{0009}" || c == "\u{000A}" || c == "\u{000C}" || c == "\u{000D}"
       || c == "\u{0020}":
       // Insert the character.
-      self.insertACharachter([c])
+      insertACharachter([c])
       break
 
     // A comment token
     case .comment(let comment):
       // Insert a comment.
-      self.insertAComment(comment)
+      insertAComment(comment)
 
     // A DOCTYPE token
     case .doctype:
@@ -31,14 +31,14 @@ extension TreeBuilder {
     // A start tag whose tag name is "html"
     case .startTag("html", attributes: _, _):
       // Process the token using the rules for the "in body" insertion mode.
-      self.insertionMode = .inBody
-      self.handleInBody(token)
+      insertionMode = .inBody
+      handleInBody(token)
 
     // A start tag whose tag name is one of: "base", "basefont", "bgsound", "link"
     case .startTag(let tagName, _, _)
     where tagName == "base" || tagName == "basefont" || tagName == "bgsound" || tagName == "link":
       // Insert an HTML element for the token.
-      self.insertHTMLElement(token)
+      insertHTMLElement(token)
 
     // Immediately pop the current node off the stack of open elements.
 
@@ -47,12 +47,12 @@ extension TreeBuilder {
     // A start tag whose tag name is "meta"
     case .startTag("meta", _, _):
       // Insert an HTML element for the token.
-      let element = self.insertHTMLElement(token)
+      let element = insertHTMLElement(token)
       // Immediately pop the current node off the stack of open elements.
       // FIXME: Acknowledge the token's self-closing flag, if it is set.
 
       // If the active speculative HTML parser is null, then:
-      if self.activeSpeculativeHTMLParser != nil {
+      if activeSpeculativeHTMLParser != nil {
         print("\(#function): activeSpeculativeHTMLParser not implemented")
       }
 
@@ -81,7 +81,7 @@ extension TreeBuilder {
       print("\(#function): FIXME: title not implemented")
 
     // A start tag whose tag name is "noscript", if the scripting flag is enabled
-    case .startTag("noscript", attributes: _, _) where self.scriptingFlag:
+    case .startTag("noscript", attributes: _, _) where scriptingFlag:
       // Follow the generic raw text element parsing algorithm.
       print("\(#function): FIXME: noscript not implemented")
 
@@ -91,12 +91,12 @@ extension TreeBuilder {
       print("\(#function): FIXME: \(tagName) not implemented")
 
     // A start tag whose tag name is "noscript", if the scripting flag is disabled
-    case .startTag("noscript", attributes: _, _) where !self.scriptingFlag:
+    case .startTag("noscript", attributes: _, _) where !scriptingFlag:
       // Insert an HTML element for the token.
       let element = insertHTMLElement(token)
 
       // Switch the insertion mode to "in head noscript".
-      self.insertionMode = .inHeadNoscript
+      insertionMode = .inHeadNoscript
 
       print("\(#function): FIXME: noscript not implemented")
 
@@ -104,49 +104,49 @@ extension TreeBuilder {
     case .startTag("script", _, _):
         // Run these steps:
         // Let the adjusted insertion location be the appropriate place for inserting a node.
-        let adjustedInsertionLocation = self.appropriatePlaceForInsertingANode()
+        let adjustedInsertionLocation = appropriatePlaceForInsertingANode()
 
         // Create an element for the token in the HTML namespace, with the
         // intended parent being the element in which the adjusted insertion
-        // location finds itself.
-        let element = self.document.createElement("script")
+        // location finds it
+        let element = document.createElement("script")
 
         // Set the element's parser document to the Document, and set the element's force async to false.
         // element.forceAsync = false
-        // if self.isFragmentParsing {
+        // if isFragmentParsing {
         //     element.alreadyStarted = true
         // }
 
         // Insert the newly created element at the adjusted insertion location.
         adjustedInsertionLocation.insert(element)
         // Push the element onto the stack of open elements so that it is the new current node.
-        self.stack.append(element)
+        stack.append(element)
         // Switch the tokenizer to the script data state.
-        self.tokenizer.state = .scriptData
+        tokenizer.state = .scriptData
         // Let the original insertion mode be the current insertion mode.
-        self.originalInsertionMode = self.insertionMode
+        originalInsertionMode = insertionMode
         // Switch the insertion mode to "text".
-        self.insertionMode = .text
+        insertionMode = .text
 
     // An end tag whose tag name is "head"
     case .endTag("head", _, _):
       // Pop the current node (which will be the head element) off the stack of open elements.
-      self.stack.removeLast()
+      stack.removeLast()
 
       // Switch the insertion mode to "after head".
-      self.insertionMode = .afterHead
+      insertionMode = .afterHead
 
     // An end tag whose tag name is one of: "body", "html", "br"
     case .endTag(let tagName, _, _) where tagName == "body" || tagName == "html" || tagName == "br":
       // Act as described in the "anything else" entry below. (inlined)
       // Pop the current node (which will be the head element) off the stack of open elements.
-      self.stack.removeLast()
+      stack.removeLast()
 
       // Switch the insertion mode to "after head".
-      self.insertionMode = .afterHead
+      insertionMode = .afterHead
 
       // Reprocess the token.
-      self.handleInHead(token)
+      handleInHead(token)
 
     // A start tag whose tag name is "template"
     // Let template start tag be the start tag.
@@ -155,7 +155,7 @@ extension TreeBuilder {
     // Switch the insertion mode to "in template".
     // Push "in template" onto the stack of template insertion modes so that it is the new current template insertion mode.
     // Let the adjusted insertion location be the appropriate place for inserting a node.
-    // Let intended parent be the element in which the adjusted insertion location finds itself.
+    // Let intended parent be the element in which the adjusted insertion location finds it
     // Let document be intended parent's node document.
     // If any of the following are false:
     // template start tag's shadowrootmode is not in the none state;
@@ -200,13 +200,13 @@ extension TreeBuilder {
     // Anything else
     default:
       // Pop the current node (which will be the head element) off the stack of open elements.
-      self.stack.removeLast()
+      stack.removeLast()
 
       // Switch the insertion mode to "after head".
-      self.insertionMode = .afterHead
+      insertionMode = .afterHead
 
       // Reprocess the token.
-      self.handleAfterHead(token)
+      handleAfterHead(token)
     }
   }
 

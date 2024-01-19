@@ -5,7 +5,7 @@ extension Tokenizer {
   func handleDoctypeNameState() {
     
     // Consume the next input character:
-    switch self.consumeNextInputCharacter() {
+    switch consumeNextInputCharacter() {
 
     // U+0009 CHARACTER TABULATION (tab)
     // U+000A LINE FEED (LF)
@@ -13,39 +13,39 @@ extension Tokenizer {
     // U+0020 SPACE
     case "\u{0009}", "\u{000A}", "\u{000C}", " ":
       // Switch to the after DOCTYPE name state.
-      self.state = .afterDoctypeName
+      state = .afterDoctypeName
 
     // U+003E GREATER-THAN SIGN (>)
     case ">":
       // Switch to the data state. Emit the current DOCTYPE token.
-      self.state = .data
-      self.emitCurrentToken()
+      state = .data
+      emitCurrentToken()
 
     // ASCII upper alpha
     case let character where character!.isASCIIUpperAlpha:
       // Append the lowercase version of the current input character (add 0x0020 to the character's code point) to the current DOCTYPE token's name.
-      self.currentDocTypeAppendToName(character!.lowercased())
+      currentDocTypeAppendToName(character!.lowercased())
 
     // U+0000 NULL
     case "\u{0000}":
       // This is an unexpected-null-character parse error.
       // Append a U+FFFD REPLACEMENT CHARACTER character to the current DOCTYPE token's name.
-      self.currentDocTypeAppendToName("\u{FFFD}")
+      currentDocTypeAppendToName("\u{FFFD}")
 
     // EOF
     case nil:
       // This is an eof-in-doctype parse error.
       // Set the current DOCTYPE token's force-quirks flag to on.
-      self.currentDocTypeSetForceQuirksFlag(true)
+      currentDocTypeSetForceQuirksFlag(true)
       // Emit the current DOCTYPE token.
-      self.emitCurrentToken()
+      emitCurrentToken()
       // Emit an end-of-file token.
-      self.emitEndOfFileToken()
+      emitEndOfFileToken()
 
     // Anything else
     // Append the current input character to the current DOCTYPE token's name.
     case let character:
-      self.currentDocTypeAppendToName(String(character!))
+      currentDocTypeAppendToName(String(character!))
     }
   }
 

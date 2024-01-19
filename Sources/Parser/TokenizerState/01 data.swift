@@ -5,18 +5,18 @@ extension Tokenizer {
   func handleDataState() {
 
     // Consume the next input character:
-    switch self.consumeNextInputCharacter() {
+    switch consumeNextInputCharacter() {
 
     // U+0026 AMPERSAND (&)
     case "&":
       // Set the return state to the data state. Switch to the character reference state.
-      self.returnState = .data
-      self.state = .characterReference
+      returnState = .data
+      state = .characterReference
 
     // U+003C LESS-THAN SIGN (<)
     case "<":
       // Switch to the tag open state.
-      self.state = .tagOpen
+      state = .tagOpen
 
     // U+0000 NULL
     case "\0":

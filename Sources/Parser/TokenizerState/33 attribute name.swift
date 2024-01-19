@@ -5,7 +5,7 @@ extension Tokenizer {
   func handleAttributeNameState() {
     
     // Consume the next input character:
-    switch self.consumeNextInputCharacter() {
+    switch consumeNextInputCharacter() {
 
     // U+0009 CHARACTER TABULATION (tab)
     // U+000A LINE FEED (LF)
@@ -16,25 +16,25 @@ extension Tokenizer {
     // EOF
     case "\t", "\n", "\u{000C}", " ", "/", ">", nil:
       // Reconsume in the after attribute name state.
-      self.reconsume(.afterAttributeName)
+      reconsume(.afterAttributeName)
 
     // U+003D EQUALS SIGN (=)
     case "=":
       // Switch to the before attribute value state.
-      self.state = .beforeAttributeValue
+      state = .beforeAttributeValue
 
     // ASCII upper alpha
     case let char where char!.isASCIIUpperAlpha:
       // Append the lowercase version of the current input character (add 0x0020 to the character's code point)
       // to the current attribute's name.
-      self.currentAttributeAppendToName(
+      currentAttributeAppendToName(
         String(UnicodeScalar(char!.unicodeScalars.first!.value + 0x0020)!))
 
     // U+0000 NULL
     case "\0":
       // This is an unexpected-null-character parse error. Append a U+FFFD REPLACEMENT CHARACTER character
       // to the current attribute's name.
-      self.currentAttributeAppendToName("\u{FFFD}")
+      currentAttributeAppendToName("\u{FFFD}")
 
     // U+0022 QUOTATION MARK (")
     // U+0027 APOSTROPHE (')
@@ -47,7 +47,7 @@ extension Tokenizer {
     // Anything else
     default:
       // Append the current input character to the current attribute's name.
-      self.currentAttributeAppendToName(String(self.currentInputCharacter()!))
+      currentAttributeAppendToName(String(currentInputCharacter()!))
     }
   }
 

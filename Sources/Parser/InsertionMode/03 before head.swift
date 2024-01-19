@@ -20,7 +20,7 @@ extension TreeBuilder {
     // A comment token
     case .comment(let comment):
       // Insert a comment.
-      self.insertAComment(comment)
+      insertAComment(comment)
 
     // A DOCTYPE token
     case .doctype:
@@ -30,16 +30,16 @@ extension TreeBuilder {
     // A start tag whose tag name is "html"
     case .startTag("html", attributes: _, isSelfClosing: _):
       // Process the token using the rules for the "in body" insertion mode.
-      self.insertionMode = .inBody
-      self.handleInBody(token)
+      insertionMode = .inBody
+      handleInBody(token)
 
     // A start tag whose tag name is "head"
     case .startTag("head", attributes: _, isSelfClosing: _):
       // Insert an HTML element for the token.
-      self.insertHTMLElement(token)
+      insertHTMLElement(token)
 
       // Switch the insertion mode to "in head".
-      self.insertionMode = .inHead
+      insertionMode = .inHead
 
     // An end tag whose tag name is one of: "head", "body", "html", "br"
     case .endTag(let tagName, _, _):
@@ -59,10 +59,10 @@ extension TreeBuilder {
       _ = insertHTMLElement(token)
 
       // Switch the insertion mode to "in head".
-      self.insertionMode = .inHead
+      insertionMode = .inHead
 
       // Reprocess the current token.
-      self.handleInHead(token)
+      handleInHead(token)
     }
   }
 

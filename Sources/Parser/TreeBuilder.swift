@@ -78,7 +78,7 @@ class TreeBuilder: TokenReceiver {
 
     // Otherwise, let target be the current node.
     if target == nil {
-      target = self.currentNode
+      target = currentNode
     }
 
     // 2. Determine the adjusted insertion location using the first matching steps from the following list:
@@ -109,7 +109,7 @@ class TreeBuilder: TokenReceiver {
 
     // 2.7 Let adjusted insertion location be inside previous element, after its last child (if any).
 
-    if self.fosterParenting {
+    if fosterParenting {
       print("FIXME: foster parenting not implemented")
     }
     // Otherwise
@@ -171,7 +171,7 @@ class TreeBuilder: TokenReceiver {
 
     // 3. Create a Comment node whose data attribute is set to data and whose node
     //    document is the same as that of the node in which the adjusted insertion
-    //    location finds itself.
+    //    location finds it
     let commentNode = Comment()
     commentNode.data = DOMString(data)
     commentNode.ownerDocument = adjustedInsertionLocation.node?.ownerDocument
@@ -188,11 +188,11 @@ class TreeBuilder: TokenReceiver {
 func insertForeignElement(token: Token, namespace: String, onlyAddElementToStack: Bool) -> Element
   {
     // Let the adjusted insertion location be the appropriate place for inserting a node.
-    let appropriatePlaceForInsertingANode = self.appropriatePlaceForInsertingANode()
+    let appropriatePlaceForInsertingANode = appropriatePlaceForInsertingANode()
 
     // Let element be the result of creating an element for the token in the
     // given namespace, with the intended parent being the element in which the
-    // adjusted insertion location finds itself.
+    // adjusted insertion location finds it
     let intendedParent = appropriatePlaceForInsertingANode.node! as! Element
     let element = createElementForToken(
       token: token, 
@@ -206,7 +206,7 @@ func insertForeignElement(token: Token, namespace: String, onlyAddElementToStack
     }
 
     // Push element onto the stack of open elements so that it is the new current node.
-    self.stack.append(element)
+    stack.append(element)
 
     // Return element.
     return element
@@ -230,7 +230,7 @@ func insertForeignElement(token: Token, namespace: String, onlyAddElementToStack
 
   func handleToken(_ token: Token) {
     // Handle the token
-    switch self.insertionMode {
+    switch insertionMode {
     case .initial:
       handleInitial(token)
     case .beforeHTML:
@@ -244,7 +244,7 @@ func insertForeignElement(token: Token, namespace: String, onlyAddElementToStack
     case .inBody:
       handleInBody(token)
     default:
-      print("Unknown insertion mode: \(self.insertionMode)")
+      print("Unknown insertion mode: \(insertionMode)")
       exit(0)
     }
   }

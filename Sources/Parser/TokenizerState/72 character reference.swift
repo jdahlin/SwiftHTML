@@ -6,29 +6,29 @@ extension Tokenizer {
     
     // Set the temporary buffer to the empty string.
     // Append a U+0026 AMPERSAND (&) character to the temporary buffer.
-    self.temporaryBuffer = "&"
+    temporaryBuffer = "&"
 
     // Consume the next input character:
-    switch self.consumeNextInputCharacter() {
+    switch consumeNextInputCharacter() {
 
     // ASCII alphanumeric
     case let char where char?.isASCIIAlphanumeric == true:
       // Reconsume in the named character reference state.
-      self.reconsume(.namedCharacterReference)
+      reconsume(.namedCharacterReference)
 
     // U+0023 NUMBER SIGN (#)
     case "#":
       // Append the current input character to the temporary buffer. Switch to the numeric character reference state.
       temporaryBuffer.append("#")
-      self.state = .numericCharacterReference
+      state = .numericCharacterReference
 
     // Anything else
     default:
       // Flush code points consumed as a character reference.
-      self.flushCodePointsConsumedAsCharacterReference()
+      flushCodePointsConsumedAsCharacterReference()
 
       // Reconsume in the return state.
-      self.reconsume(self.returnState)
+      reconsume(returnState)
     }
   }
 

@@ -12,12 +12,12 @@ extension TreeBuilder {
     where c == "\u{0009}" || c == "\u{000A}" || c == "\u{000C}" || c == "\u{000D}"
       || c == "\u{0020}":
       // Process the token using the rules for the "in body" insertion mode.
-      self.handleInBody(token)
+      handleInBody(token)
 
     // A comment token
     case .comment(let comment):
       // Insert a comment as the last child of the first element in the stack of open elements (the html element).
-      self.insertAComment(comment)
+      insertAComment(comment)
 
     // A DOCTYPE token
     case .doctype:
@@ -31,7 +31,7 @@ extension TreeBuilder {
 
     // An end tag whose tag name is "html"
     case .endTag("html", _, _):
-      if self.isFragmentParsing {
+      if isFragmentParsing {
         // Parse error. Ignore the token.
       } else {
         // Switch the insertion mode to "after after body".

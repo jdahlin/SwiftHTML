@@ -56,7 +56,7 @@ class Document: Node {
     // [CEReactions, NewObject] Element createElement(DOMString localName, optional (DOMString or ElementCreationOptions) options = {});
     func createElement(_ localName: DOMString,
                        options: ElementCreationOptions? = nil) -> Element {
-        return self.createElement(
+        return createElement(
             localName: localName,
             namespace: nil)
     }
@@ -82,27 +82,28 @@ class Document: Node {
         // 5. If definition is non-null, and definition’s name is not equal to
         //    its local name (i.e., definition represents a customized built-in
         //    element), then:
+        if definition != nil && definition!.name != localName {
+            // 5.1 Let interface be the element interface for localName and the HTML namespace.
 
-        // 5.1 Let interface be the element interface for localName and the HTML namespace.
+            // 5.2 Set result to a new element that implements interface, with no
+            //     attributes, namespace set to the HTML namespace, namespace prefix
+            //     set to prefix, local name set to localName, custom element state
+            //     set to "undefined", custom element definition set to null, is
+            //     value set to is, and node document set to document.
 
-        // 5.2 Set result to a new element that implements interface, with no
-        //     attributes, namespace set to the HTML namespace, namespace prefix
-        //     set to prefix, local name set to localName, custom element state
-        //     set to "undefined", custom element definition set to null, is
-        //     value set to is, and node document set to document.
+            // 5.3 If the synchronous custom elements flag is set, then run this
+            //     step while catching any exceptions:
 
-        // 5.3 If the synchronous custom elements flag is set, then run this
-        //     step while catching any exceptions:
+            // 5.3.1 Upgrade element using definition.
 
-        // 5.3.1 Upgrade element using definition.
+            // If this step threw an exception, then:
 
-        // If this step threw an exception, then:
+            // 5.3.1 Report the exception.
 
-        // 5.3.1 Report the exception.
+            // 5.3.2 Set result’s custom element state to "failed".
 
-        // 5.3.2 Set result’s custom element state to "failed".
-
-        // 5.4 Otherwise, enqueue a custom element upgrade reaction given result and definition.
+            // 5.4 Otherwise, enqueue a custom element upgrade reaction given result and definition.
+        }
 
         // 6. Otherwise, if definition is non-null, then:
 
@@ -182,7 +183,7 @@ class Document: Node {
     var body: Element? {
         // The body element of a Document object is its first element child whose
         // local name is body and whose namespace is the HTML namespace.
-        for item in self.childNodes.array {
+        for item in childNodes.array {
             if let element = item as? Element,
                element.localName == "body",
                element.namespaceURI == HTML_NS {
