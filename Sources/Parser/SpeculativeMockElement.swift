@@ -2,7 +2,6 @@
 
 // A speculative mock element is a struct with the following items:
 struct SpeculativeMockElement {
-
     // A string namespace, corresponding to an element's namespace.
     var namespace: String?
 
@@ -14,11 +13,9 @@ struct SpeculativeMockElement {
 
     // A list children, corresponding to an element's children.
     var children: [Node]
-
 }
 
 extension SpeculativeMockElement {
-
     // https://html.spec.whatwg.org/multipage/parsing.html#create-a-speculative-mock-element
     //
     // Referenced in

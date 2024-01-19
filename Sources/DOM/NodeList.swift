@@ -6,12 +6,12 @@
 // };
 
 class NodeList<T: Node>: Sequence {
-    var array: Array<T>
-    
-    init(array: Array<T> = []) {
+    var array: [T]
+
+    init(array: [T] = []) {
         self.array = array
     }
-    
+
     func makeIterator() -> Array<T>.Iterator {
         return array.makeIterator()
     }

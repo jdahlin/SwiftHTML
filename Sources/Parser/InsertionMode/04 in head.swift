@@ -1,152 +1,149 @@
 extension TreeBuilder {
+    // 13.2.6.4.4 The "in head" insertion mode
+    // https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inhead
+    func handleInHead(_ token: Token) {
+        switch token {
+        // A character token that is one of
+        // - U+0009 CHARACTER TABULATION,
+        // - U+000A LINE FEED (LF),
+        // - U+000C FORM FEED (FF),
+        // - U+000D CARRIAGE RETURN (CR), or
+        // - U+0020 SPACE
+        case let .character(c)
+            where c == "\u{0009}" || c == "\u{000A}" || c == "\u{000C}" || c == "\u{000D}"
+            || c == "\u{0020}":
+            // Insert the character.
+            insertACharachter([c])
 
-  // 13.2.6.4.4 The "in head" insertion mode
-  // https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inhead
-  func handleInHead(_ token: Token) {
-    switch token {
+        // A comment token
+        case let .comment(comment):
+            // Insert a comment.
+            insertAComment(comment)
 
-    // A character token that is one of
-    // - U+0009 CHARACTER TABULATION,
-    // - U+000A LINE FEED (LF),
-    // - U+000C FORM FEED (FF),
-    // - U+000D CARRIAGE RETURN (CR), or
-    // - U+0020 SPACE
-    case .character(let c)
-    where c == "\u{0009}" || c == "\u{000A}" || c == "\u{000C}" || c == "\u{000D}"
-      || c == "\u{0020}":
-      // Insert the character.
-      insertACharachter([c])
-      break
+        // A DOCTYPE token
+        case .doctype:
+            // Parse error. Ignore the token.
+            break
 
-    // A comment token
-    case .comment(let comment):
-      // Insert a comment.
-      insertAComment(comment)
+        // A start tag whose tag name is "html"
+        case .startTag("html", attributes: _, _):
+            // Process the token using the rules for the "in body" insertion mode.
+            insertionMode = .inBody
+            handleInBody(token)
 
-    // A DOCTYPE token
-    case .doctype:
-      // Parse error. Ignore the token.
-      break
-
-    // A start tag whose tag name is "html"
-    case .startTag("html", attributes: _, _):
-      // Process the token using the rules for the "in body" insertion mode.
-      insertionMode = .inBody
-      handleInBody(token)
-
-    // A start tag whose tag name is one of: "base", "basefont", "bgsound", "link"
-    case .startTag(let tagName, _, _)
-    where tagName == "base" || tagName == "basefont" || tagName == "bgsound" || tagName == "link":
-      // Insert an HTML element for the token.
-      insertHTMLElement(token)
+        // A start tag whose tag name is one of: "base", "basefont", "bgsound", "link"
+        case let .startTag(tagName, _, _)
+            where tagName == "base" || tagName == "basefont" || tagName == "bgsound" || tagName == "link":
+            // Insert an HTML element for the token.
+            insertHTMLElement(token)
 
     // Immediately pop the current node off the stack of open elements.
 
     // FIXME: Acknowledge the token's self-closing flag, if it is set.
 
-    // A start tag whose tag name is "meta"
-    case .startTag("meta", _, _):
-      // Insert an HTML element for the token.
-      let element = insertHTMLElement(token)
-      // Immediately pop the current node off the stack of open elements.
-      // FIXME: Acknowledge the token's self-closing flag, if it is set.
+        // A start tag whose tag name is "meta"
+        case .startTag("meta", _, _):
+            // Insert an HTML element for the token.
+            let element = insertHTMLElement(token)
+            // Immediately pop the current node off the stack of open elements.
+            // FIXME: Acknowledge the token's self-closing flag, if it is set.
 
-      // If the active speculative HTML parser is null, then:
-      if activeSpeculativeHTMLParser != nil {
-        print("\(#function): activeSpeculativeHTMLParser not implemented")
-      }
+            // If the active speculative HTML parser is null, then:
+            if activeSpeculativeHTMLParser != nil {
+                print("\(#function): activeSpeculativeHTMLParser not implemented")
+            }
 
-      // If the element has a charset attribute, and getting an encoding from
-      // its value results in an encoding, and the confidence is currently
-      // tentative, then change the encoding to the resulting encoding.
-      if element.hasAttribute("charset") {
-        print("\(#function): charset not implemented")
-        // Otherwise, if the element has an http-equiv attribute whose value is an
-        // ASCII case-insensitive match for the string "Content-Type", and the
-        // element has a content attribute, and applying the algorithm for
-        // extracting a character encoding from a meta element to that attribute's
-        // value returns an encoding, and the confidence is currently tentative,
-        // then change the encoding to the extracted encoding. The speculative
-        // HTML parser doesn't speculatively apply character encoding declarations
-        // in order to reduce implementation complexity.
-      } else if element.hasAttribute("http-equiv")
-        && element.getAttribute("http-equiv") == "Content-Type" && element.hasAttribute("content")
-      {
-        print("\(#function): FIXME: http-equiv not implemented")
-      }
+            // If the element has a charset attribute, and getting an encoding from
+            // its value results in an encoding, and the confidence is currently
+            // tentative, then change the encoding to the resulting encoding.
+            if element.hasAttribute("charset") {
+                print("\(#function): charset not implemented")
+                // Otherwise, if the element has an http-equiv attribute whose value is an
+                // ASCII case-insensitive match for the string "Content-Type", and the
+                // element has a content attribute, and applying the algorithm for
+                // extracting a character encoding from a meta element to that attribute's
+                // value returns an encoding, and the confidence is currently tentative,
+                // then change the encoding to the extracted encoding. The speculative
+                // HTML parser doesn't speculatively apply character encoding declarations
+                // in order to reduce implementation complexity.
+            } else if element.hasAttribute("http-equiv"),
+                      element.getAttribute("http-equiv") == "Content-Type", element.hasAttribute("content")
+            {
+                print("\(#function): FIXME: http-equiv not implemented")
+            }
 
-    // A start tag whose tag name is "title"
-    case .startTag("title", attributes: _, _):
-      // Follow the generic RCDATA element parsing algorithm.
-      print("\(#function): FIXME: title not implemented")
+        // A start tag whose tag name is "title"
+        case .startTag("title", attributes: _, _):
+            // Follow the generic RCDATA element parsing algorithm.
+            print("\(#function): FIXME: title not implemented")
 
-    // A start tag whose tag name is "noscript", if the scripting flag is enabled
-    case .startTag("noscript", attributes: _, _) where scriptingFlag:
-      // Follow the generic raw text element parsing algorithm.
-      print("\(#function): FIXME: noscript not implemented")
+        // A start tag whose tag name is "noscript", if the scripting flag is enabled
+        case .startTag("noscript", attributes: _, _) where scriptingFlag:
+            // Follow the generic raw text element parsing algorithm.
+            print("\(#function): FIXME: noscript not implemented")
 
-    // A start tag whose tag name is one of: "noframes", "style"
-    case .startTag(let tagName, attributes: _, _) where tagName == "noframes" || tagName == "style":
-      // Follow the generic raw text element parsing algorithm.
-      print("\(#function): FIXME: \(tagName) not implemented")
+        // A start tag whose tag name is one of: "noframes", "style"
+        case .startTag(let tagName, attributes: _, _) where tagName == "noframes" || tagName == "style":
+            // Follow the generic raw text element parsing algorithm.
+            print("\(#function): FIXME: \(tagName) not implemented")
 
-    // A start tag whose tag name is "noscript", if the scripting flag is disabled
-    case .startTag("noscript", attributes: _, _) where !scriptingFlag:
-      // Insert an HTML element for the token.
-      let element = insertHTMLElement(token)
+        // A start tag whose tag name is "noscript", if the scripting flag is disabled
+        case .startTag("noscript", attributes: _, _) where !scriptingFlag:
+            // Insert an HTML element for the token.
+            let element = insertHTMLElement(token)
 
-      // Switch the insertion mode to "in head noscript".
-      insertionMode = .inHeadNoscript
+            // Switch the insertion mode to "in head noscript".
+            insertionMode = .inHeadNoscript
 
-      print("\(#function): FIXME: noscript not implemented")
+            print("\(#function): FIXME: noscript not implemented")
 
-    // A start tag whose tag name is "script"
-    case .startTag("script", _, _):
-        // Run these steps:
-        // Let the adjusted insertion location be the appropriate place for inserting a node.
-        let adjustedInsertionLocation = appropriatePlaceForInsertingANode()
+        // A start tag whose tag name is "script"
+        case .startTag("script", _, _):
+            // Run these steps:
+            // Let the adjusted insertion location be the appropriate place for inserting a node.
+            let adjustedInsertionLocation = appropriatePlaceForInsertingANode()
 
-        // Create an element for the token in the HTML namespace, with the
-        // intended parent being the element in which the adjusted insertion
-        // location finds it
-        let element = document.createElement("script")
+            // Create an element for the token in the HTML namespace, with the
+            // intended parent being the element in which the adjusted insertion
+            // location finds it
+            let element = document.createElement("script")
 
-        // Set the element's parser document to the Document, and set the element's force async to false.
-        // element.forceAsync = false
-        // if isFragmentParsing {
-        //     element.alreadyStarted = true
-        // }
+            // Set the element's parser document to the Document, and set the element's force async to false.
+            // element.forceAsync = false
+            // if isFragmentParsing {
+            //     element.alreadyStarted = true
+            // }
 
-        // Insert the newly created element at the adjusted insertion location.
-        adjustedInsertionLocation.insert(element)
-        // Push the element onto the stack of open elements so that it is the new current node.
-        stack.append(element)
-        // Switch the tokenizer to the script data state.
-        tokenizer.state = .scriptData
-        // Let the original insertion mode be the current insertion mode.
-        originalInsertionMode = insertionMode
-        // Switch the insertion mode to "text".
-        insertionMode = .text
+            // Insert the newly created element at the adjusted insertion location.
+            adjustedInsertionLocation.insert(element)
+            // Push the element onto the stack of open elements so that it is the new current node.
+            stack.append(element)
+            // Switch the tokenizer to the script data state.
+            tokenizer.state = .scriptData
+            // Let the original insertion mode be the current insertion mode.
+            originalInsertionMode = insertionMode
+            // Switch the insertion mode to "text".
+            insertionMode = .text
 
-    // An end tag whose tag name is "head"
-    case .endTag("head", _, _):
-      // Pop the current node (which will be the head element) off the stack of open elements.
-      stack.removeLast()
+        // An end tag whose tag name is "head"
+        case .endTag("head", _, _):
+            // Pop the current node (which will be the head element) off the stack of open elements.
+            stack.removeLast()
 
-      // Switch the insertion mode to "after head".
-      insertionMode = .afterHead
+            // Switch the insertion mode to "after head".
+            insertionMode = .afterHead
 
-    // An end tag whose tag name is one of: "body", "html", "br"
-    case .endTag(let tagName, _, _) where tagName == "body" || tagName == "html" || tagName == "br":
-      // Act as described in the "anything else" entry below. (inlined)
-      // Pop the current node (which will be the head element) off the stack of open elements.
-      stack.removeLast()
+        // An end tag whose tag name is one of: "body", "html", "br"
+        case let .endTag(tagName, _, _) where tagName == "body" || tagName == "html" || tagName == "br":
+            // Act as described in the "anything else" entry below. (inlined)
+            // Pop the current node (which will be the head element) off the stack of open elements.
+            stack.removeLast()
 
-      // Switch the insertion mode to "after head".
-      insertionMode = .afterHead
+            // Switch the insertion mode to "after head".
+            insertionMode = .afterHead
 
-      // Reprocess the token.
-      handleInHead(token)
+            // Reprocess the token.
+            handleInHead(token)
 
     // A start tag whose tag name is "template"
     // Let template start tag be the start tag.
@@ -187,27 +184,26 @@ extension TreeBuilder {
     // Pop the current template insertion mode off the stack of template insertion modes.
     // Reset the insertion mode appropriately.
 
-    // A start tag whose tag name is "head"
-    case .startTag("head", attributes: _, _):
-      // Parse error. Ignore the token.
-      break
+        // A start tag whose tag name is "head"
+        case .startTag("head", attributes: _, _):
+            // Parse error. Ignore the token.
+            break
 
-    // Any other end tag
-    case .endTag:
-      // Parse error. Ignore the token.
-      break
+        // Any other end tag
+        case .endTag:
+            // Parse error. Ignore the token.
+            break
 
-    // Anything else
-    default:
-      // Pop the current node (which will be the head element) off the stack of open elements.
-      stack.removeLast()
+        // Anything else
+        default:
+            // Pop the current node (which will be the head element) off the stack of open elements.
+            stack.removeLast()
 
-      // Switch the insertion mode to "after head".
-      insertionMode = .afterHead
+            // Switch the insertion mode to "after head".
+            insertionMode = .afterHead
 
-      // Reprocess the token.
-      handleAfterHead(token)
+            // Reprocess the token.
+            handleAfterHead(token)
+        }
     }
-  }
-
 }

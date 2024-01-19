@@ -44,9 +44,7 @@ struct ElementCreationOptions {
     var is_: DOMString?
 }
 
-struct BrowsingContext {
-
-}
+struct BrowsingContext {}
 
 class Document: Node {
     var mode: DocumentMode = .noQuirks
@@ -55,20 +53,22 @@ class Document: Node {
 
     // [CEReactions, NewObject] Element createElement(DOMString localName, optional (DOMString or ElementCreationOptions) options = {});
     func createElement(_ localName: DOMString,
-                       options: ElementCreationOptions? = nil) -> Element {
+                       options _: ElementCreationOptions? = nil) -> Element
+    {
         return createElement(
             localName: localName,
-            namespace: nil)
+            namespace: nil
+        )
     }
 
     // https://dom.spec.whatwg.org/#concept-create-element
     func createElement(
         localName: DOMString,
-        namespace: DOMString?,
+        namespace _: DOMString?,
         prefix: DOMString? = nil,
-        is: DOMString? = nil,
-        synchronousCustomElements: Bool = false
-        ) -> Element {
+        is _: DOMString? = nil,
+        synchronousCustomElements _: Bool = false
+    ) -> Element {
         // 1. If prefix was not given, let prefix be null.
         // 2. If is was not given, let is be null.
 
@@ -169,7 +169,8 @@ class Document: Node {
             customElementState: .undefined,
             customElementDefinition: nil,
             isValue: nil,
-            nodeDocument: self)
+            nodeDocument: self
+        )
 
         // 7.1.3. If namespace is the HTML namespace, and either localName is a
         //        valid custom element name or is is non-null, then set result’s
@@ -186,7 +187,8 @@ class Document: Node {
         for item in childNodes.array {
             if let element = item as? Element,
                element.localName == "body",
-               element.namespaceURI == HTML_NS {
+               element.namespaceURI == HTML_NS
+            {
                 return element
             }
         }

@@ -32,7 +32,7 @@
 //   const unsigned short INVALID_NODE_TYPE_ERR = 24;
 //   const unsigned short DATA_CLONE_ERR = 25;
 // };
-public enum DOMException : Error {
+public enum DOMException: Error {
     case indexError
     case domStringError
     case hierarchyRequestError
@@ -58,5 +58,4 @@ public enum DOMException : Error {
     case timeoutError
     case invalidNodeTypeError
     case dataCloneError
-
 }

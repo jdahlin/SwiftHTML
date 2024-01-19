@@ -1,6 +1,4 @@
 // interface Comment : CharacterData {
 //   constructor(optional DOMString data = "");
 // };
-class Comment: CharacterData {
-
-}
+class Comment: CharacterData {}

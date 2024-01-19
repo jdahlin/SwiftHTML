@@ -8,6 +8,4 @@
 //   readonly attribute DOMString wholeText;
 // };
 
-class Text: CharacterData {
-
-}
+class Text: CharacterData {}

@@ -42,9 +42,8 @@ class NamedNodeMap {
         attributes[qualifiedName] = nil
         return Attr(name: qualifiedName, value: value)
     }
-    
+
     // Attr? getNamedItemNS(DOMString? namespace, DOMString localName);
     // [CEReactions] Attr? setNamedItemNS(Attr attr);
     // [CEReactions] Attr removeNamedItemNS(DOMString? namespace, DOMString localName);
-
 }

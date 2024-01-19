@@ -48,73 +48,74 @@
 
 // https://dom.spec.whatwg.org/#concept-element-custom-element-state
 enum CustomElementState {
-  case undefined
-  case failed
-  case uncustomized
-  case customized
-  case precustomized
-  case custom
+    case undefined
+    case failed
+    case uncustomized
+    case customized
+    case precustomized
+    case custom
 }
 
 public class Element: Node {
-  // readonly attribute DOMString? namespaceURI;
-  var namespaceURI: DOMString
+    // readonly attribute DOMString? namespaceURI;
+    var namespaceURI: DOMString
 
-  //  readonly attribute DOMString? prefix;
-  var prefix: DOMString?
+    //  readonly attribute DOMString? prefix;
+    var prefix: DOMString?
 
-  // readonly attribute DOMString localName;
-  var localName: DOMString
-  
-  // readonly attribute DOMString tagName; 
-  var tagName: DOMString {
-    let name = localName.uppercased()
-    return if prefix == nil {
-      name
-    } else {
-      "\(prefix!):\(name)"
+    // readonly attribute DOMString localName;
+    var localName: DOMString
+
+    // readonly attribute DOMString tagName;
+    var tagName: DOMString {
+        let name = localName.uppercased()
+        return if prefix == nil {
+            name
+        } else {
+            "\(prefix!):\(name)"
+        }
     }
-  }
 
-  var attributes: NamedNodeMap
+    var attributes: NamedNodeMap
 
-  required init(localName: DOMString, 
-                attributes: [Attr] = [], 
-                namespace: DOMString,
-                prefix: DOMString? = nil,
-                parentNode: Node? = nil,
-                customElementState: CustomElementState = .undefined,
-                customElementDefinition: CustomElementDefinition? = nil,
-                isValue: DOMString? = nil,
-                nodeDocument: Document) {
-    self.attributes = NamedNodeMap(attributes: attributes)
-    self.namespaceURI = namespace
-    self.localName = localName
-    super.init(ownerDocument: nodeDocument, parentNode: parentNode)
-    self.attributes.ownerElement = self
-  }
-
-  // An element’s qualified name is its local name if its namespace prefix is
-  // null; otherwise its namespace prefix, followed by ":", followed by its
-  // local name.
-  var qualifiedName: DOMString {
-    var qualifiedName = localName
-    if let prefix = prefix {
-      qualifiedName = "\(prefix):\(qualifiedName)"
+    required init(localName: DOMString,
+                  attributes: [Attr] = [],
+                  namespace: DOMString,
+                  prefix _: DOMString? = nil,
+                  parentNode: Node? = nil,
+                  customElementState _: CustomElementState = .undefined,
+                  customElementDefinition _: CustomElementDefinition? = nil,
+                  isValue _: DOMString? = nil,
+                  nodeDocument: Document)
+    {
+        self.attributes = NamedNodeMap(attributes: attributes)
+        namespaceURI = namespace
+        self.localName = localName
+        super.init(ownerDocument: nodeDocument, parentNode: parentNode)
+        self.attributes.ownerElement = self
     }
-    return qualifiedName
-  }
 
-  // Element interface
-  func hasAttribute(_ qualifiedName: DOMString) -> Bool {
-    return attributes.getNamedItem(qualifiedName) != nil
-  }
+    // An element’s qualified name is its local name if its namespace prefix is
+    // null; otherwise its namespace prefix, followed by ":", followed by its
+    // local name.
+    var qualifiedName: DOMString {
+        var qualifiedName = localName
+        if let prefix = prefix {
+            qualifiedName = "\(prefix):\(qualifiedName)"
+        }
+        return qualifiedName
+    }
 
-  func getAttribute(_ qualifiedName: DOMString) -> DOMString? {
-    return attributes.getNamedItem(qualifiedName)?.value
-  }
+    // Element interface
+    func hasAttribute(_ qualifiedName: DOMString) -> Bool {
+        return attributes.getNamedItem(qualifiedName) != nil
+    }
 
-  func setAttribute(_ qualifiedName: DOMString, _ value: DOMString) {
-    attributes.setNamedItem(Attr(name: qualifiedName, value: value))
-  }
+    func getAttribute(_ qualifiedName: DOMString) -> DOMString? {
+        return attributes.getNamedItem(qualifiedName)?.value
+    }
+
+    func setAttribute(_ qualifiedName: DOMString, _ value: DOMString) {
+        attributes.setNamedItem(Attr(name: qualifiedName, value: value))
+    }
 }

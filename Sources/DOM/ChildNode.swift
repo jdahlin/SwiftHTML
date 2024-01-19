@@ -19,65 +19,62 @@ protocol ChildNode {
 
 // Element includes ChildNode;
 extension Element: ChildNode {
-  func before(_ nodes: Node...) {
-    print("\(#function): not implemented")
-  }
+    func before(_: Node...) {
+        print("\(#function): not implemented")
+    }
 
-  func before(_ nodes: DOMString...) {
-    print("\(#function): not implemented")
-  }
+    func before(_: DOMString...) {
+        print("\(#function): not implemented")
+    }
 
-  func after(_ nodes: Node...) {
-    print("\(#function): not implemented")
-  }
+    func after(_: Node...) {
+        print("\(#function): not implemented")
+    }
 
-  func after(_ nodes: DOMString...) {
-    print("\(#function): not implemented")
-  }
+    func after(_: DOMString...) {
+        print("\(#function): not implemented")
+    }
 
-  func replaceWith(_ nodes: Node...) {
-    print("\(#function): not implemented")
-  }
+    func replaceWith(_: Node...) {
+        print("\(#function): not implemented")
+    }
 
-  func replaceWith(_ nodes: DOMString...) {
-    print("\(#function): not implemented")
-  }
+    func replaceWith(_: DOMString...) {
+        print("\(#function): not implemented")
+    }
 
-  func remove() {
-    print("\(#function): not implemented")
-  }
-
+    func remove() {
+        print("\(#function): not implemented")
+    }
 }
 
 // CharacterData includes ChildNode;
-extension CharacterData : ChildNode {
-  func before(_ nodes: Node...) {
-    print("\(#function): not implemented")
-  }
+extension CharacterData: ChildNode {
+    func before(_: Node...) {
+        print("\(#function): not implemented")
+    }
 
-  func before(_ nodes: DOMString...) {
-    print("\(#function): not implemented")
-  }
+    func before(_: DOMString...) {
+        print("\(#function): not implemented")
+    }
 
-  func after(_ nodes: Node...) {
-    print("\(#function): not implemented")
-  }
+    func after(_: Node...) {
+        print("\(#function): not implemented")
+    }
 
-  func after(_ nodes: DOMString...) {
-    print("\(#function): not implemented")
-  }
+    func after(_: DOMString...) {
+        print("\(#function): not implemented")
+    }
 
-  func replaceWith(_ nodes: Node...) {
-    print("\(#function): not implemented")
-  }
+    func replaceWith(_: Node...) {
+        print("\(#function): not implemented")
+    }
 
-  func replaceWith(_ nodes: DOMString...) {
-    print("\(#function): not implemented")
-  }
+    func replaceWith(_: DOMString...) {
+        print("\(#function): not implemented")
+    }
 
-  func remove() {
-    print("\(#function): not implemented")
-  }
-
-
+    func remove() {
+        print("\(#function): not implemented")
+    }
 }

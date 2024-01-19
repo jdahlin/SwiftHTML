@@ -21,6 +21,4 @@
 //   AbortSignal signal;
 // };
 
-public class EventTarget {
-
-}
+public class EventTarget {}

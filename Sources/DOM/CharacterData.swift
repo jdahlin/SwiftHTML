@@ -10,5 +10,5 @@
 // };
 
 class CharacterData: Node {
-  var data: DOMString = ""
+    var data: DOMString = ""
 }

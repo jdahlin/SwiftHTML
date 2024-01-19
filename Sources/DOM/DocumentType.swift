@@ -8,13 +8,11 @@ class DocumentType: Node {
     let name: DOMString
     let publicId: DOMString?
     let systemId: DOMString?
-    
+
     init(name: DOMString, publicId: DOMString?, systemId: DOMString?) {
         self.name = name
         self.publicId = publicId
         self.systemId = systemId
         super.init()
     }
-
 }
-
