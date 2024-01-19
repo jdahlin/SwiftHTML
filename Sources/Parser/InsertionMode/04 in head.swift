@@ -37,9 +37,9 @@ extension TreeBuilder {
             // Insert an HTML element for the token.
             insertHTMLElement(token)
 
-    // Immediately pop the current node off the stack of open elements.
+            // Immediately pop the current node off the stack of open elements.
 
-    // FIXME: Acknowledge the token's self-closing flag, if it is set.
+            // FIXME: Acknowledge the token's self-closing flag, if it is set.
 
         // A start tag whose tag name is "meta"
         case .startTag("meta", _, _):
@@ -90,7 +90,7 @@ extension TreeBuilder {
         // A start tag whose tag name is "noscript", if the scripting flag is disabled
         case .startTag("noscript", attributes: _, _) where !scriptingFlag:
             // Insert an HTML element for the token.
-            let element = insertHTMLElement(token)
+            _ = insertHTMLElement(token)
 
             // Switch the insertion mode to "in head noscript".
             insertionMode = .inHeadNoscript
@@ -143,7 +143,7 @@ extension TreeBuilder {
             insertionMode = .afterHead
 
             // Reprocess the token.
-            handleInHead(token)
+            reprocessToken(token)
 
     // A start tag whose tag name is "template"
     // Let template start tag be the start tag.
@@ -203,7 +203,7 @@ extension TreeBuilder {
             insertionMode = .afterHead
 
             // Reprocess the token.
-            handleAfterHead(token)
+            reprocessToken(token)
         }
     }
 }

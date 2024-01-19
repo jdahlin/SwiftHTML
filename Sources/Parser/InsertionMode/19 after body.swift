@@ -43,10 +43,12 @@ extension TreeBuilder {
 
         default:
             // Parse error.
+
             // Switch the insertion mode to "in body"
             insertionMode = .inBody
+
             // reprocess the token.
-            handleInBody(token)
+            reprocessToken(token)
         }
     }
 }

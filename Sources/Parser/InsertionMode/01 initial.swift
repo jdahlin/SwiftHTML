@@ -56,9 +56,12 @@ extension TreeBuilder {
             // If the document is not an iframe srcdoc document, then this is a
             // parse error; if the parser cannot change the mode flag is false, set
             // the Document to quirks mode.
-            // In any case, switch the insertion mode to "before html", then
-            // reprocess the token.
+
+            // In any case, switch the insertion mode to "before html", 
             insertionMode = .beforeHTML
+
+            // then reprocess the token.
+            reprocessToken(token)
         }
     }
 }

@@ -66,6 +66,8 @@ extension TreeBuilder {
 
             // Switch the insertion mode to "before head", then reprocess the token.
             insertionMode = .beforeHead
+
+            reprocessToken(token)
         }
 
         // The document element can end up being removed from the Document object,

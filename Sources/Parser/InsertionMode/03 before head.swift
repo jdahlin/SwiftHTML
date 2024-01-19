@@ -34,7 +34,10 @@ extension TreeBuilder {
         // A start tag whose tag name is "head"
         case .startTag("head", attributes: _, isSelfClosing: _):
             // Insert an HTML element for the token.
-            insertHTMLElement(token)
+            let headElement = insertHTMLElement(token)
+
+            // Set the head element pointer to the newly created head element.
+            headElementPointer = headElement
 
             // Switch the insertion mode to "in head".
             insertionMode = .inHead
@@ -54,13 +57,16 @@ extension TreeBuilder {
         // Anything else
         default:
             // Insert an HTML element for a "head" start tag token with no attributes.
-            _ = insertHTMLElement(token)
+            let headElement = insertHTMLElement(token)
+
+            // Set the head element pointer to the newly created head element.
+            headElementPointer = headElement
 
             // Switch the insertion mode to "in head".
             insertionMode = .inHead
 
             // Reprocess the current token.
-            handleInHead(token)
+            reprocessToken(token)
         }
     }
 }

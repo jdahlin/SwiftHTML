@@ -46,18 +46,26 @@ extension TreeBuilder {
             insertionMode = .inFrameset
 
         // A start tag whose tag name is one of: "base", "basefont", "bgsound", "link", "meta", "noframes", "script", "style", "template", "title"
-        case .startTag(_, attributes: _, _):
+        case .startTag(let tagName, attributes: _, _)
+            where tagName == "base" || tagName == "basefont" || tagName == "bgsound"
+            || tagName == "link" || tagName == "meta" || tagName == "noframes"
+            || tagName == "script" || tagName == "style" || tagName == "template"
+            || tagName == "title":
             // Parse error.
             // parseError("Unexpected start tag '\(tagName)' in 'in head' insertion mode.")
+
             // Push the node pointed to by the head element pointer onto the stack of open elements.
             stack.append(headElementPointer!)
+
             // Process the token using the rules for the "in head" insertion mode.
             handleInHead(token)
+
             // Remove the node pointed to by the head element pointer from the stack of open elements.
             // (It might not be the current node at this point.)
             if let index = stack.lastIndex(of: headElementPointer!) {
                 stack.remove(at: index)
             }
+
             // The head element pointer cannot be null at this point.
             assert(headElementPointer != nil)
 
@@ -72,10 +80,12 @@ extension TreeBuilder {
 
             // Insert an HTML element for a "body" start tag token with no attributes.
             insertHTMLElement(Token.startTag("body", attributes: []))
+
             // Switch the insertion mode to "in body".
             insertionMode = .inBody
+
             // Reprocess the current token.
-            handleInBody(token)
+            reprocessToken(token)
 
         // A start tag whose tag name is "head"
         case .startTag("head", _, _):
@@ -91,10 +101,12 @@ extension TreeBuilder {
         default:
             // Insert an HTML element for a "body" start tag token with no attributes.
             insertHTMLElement(Token.startTag("body", attributes: []))
+
             // Switch the insertion mode to "in body".
             insertionMode = .inBody
+
             // Reprocess the current token.
-            handleInBody(token)
+            reprocessToken(token)
         }
     }
 }

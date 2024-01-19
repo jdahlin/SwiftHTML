@@ -124,15 +124,18 @@ extension TreeBuilder {
                 "dd", "dt", "li", "optgroup", "option", "p", "rb", "rp", "rt", "rtc",
                 "tbody", "td", "tfoot", "th", "thead", "tr", "body", "html",
             ]
-            guard stack.contains(where: { element in
-                validElements.contains(element.tagName)
-            }) else {
+            guard
+                stack.contains(where: { element in
+                    validElements.contains(element.tagName)
+                })
+            else {
                 // This is a parse error.
                 break
             }
             // Switch the insertion mode to "after body".
             insertionMode = .afterBody
 
+    
     // An end tag whose tag name is "html"
     // If the stack of open elements does not have a body element in scope, this is a parse error; ignore the token.
     // Otherwise, if there is a node in the stack of open elements that is not either a dd element, a dt element, an li element, an optgroup element, an option element, a p element, an rb element, an rp element, an rt element, an rtc element, a tbody element, a td element, a tfoot element, a th element, a thead element, a tr element, the body element, or the html element, then this is a parse error.
@@ -396,60 +399,80 @@ extension TreeBuilder {
     // scripting flag is disabled, it can also be a noscript element.
 
         // Any other end tag
-        case .endTag:
-            break
-        // Run these steps:
-        // Initialize node to be the current node (the bottommost node of the stack).
-        // Loop: If node is an HTML element with the same tag name as the token, then:
-        // Generate implied end tags, except for HTML elements with the same tag name as the token.
-        // If node is not the current node, then this is a parse error.
-        // Pop all the nodes from the current node up to node, including node, then stop these steps.
-        // Otherwise, if node is in the special category, then this is a parse error; ignore the token, and return.
-        // Set node to the previous entry in the stack of open elements.
-        // Return to the step labeled loop.
-        // When the steps above say the user agent is to close a p element, it means that the user agent must run the following steps:
-        // Generate implied end tags, except for p elements.
-        // If the current node is not a p element, then this is a parse error.
-        // Pop elements from the stack of open elements until a p element has been popped from the stack.
-        // The adoption agency algorithm, which takes as its only argument a token token for which the algorithm is being run, consists of the following steps:
-        // Let subject be token's tag name.
-        // If the current node is an HTML element whose tag name is subject, and the current node is not in the list of active formatting elements, then pop the current node off the stack of open elements and return.
-        // Let outerLoopCounter be 0.
-        // While true:
-        // If outerLoopCounter is greater than or equal to 8, then return.
-        // Increment outerLoopCounter by 1.
-        // Let formattingElement be the last element in the list of active formatting elements that:
-        // is between the end of the list and the last marker in the list, if any, or the start of the list otherwise, and
-        // has the tag name subject.
-        // If there is no such element, then return and instead act as described in the "any other end tag" entry above.
-        // If formattingElement is not in the stack of open elements, then this is a parse error; remove the element from the list, and return.
-        // If formattingElement is in the stack of open elements, but the element is not in scope, then this is a parse error; return.
-        // If formattingElement is not the current node, this is a parse error. (But do not return.)
-        // Let furthestBlock be the topmost node in the stack of open elements that is lower in the stack than formattingElement, and is an element in the special category. There might not be one.
-        // If there is no furthestBlock, then the UA must first pop all the nodes from the bottom of the stack of open elements, from the current node up to and including formattingElement, then remove formattingElement from the list of active formatting elements, and finally return.
-        // Let commonAncestor be the element immediately above formattingElement in the stack of open elements.
-        // Let a bookmark note the position of formattingElement in the list of active formatting elements relative to the elements on either side of it in the list.
-        // Let node and lastNode be furthestBlock.
-        // Let innerLoopCounter be 0.
-        // While true:
-        // Increment innerLoopCounter by 1.
-        // Let node be the element immediately above node in the stack of open elements, or if node is no longer in the stack of open elements (e.g. because it got removed by this algorithm), the element that was immediately above node in the stack of open elements before node was removed.
-        // If node is formattingElement, then break.
-        // If innerLoopCounter is greater than 3 and node is in the list of active formatting elements, then remove node from the list of active formatting elements.
-        // If node is not in the list of active formatting elements, then remove node from the stack of open elements and continue.
-        // Create an element for the token for which the element node was created, in the HTML namespace, with commonAncestor as the intended parent; replace the entry for node in the list of active formatting elements with an entry for the new element, replace the entry for node in the stack of open elements with an entry for the new element, and let node be the new element.
-        // If last node is furthestBlock, then move the aforementioned bookmark to be immediately after the new node in the list of active formatting elements.
-        // Append lastNode to node.
-        // Set lastNode to node.
-        // Insert whatever lastNode ended up being in the previous step at the appropriate place for inserting a node, but using commonAncestor as the override target.
-        // Create an element for the token for which formattingElement was created, in the HTML namespace, with furthestBlock as the intended parent.
-        // Take all of the child nodes of furthestBlock and append them to the element created in the last step.
-        // Append that new element to furthestBlock.
-        // Remove formattingElement from the list of active formatting elements, and insert the new element into the list of active formatting elements at the position of the aforementioned bookmark.
-        // Remove formattingElement from the stack of open elements, and insert the new element into the stack of open elements immediately below the position of furthestBlock in that stack.
-        // This algorithm's name, the "adoption agency algorithm", comes from the way it causes elements to change parents, and is in contrast with other possible algorithms for dealing with misnested content.
+        case .endTag(let tagName, _, _):
+            // Initialize node to be the current node (the bottommost node of the stack).
+            let node = currentNode
+
+            // Loop: If node is an HTML element with the same tag name as the token, then:
+            while stack.count > 0 {
+                guard node is Element else { break }
+                let element = node as! Element
+
+                // Generate implied end tags, except for HTML elements with the same tag name as the token.
+                //generateImpliedEndTags(exceptFor: token.tagName)
+
+                // If node is not the current node, then this is a parse error.
+                if node != currentNode {
+                    // Parse error.
+                    break
+                }
+
+                // Pop elements from the stack of open elements until node has been popped from the stack.
+                var removedNode: Node? = nil
+                while removedNode != node {
+                    removedNode = stack.removeLast()
+                }
+                break
+            }
+            // Otherwise, if node is in the special category, then this is a
+            // parse error; ignore the token, and return. Set node to the
+            // previous entry in the stack of open elements. Return to the step
+            // labeled loop.
+
         default:
             break
         }
     }
 }
+
+// When the steps above say the user agent is to close a p element, it means that the user agent must run the following steps:
+// Generate implied end tags, except for p elements.
+// If the current node is not a p element, then this is a parse error.
+// Pop elements from the stack of open elements until a p element has been popped from the stack.
+// The adoption agency algorithm, which takes as its only argument a token token for which the algorithm is being run, consists of the following steps:
+// Let subject be token's tag name.
+// If the current node is an HTML element whose tag name is subject, and the current node is not in the list of active formatting elements, then pop the current node off the stack of open elements and return.
+// Let outerLoopCounter be 0.
+// While true:
+// If outerLoopCounter is greater than or equal to 8, then return.
+// Increment outerLoopCounter by 1.
+// Let formattingElement be the last element in the list of active formatting elements that:
+// is between the end of the list and the last marker in the list, if any, or the start of the list otherwise, and
+// has the tag name subject.
+// If there is no such element, then return and instead act as described in the "any other end tag" entry above.
+// If formattingElement is not in the stack of open elements, then this is a parse error; remove the element from the list, and return.
+// If formattingElement is in the stack of open elements, but the element is not in scope, then this is a parse error; return.
+// If formattingElement is not the current node, this is a parse error. (But do not return.)
+// Let furthestBlock be the topmost node in the stack of open elements that is lower in the stack than formattingElement, and is an element in the special category. There might not be one.
+// If there is no furthestBlock, then the UA must first pop all the nodes from the bottom of the stack of open elements, from the current node up to and including formattingElement, then remove formattingElement from the list of active formatting elements, and finally return.
+// Let commonAncestor be the element immediately above formattingElement in the stack of open elements.
+// Let a bookmark note the position of formattingElement in the list of active formatting elements relative to the elements on either side of it in the list.
+// Let node and lastNode be furthestBlock.
+// Let innerLoopCounter be 0.
+// While true:
+// Increment innerLoopCounter by 1.
+// Let node be the element immediately above node in the stack of open elements, or if node is no longer in the stack of open elements (e.g. because it got removed by this algorithm), the element that was immediately above node in the stack of open elements before node was removed.
+// If node is formattingElement, then break.
+// If innerLoopCounter is greater than 3 and node is in the list of active formatting elements, then remove node from the list of active formatting elements.
+// If node is not in the list of active formatting elements, then remove node from the stack of open elements and continue.
+// Create an element for the token for which the element node was created, in the HTML namespace, with commonAncestor as the intended parent; replace the entry for node in the list of active formatting elements with an entry for the new element, replace the entry for node in the stack of open elements with an entry for the new element, and let node be the new element.
+// If last node is furthestBlock, then move the aforementioned bookmark to be immediately after the new node in the list of active formatting elements.
+// Append lastNode to node.
+// Set lastNode to node.
+// Insert whatever lastNode ended up being in the previous step at the appropriate place for inserting a node, but using commonAncestor as the override target.
+// Create an element for the token for which formattingElement was created, in the HTML namespace, with furthestBlock as the intended parent.
+// Take all of the child nodes of furthestBlock and append them to the element created in the last step.
+// Append that new element to furthestBlock.
+// Remove formattingElement from the list of active formatting elements, and insert the new element into the list of active formatting elements at the position of the aforementioned bookmark.
+// Remove formattingElement from the stack of open elements, and insert the new element into the stack of open elements immediately below the position of furthestBlock in that stack.
+// This algorithm's name, the "adoption agency algorithm", comes from the way it causes elements to change parents, and is in contrast with other possible algorithms for dealing with misnested content.

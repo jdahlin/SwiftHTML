@@ -150,8 +150,8 @@ public enum TokenizerState {
 
 public enum Token {
     case character(Character)
-    case startTag(_ tag: String, attributes: [Attr] = [], isSelfClosing: Bool = false)
-    case endTag(String, attributes: [Attr] = [], isSelfClosing: Bool = false)
+    case startTag(_ tagName: String, attributes: [Attr] = [], isSelfClosing: Bool = false)
+    case endTag(_ tagName: String, attributes: [Attr] = [], isSelfClosing: Bool = false)
     case comment(String)
     case doctype(name: String, publicId: String?, systemId: String?, forceQuirks: Bool)
     case attribute(name: String, value: String)
