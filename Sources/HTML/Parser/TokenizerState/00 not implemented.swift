@@ -11,17 +11,6 @@
 // Anything else
 // Emit the current input character as a character token.
 
-// 13.2.5.3 RAWTEXT state
-// Consume the next input character:
-// U+003C LESS-THAN SIGN (<)
-// Switch to the RAWTEXT less-than sign state.
-// U+0000 NULL
-// This is an unexpected-null-character parse error. Emit a U+FFFD REPLACEMENT CHARACTER character token.
-// EOF
-// Emit an end-of-file token.
-// Anything else
-// Emit the current input character as a character token.
-
 // 13.2.5.4 Script data state
 // Consume the next input character:
 // U+003C LESS-THAN SIGN (<)
@@ -73,38 +62,6 @@
 // Append the current input character to the current tag token's tag name. Append the current input character to the temporary buffer.
 // Anything else
 // Emit a U+003C LESS-THAN SIGN character token, a U+002F SOLIDUS character token, and a character token for each of the characters in the temporary buffer (in the order they were added to the buffer). Reconsume in the RCDATA state.
-
-// 13.2.5.12 RAWTEXT less-than sign state
-// Consume the next input character:
-// U+002F SOLIDUS (/)
-// Set the temporary buffer to the empty string. Switch to the RAWTEXT end tag open state.
-// Anything else
-// Emit a U+003C LESS-THAN SIGN character token. Reconsume in the RAWTEXT state.
-
-// 13.2.5.13 RAWTEXT end tag open state
-// Consume the next input character:
-// ASCII alpha
-// Create a new end tag token, set its tag name to the empty string. Reconsume in the RAWTEXT end tag name state.
-// Anything else
-// Emit a U+003C LESS-THAN SIGN character token and a U+002F SOLIDUS character token. Reconsume in the RAWTEXT state.
-
-// 13.2.5.14 RAWTEXT end tag name state
-// Consume the next input character:
-// U+0009 CHARACTER TABULATION (tab)
-// U+000A LINE FEED (LF)
-// U+000C FORM FEED (FF)
-// U+0020 SPACE
-// If the current end tag token is an appropriate end tag token, then switch to the before attribute name state. Otherwise, treat it as per the "anything else" entry below.
-// U+002F SOLIDUS (/)
-// If the current end tag token is an appropriate end tag token, then switch to the self-closing start tag state. Otherwise, treat it as per the "anything else" entry below.
-// U+003E GREATER-THAN SIGN (>)
-// If the current end tag token is an appropriate end tag token, then switch to the data state and emit the current tag token. Otherwise, treat it as per the "anything else" entry below.
-// ASCII upper alpha
-// Append the lowercase version of the current input character (add 0x0020 to the character's code point) to the current tag token's tag name. Append the current input character to the temporary buffer.
-// ASCII lower alpha
-// Append the current input character to the current tag token's tag name. Append the current input character to the temporary buffer.
-// Anything else
-// Emit a U+003C LESS-THAN SIGN character token, a U+002F SOLIDUS character token, and a character token for each of the characters in the temporary buffer (in the order they were added to the buffer). Reconsume in the RAWTEXT state.
 
 // 13.2.5.15 Script data less-than sign state
 // Consume the next input character:

@@ -173,6 +173,8 @@ class Tokenizer {
     var currentToken: Token?
     var reconsumeNext = false
     var temporaryBuffer = ""
+    var currentEndTagName: String?
+    var lastStartTagName: String?
 
     init(data: Data) {
         self.data = data
@@ -200,12 +202,24 @@ class Tokenizer {
         return Character(UnicodeScalar(data[position]))
     }
 
+    func emitToken(_ token: Token) {
+        switch token {
+        case let .startTag(tagName, _, _):
+            lastStartTagName = tagName
+        case let .endTag(tagName, _, _):
+            currentEndTagName = tagName
+        default:
+            break
+        }
+        delegate?.didReceiveToken(token)
+    }
+
     func emitCharacterToken(_ character: Character) {
-        delegate?.didReceiveToken(.character(character))
+        emitToken(.character(character))
     }
 
     func emitEndOfFileToken() {
-        delegate?.didReceiveToken(.eof)
+        emitToken(.eof)
     }
 
     func emitCurrentToken() {
@@ -213,7 +227,15 @@ class Tokenizer {
             assertionFailure()
             return
         }
-        delegate?.didReceiveToken(token)
+        emitToken(token)
+    }
+
+    func isCurrentEndTagTokenAppropriateEndTagToken() -> Bool {
+        if lastStartTagName == nil {
+            return false
+        }
+        // FIXME: Confirm that this is correct or just coincidencially works
+        return temporaryBuffer == lastStartTagName
     }
 
     func createAttribute(name: String = "", value: String = "") {
@@ -330,8 +352,11 @@ class Tokenizer {
         case .data:
             handleDataState()
 
-    // 13.2.5.2 RCDATA state
-    // 13.2.5.3 RAWTEXT state
+        // 13.2.5.2 RCDATA state
+        // 13.2.5.3 RAWTEXT state
+        case .rawText:
+            handleRawTextState()
+
     // 13.2.5.4 Script data state
     // 13.2.5.5 PLAINTEXT state
 
@@ -350,9 +375,19 @@ class Tokenizer {
         // 13.2.5.9 RCDATA less-than sign state
         // 13.2.5.10 RCDATA end tag open state
         // 13.2.5.11 RCDATA end tag name state
+
         // 13.2.5.12 RAWTEXT less-than sign state
+        case .rawTextLessThanSign:
+            handleRawTextLessThanState()
+
         // 13.2.5.13 RAWTEXT end tag open state
+        case .rawTextEndTagOpen:
+            handleRawTextEndTagOpenState()
+
         // 13.2.5.14 RAWTEXT end tag name state
+        case .rawTextEndTagName:
+            handleRawTextEndTagNameState()
+
         // 13.2.5.15 Script data less-than sign state
         // 13.2.5.16 Script data end tag open state
         // 13.2.5.17 Script data end tag name state

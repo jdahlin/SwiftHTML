@@ -12,7 +12,7 @@ extension TreeBuilder {
             where c == "\u{0009}" || c == "\u{000A}" || c == "\u{000C}" || c == "\u{000D}"
             || c == "\u{0020}":
             // Insert the character.
-            insertACharachter([c])
+            insertACharacter([c])
 
         // A comment token
         case let .comment(comment):

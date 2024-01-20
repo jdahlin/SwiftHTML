@@ -8,43 +8,42 @@
 import Foundation
 
 public struct TokenStream: Sequence, IteratorProtocol {
-    
     public var tokens: any IteratorProtocol<InputToken?>
     var currentToken: InputToken? = nil
-    var retainCurrentInputToken = false;
-    
+    var retainCurrentInputToken = false
+
     init(inputTokens: [InputToken]) {
         var iterator = inputTokens.makeIterator()
-        self.tokens = AnyIterator<InputToken?> {
+        tokens = AnyIterator<InputToken?> {
             switch iterator.next() {
-                case .none:
-                    return nil
-                case .some(let inputToken):
-                    return inputToken
+            case .none:
+                return nil
+            case let .some(inputToken):
+                return inputToken
             }
         }
     }
-    
+
     init(tokenizer: Tokenizer) {
         var tokenizerIterator = tokenizer.makeIterator()
-        self.tokens = AnyIterator<InputToken?> {
+        tokens = AnyIterator<InputToken?> {
             switch tokenizerIterator.next() {
-                case .none:
-                    return nil
-                case .some(let token):
-                    return InputToken.token(token as! Token)
+            case .none:
+                return nil
+            case let .some(token):
+                return InputToken.token(token as! Token)
             }
         }
     }
-    
+
     public mutating func next() -> Token? {
         do {
-            return try self.consumeNextToken()
+            return try consumeNextToken()
         } catch {
             return nil
         }
     }
-    
+
     public init(_ string: String) {
         self.init(tokenizer: Tokenizer(string))
     }
@@ -53,58 +52,58 @@ public struct TokenStream: Sequence, IteratorProtocol {
         var tokensIterator = tokens.makeIterator()
         self.tokens = AnyIterator<InputToken?> {
             switch tokensIterator.next() {
-                case .none:
-                    return nil
-                case .some(let token):
-                    return InputToken.token(token)
+            case .none:
+                return nil
+            case let .some(token):
+                return InputToken.token(token)
             }
         }
     }
 
     // https://www.w3.org/TR/css-syntax-3/#consume-the-next-input-token
     mutating func consumeNextInputToken() throws -> InputToken {
-        if self.retainCurrentInputToken {
-            self.retainCurrentInputToken = false
+        if retainCurrentInputToken {
+            retainCurrentInputToken = false
         } else {
-            if let token = self.tokens.next() {
-                self.currentToken = token
+            if let token = tokens.next() {
+                currentToken = token
             } else {
-                self.currentToken = InputToken.token(.eof)
+                currentToken = InputToken.token(.eof)
             }
         }
-        return self.currentToken!
+        return currentToken!
     }
-    
+
     // https://www.w3.org/TR/css-syntax-3/#reconsume-the-current-input-token
     mutating func reconsumeCurrentInputToken() {
         // The next time an algorithm instructs you to consume the next input token,
         // instead do nothing (retain the current input token unchanged).
-        self.retainCurrentInputToken = true
+        retainCurrentInputToken = true
     }
-    
+
     func currentInputToken() throws -> InputToken {
-        switch self.currentToken {
-        case .some(let token):
+        switch currentToken {
+        case let .some(token):
             return token
         case .none:
             throw ParserError.eof
         }
     }
-    
+
     mutating func consumeNextToken() throws -> Token {
-        switch try self.consumeNextInputToken() {
-            case .componentValue(.token(let token)):
-                return token
-            case .token(let token):
-                return token
-            default:
-                throw ParserError.unexpectedToken
+        switch try consumeNextInputToken() {
+        case let .componentValue(.token(token)):
+            return token
+        case let .token(token):
+            return token
+        default:
+            throw ParserError.unexpectedToken
         }
     }
-    
+
     mutating func consumeWhile(_ expected: Token) throws {
         repeat {
-            if try self.consumeNextToken() == expected {
+            if try consumeNextToken() == expected {
                 continue
             }
             return

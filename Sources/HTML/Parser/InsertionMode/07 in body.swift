@@ -15,13 +15,13 @@ extension TreeBuilder {
             || c == "\u{0020}":
             // Reconstruct the active formatting elements, if any.
             // Insert the token's character.
-            insertACharachter([c])
+            insertACharacter([c])
 
         // Any other character token
         case let .character(c):
             // Reconstruct the active formatting elements, if any.
             // Insert the token's character.
-            insertACharachter([c])
+            insertACharacter([c])
 
             // Set the frameset-ok flag to "not ok".
             framesetOkFlag = .notOk

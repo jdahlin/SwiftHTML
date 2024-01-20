@@ -69,11 +69,11 @@ public enum Combinator {
     // child combinator (>), e.g: child > parent
     // https://www.w3.org/TR/selectors-4/#child-combinators
     case child
-    
+
     // next sibling combinator (+), e.g: child + next-sibling
     // https://www.w3.org/TR/selectors-4/#adjacent-sibling-combinators
     case nextSibling
-    
+
     // subsequent-sibling combinator (~), e.g: sibling ~ subsequent-sibling
     // https://www.w3.org/TR/selectors-4/#general-sibling-combinators
     case subsequentSibling
@@ -85,49 +85,47 @@ public enum Combinator {
 public struct ComplexSelector {
     public var selector: CompoundSelector
     public var elements: [(Combinator, CompoundSelector)]
-    
 }
 
 // Enum representing attribute matchers
 public enum AttrMatcher {
     // E[foo="bar"]
     case exact
-    
+
     // E[foo*="bar"]
     case contains
-    
+
     // E[foo^="bar"]
     case startsWith
-    
+
     // E[foo$="bar"]
     case endsWith
-    
+
     case any
-    
+
     public init?(_ cv: ComponentValue) {
         switch cv {
-        case .token(.delim(let c)): self.init(Character(c))
+        case let .token(.delim(c)): self.init(Character(c))
         default:
             return nil
         }
     }
-    
+
     public init?(_ c: Character) {
         switch c {
         case "*": self = .contains
         case "^": self = .startsWith
-        case  "$": self = .endsWith
+        case "$": self = .endsWith
         default:
             return nil
         }
     }
-    
 }
 
 public enum AttrModifier {
     case insensitive
     case sensitive
-    
+
     init?(_ char: String) {
         switch char {
         case "i": self = .insensitive
@@ -136,7 +134,6 @@ public enum AttrModifier {
             return nil
         }
     }
-
 }
 
 // Qualified Name that allows wildcards
@@ -150,47 +147,45 @@ public struct NSPrefix {
     var wildcard = false
 }
 
-
 public struct AttributeSelector {
     var name: WQName
     var attrMatcher: AttrMatcher?
     var value: String?
-    var modifier: AttrModifier = AttrModifier.sensitive
+    var modifier: AttrModifier = .sensitive
 }
 
 struct ComponentValues {
     var pos = 0
     var values: [ComponentValue]
-    
+
     var count: Int { values.count }
     subscript(index: Int) -> ComponentValue {
-        get {
-            values[index]
-        }
+        values[index]
     }
-    
+
     func peek(_ i: Int = 0) -> ComponentValue? {
         let pos = self.pos + i
-        return if pos > self.count - 1 {
+        return if pos > count - 1 {
             nil
         } else {
-            self.values[pos]
+            values[pos]
         }
     }
+
     mutating func next() -> ComponentValue? {
         let pos = self.pos
-        if pos > self.count - 1 {
+        if pos > count - 1 {
             return nil
         } else {
             self.pos = pos + 1
-            let value = self.values[pos]
+            let value = values[pos]
             return value
         }
     }
-    
+
     mutating func strip_whitespace() {
         while case .token(.whitespace) = peek() {
-            _ = self.next()
+            _ = next()
         }
     }
 }
@@ -219,7 +214,7 @@ func consumeComplexSelector(_ values: inout ComponentValues) -> ComplexSelector?
     guard let selector = consumeCompoundSelector(&values) else {
         return nil
     }
-    
+
     var elements: [(Combinator, CompoundSelector)] = []
     while true {
         guard let combinator = consumeCombinator(&values) else { break }
@@ -231,7 +226,7 @@ func consumeComplexSelector(_ values: inout ComponentValues) -> ComplexSelector?
     return ComplexSelector(selector: selector, elements: elements)
 }
 
-// <compound-selector> = [ 
+// <compound-selector> = [
 //   <type-selector>?
 //   <subclass-selector>*
 //   [ <pseudo-element-selector> <pseudo-class-selector>* ]*
@@ -239,7 +234,7 @@ func consumeComplexSelector(_ values: inout ComponentValues) -> ComplexSelector?
 func consumeCompoundSelector(_ values: inout ComponentValues) -> CompoundSelector? {
     if let name = consumeWQName(&values) {
         return CompoundSelector(typeSelector: name)
-    } 
+    }
     if case .token(.delim("*")) = values.peek() {
         _ = values.next()
         return CompoundSelector(typeSelector: WQName(name: "*"))
@@ -247,7 +242,7 @@ func consumeCompoundSelector(_ values: inout ComponentValues) -> CompoundSelecto
     if let subclassSelector = consumeSubclassSeletor(&values) {
         return CompoundSelector(subclassSelectors: [subclassSelector])
     }
-    //print("Compound: \(values.values) Not implemented")
+    // print("Compound: \(values.values) Not implemented")
     return nil
 }
 
@@ -269,7 +264,7 @@ func consumeWQName(_ values: inout ComponentValues) -> WQName? {
 
 // <combinator> = '>' | '+' | '~' | [ '|' '|' ]
 func consumeCombinator(_ values: inout ComponentValues) -> Combinator? {
-    if case .token(let token) = values.peek() {
+    if case let .token(token) = values.peek() {
         switch token {
         case .whitespace:
             _ = values.next()
@@ -290,7 +285,6 @@ func consumeCombinator(_ values: inout ComponentValues) -> Combinator? {
     return nil
 }
 
-
 // <attribute-selector> = '[' <wq-name> ']' |
 //                        '[' <wq-name> <attr-matcher> [ <string-token> | <ident-token> ] <attr-modifier>? ']'
 func consumeAttributeSelector(_ values: inout ComponentValues) -> AttributeSelector? {
@@ -298,9 +292,9 @@ func consumeAttributeSelector(_ values: inout ComponentValues) -> AttributeSelec
     var value: String?
     var attrMatcher: AttrMatcher?
     var modifier = AttrModifier.insensitive
-    
+
     values.strip_whitespace()
-    
+
     guard case let .token(.ident(ident)) = values.peek() else {
         return nil
     }
@@ -308,43 +302,42 @@ func consumeAttributeSelector(_ values: inout ComponentValues) -> AttributeSelec
     name = ident
 
     values.strip_whitespace()
-    
-    switch values.peek() {
 
-        // attr=value
-        case .token(.delim("=")):
+    switch values.peek() {
+    // attr=value
+    case .token(.delim("=")):
+        _ = values.next()
+        attrMatcher = AttrMatcher.exact
+        if case let .token(.ident(ident)) = values.peek() {
             _ = values.next()
-            attrMatcher = AttrMatcher.exact
+            value = ident
+        }
+    // attr*=value
+    // attr^=value
+    // attr$=value
+    case .token(.delim("^")), .token(.delim("*")), .token(.delim("$")):
+        if case let .token(.delim(char)) = values.peek(), case .token(.delim) = values.peek(2) {
+            _ = values.next()
+            _ = values.next()
+            attrMatcher = AttrMatcher(Character(char))
             if case let .token(.ident(ident)) = values.peek() {
                 _ = values.next()
                 value = ident
             }
-        // attr*=value
-        // attr^=value
-        // attr$=value
-        case .token(.delim("^")), .token(.delim("*")), .token(.delim("$")):
-            if case let .token(.delim(char)) = values.peek(), case .token(.delim) = values.peek(2) {
-                _ = values.next()
-                _ = values.next()
-                attrMatcher = AttrMatcher(Character(char))
-                if case let .token(.ident(ident)) = values.peek() {
-                    _ = values.next()
-                    value = ident
-                }
-            }
+        }
 
-        default:
-            return nil
-
+    default:
+        return nil
     }
     if case .token(.whitespace) = values.peek(),
-       case .token(.ident("s")) = values.peek(2) {
+       case .token(.ident("s")) = values.peek(2)
+    {
         modifier = .sensitive
     }
 
     values.strip_whitespace()
 
-    if (name != nil) {
+    if name != nil {
         return AttributeSelector(
             name: WQName(name: name!),
             attrMatcher: attrMatcher,
@@ -360,45 +353,44 @@ func consumeAttributeSelector(_ values: inout ComponentValues) -> AttributeSelec
 
 func consumeSubclassSeletor(_ values: inout ComponentValues) -> SubclassSelector? {
     switch values.peek() {
-        case .token(.delim(".")):
-            var i = 1
-            repeat {
-                switch values.peek(i) {
-                case .token(.whitespace):
-                    i += 1
-                    continue
-                case .token(.ident(let ident)):
-                    if i > 1 {
-                        _ = values.next()
-                    }
+    case .token(.delim(".")):
+        var i = 1
+        repeat {
+            switch values.peek(i) {
+            case .token(.whitespace):
+                i += 1
+                continue
+            case let .token(.ident(ident)):
+                if i > 1 {
                     _ = values.next()
-                    _ = values.next()
-                    let selector = SubclassSelector.class_(ident)
-                    values.strip_whitespace()
-                    return selector
-                default:
-                    return nil
                 }
-            } while true
-        case .token(let token):
-            if case .hashToken(hash: let hash) = token {
                 _ = values.next()
-                return .id(hash.hash)
+                _ = values.next()
+                let selector = SubclassSelector.class_(ident)
+                values.strip_whitespace()
+                return selector
+            default:
+                return nil
             }
-        case .simpleBlock(let simpleBlock):
-            switch simpleBlock.token {
-                case .rbracket:
-                    _ = values.next()
-                var blockValues = ComponentValues(values: simpleBlock.value)
-                if let selector = consumeAttributeSelector(&blockValues) {
-                    return .attribute(selector)
-
-                }
-                default:
-                    break
+        } while true
+    case let .token(token):
+        if case let .hashToken(hash: hash) = token {
+            _ = values.next()
+            return .id(hash.hash)
+        }
+    case let .simpleBlock(simpleBlock):
+        switch simpleBlock.token {
+        case .rbracket:
+            _ = values.next()
+            var blockValues = ComponentValues(values: simpleBlock.value)
+            if let selector = consumeAttributeSelector(&blockValues) {
+                return .attribute(selector)
             }
         default:
             break
+        }
+    default:
+        break
     }
     _ = values.next()
     return nil
@@ -408,26 +400,26 @@ func consumeSubclassSeletor(_ values: inout ComponentValues) -> SubclassSelector
 func consumeNsPrefix(_ tokenStream: inout TokenStream) throws -> NSPrefix {
     var prefix: String?
     var wildcard = false
-    
+
     switch try tokenStream.consumeNextToken() {
-        case .ident(let value):
-            prefix = value
-        case .delim(let value) where value == "*":
-            wildcard = true
-        case .delim(let value) where value == "|":
-            return NSPrefix()
-        default:
-            throw ParserError.unexpectedToken
-    }
-    
-    let token = try tokenStream.consumeNextInputToken()
-    guard case .componentValue(.token(.delim(let value))) = token else {
+    case let .ident(value):
+        prefix = value
+    case let .delim(value) where value == "*":
+        wildcard = true
+    case let .delim(value) where value == "|":
+        return NSPrefix()
+    default:
         throw ParserError.unexpectedToken
     }
-    
+
+    let token = try tokenStream.consumeNextInputToken()
+    guard case let .componentValue(.token(.delim(value))) = token else {
+        throw ParserError.unexpectedToken
+    }
+
     guard value == "|" else {
         throw ParserError.unexpectedToken
     }
-    
+
     return NSPrefix(prefix: prefix, wildcard: wildcard)
 }

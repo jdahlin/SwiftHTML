@@ -1,6 +1,6 @@
 import Foundation
 
-func FIXME(
+public func FIXME(
     _ message: String? = nil,
     function: String = #function,
     file: String = #fileID,

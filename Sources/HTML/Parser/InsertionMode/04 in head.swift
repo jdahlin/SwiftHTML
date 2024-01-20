@@ -13,7 +13,7 @@ extension TreeBuilder {
             where c == "\u{0009}" || c == "\u{000A}" || c == "\u{000C}" || c == "\u{000D}"
             || c == "\u{0020}":
             // Insert the character.
-            insertACharachter([c])
+            insertACharacter([c])
 
         // A comment token
         case let .comment(comment):
@@ -75,17 +75,17 @@ extension TreeBuilder {
         // A start tag whose tag name is "title"
         case .startTag("title", attributes: _, _):
             // Follow the generic RCDATA element parsing algorithm.
-            FIXME("title not implemented")
+            genericElementParsingAlgorithm(token, algorithm: .rcData)
 
         // A start tag whose tag name is "noscript", if the scripting flag is enabled
         case .startTag("noscript", attributes: _, _) where scriptingFlag:
             // Follow the generic raw text element parsing algorithm.
-            FIXME("noscript not implemented")
+            genericElementParsingAlgorithm(token, algorithm: .rawText)
 
         // A start tag whose tag name is one of: "noframes", "style"
         case .startTag(let tagName, attributes: _, _) where tagName == "noframes" || tagName == "style":
             // Follow the generic raw text element parsing algorithm.
-            FIXME("\(tagName) not implemented")
+            genericElementParsingAlgorithm(token, algorithm: .rawText)
 
         // A start tag whose tag name is "noscript", if the scripting flag is disabled
         case .startTag("noscript", attributes: _, _) where !scriptingFlag:

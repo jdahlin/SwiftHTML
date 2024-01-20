@@ -48,37 +48,37 @@ public extension Codepoint {
     var isSign: Bool {
         self == "-" || self == "+"
     }
-    
+
     // https://www.w3.org/TR/css-syntax-3/#digit
     var isDigit: Bool {
         // A code point between U+0030 DIGIT ZERO (0) and U+0039 DIGIT NINE (9) inclusive.
-        "0"..."9" ~= self
+        "0" ... "9" ~= self
     }
-    
+
     // https://www.w3.org/TR/css-syntax-3/#hex-digit
     var isHexDigit: Bool {
         // A digit,
-        self.isDigit
-        // or a code point between U+0041 LATIN CAPITAL LETTER A (A) and
-        // U+0046 LATIN CAPITAL LETTER F (F) inclusive,
-        || "A"..."F" ~= self
-        // or a code point between U+0061 LATIN SMALL LETTER A (a) and
-        // U+0066 LATIN SMALL LETTER F (f) inclusive.
-        || "a"..."f" ~= self
+        isDigit
+            // or a code point between U+0041 LATIN CAPITAL LETTER A (A) and
+            // U+0046 LATIN CAPITAL LETTER F (F) inclusive,
+            || "A" ... "F" ~= self
+            // or a code point between U+0061 LATIN SMALL LETTER A (a) and
+            // U+0066 LATIN SMALL LETTER F (f) inclusive.
+            || "a" ... "f" ~= self
     }
-    
+
     // https://www.w3.org/TR/css-syntax-3/#whitespace
     var isWhitespace: Bool {
         // A newline, U+0009 CHARACTER TABULATION, or U+0020 SPACE.
         self == "\n" || self == "\t" || self == " "
     }
-    
+
     // https://www.w3.org/TR/css-syntax-3/#letter
     var isLetter: Bool {
         // An uppercase letter
-        "A"..."Z" ~= self
-        // or a lowercase letter.
-        || "a"..."z" ~= self;
+        "A" ... "Z" ~= self
+            // or a lowercase letter.
+            || "a" ... "z" ~= self
     }
 
     // https://www.w3.org/TR/css-syntax-3/#non-ascii-code-point
@@ -86,40 +86,38 @@ public extension Codepoint {
         // A code point with a value equal to or greater than U+0080 <control>.
         self >= Codepoint(0x0080)
     }
-    
+
     // https://www.w3.org/TR/css-syntax-3/#ident-start-code-point
     var isIdentStartCodePoint: Bool {
         // A letter,
-        return self.isLetter
-        // a non-ASCII code point,
-        || self.isNonASCIICodePoint
-        // or U+005F LOW LINE (_).
-        || self == "_"
+        return isLetter
+            // a non-ASCII code point,
+            || isNonASCIICodePoint
+            // or U+005F LOW LINE (_).
+            || self == "_"
     }
-    
+
     // https://www.w3.org/TR/css-syntax-3/#ident-code-point
     func isIdentCodePoint() -> Bool {
         // An ident-start code point,
-        return self.isIdentStartCodePoint
-        // a digit,
-        || self.isDigit
-        // or U+002D HYPHEN-MINUS (-).
-        || self == "-"
+        return isIdentStartCodePoint
+            // a digit,
+            || isDigit
+            // or U+002D HYPHEN-MINUS (-).
+            || self == "-"
     }
-    
+
     // https://www.w3.org/TR/css-syntax-3/#maximum-allowed-code-point
     static var maximumAllowedCodePoint: UInt32 {
         // The greatest code point defined by Unicode: U+10FFFF.
         UInt32(0x10FFFF)
     }
-    
+
     // https://en.wikipedia.org/wiki/Specials_(Unicode_block)#Replacement_character
     static var replacementCharacter: Codepoint {
         Codepoint(UInt32(0xFFFD))!
     }
-
 }
-
 
 enum TokenizerError: Error {
     case invalid(String)
@@ -128,70 +126,70 @@ enum TokenizerError: Error {
     case eof
 }
 
-struct Tokenizer : Sequence {
+struct Tokenizer: Sequence {
     var stream: String.UnicodeScalarView
     var pos: String.Index
-    
+
     init(_ string: String) {
-        self.stream = string.unicodeScalars
-        self.pos = self.stream.startIndex
+        stream = string.unicodeScalars
+        pos = stream.startIndex
     }
-    
+
     @discardableResult mutating func consume() throws -> Codepoint {
-        if let c = self.peek() {
-            self.pos = self.stream.index(self.pos, offsetBy: 1)
-            return c
-        } else {
-            throw TokenizerError.eof
-        }
-    }
-    
-    @discardableResult mutating func consumeMany(_ offsetBy: Int) throws -> String {
-        var s = "";
-        for _ in 0...offsetBy {
-            let codePoint = try self.consume()
-            s.append(String(UnicodeScalar(codePoint)))
-        }
-        return s;
-    }
-    
-    func peek(_ nth: Int = 0) -> Optional<Codepoint> {
-        let pos = self.stream.index(self.pos, offsetBy: nth, limitedBy: self.stream.endIndex);
-        if pos == nil || pos == self.stream.endIndex {
-            return .none
-        } else {
-            return .some(self.stream[pos!])
-        }
-    }
-    
-    func peekOrThrow(_ nth: Int = 0) throws -> Codepoint {
-        if let c = self.peek(nth) {
+        if let c = peek() {
+            pos = stream.index(pos, offsetBy: 1)
             return c
         } else {
             throw TokenizerError.eof
         }
     }
 
-    func peekMany(_ offsetBy: Int = 2) -> Optional<String> {
-        let end = self.stream.index(self.pos, offsetBy: offsetBy - 1, limitedBy: self.stream.endIndex)
-        if end == nil || end == self.stream.endIndex {
+    @discardableResult mutating func consumeMany(_ offsetBy: Int) throws -> String {
+        var s = ""
+        for _ in 0 ... offsetBy {
+            let codePoint = try self.consume()
+            s.append(String(UnicodeScalar(codePoint)))
+        }
+        return s
+    }
+
+    func peek(_ nth: Int = 0) -> Codepoint? {
+        let pos = stream.index(self.pos, offsetBy: nth, limitedBy: stream.endIndex)
+        if pos == nil || pos == stream.endIndex {
+            return .none
+        } else {
+            return .some(stream[pos!])
+        }
+    }
+
+    func peekOrThrow(_ nth: Int = 0) throws -> Codepoint {
+        if let c = peek(nth) {
+            return c
+        } else {
+            throw TokenizerError.eof
+        }
+    }
+
+    func peekMany(_ offsetBy: Int = 2) -> String? {
+        let end = stream.index(pos, offsetBy: offsetBy - 1, limitedBy: stream.endIndex)
+        if end == nil || end == stream.endIndex {
             return Optional.none
         }
-        return Optional.some(String(self.stream[self.pos...end!]))
+        return Optional.some(String(stream[pos ... end!]))
     }
-    
+
     mutating func matches(_ expected: String) throws -> Bool {
-        let matches = self.peekMany(expected.count)
+        let matches = peekMany(expected.count)
         switch matches {
         case .none: throw TokenizerError.eof
-        case .some(let match) where match == expected:
+        case let .some(match) where match == expected:
             try self.consume()
             return true
-        case .some(_):
+        case .some:
             return false
         }
     }
-    
+
     func makeIterator() -> some IteratorProtocol {
         return TokenizerTokenIterator(self)
     }
@@ -200,16 +198,16 @@ struct Tokenizer : Sequence {
 struct TokenizerTokenIterator: IteratorProtocol {
     var tokenizer: Tokenizer
     var eof = false
-    
+
     init(_ tokenizer: Tokenizer) {
         self.tokenizer = tokenizer
     }
 
     mutating func next() -> Token? {
         do {
-            return try consumeToken(&self.tokenizer)
+            return try consumeToken(&tokenizer)
         } catch TokenizerError.eof {
-            if self.eof {
+            if eof {
                 return nil
             } else {
                 eof = true
@@ -228,193 +226,195 @@ enum HashOrDelim {
 
 // 4.3.1 https://www.w3.org/TR/css-syntax-3/#consume-token
 func consumeToken(_ tokenizer: inout Tokenizer) throws -> Token {
-    try consumeComments(&tokenizer);
+    try consumeComments(&tokenizer)
 
     switch try tokenizer.peekOrThrow() {
+    // whitespace
+    case let c where c.isWhitespace:
+        // Consume as much whitespace as possible. Return a <whitespace-token>.
+        while try tokenizer.peekOrThrow().isWhitespace {
+            try tokenizer.consume()
+        }
+        return Token.whitespace
 
-        // whitespace
-        case let c where c.isWhitespace:
-            // Consume as much whitespace as possible. Return a <whitespace-token>.
-            while try tokenizer.peekOrThrow().isWhitespace {
-                try tokenizer.consume();
-            }
-            return Token.whitespace
-        
-        // U+0022 QUOTATION MARK (")
-        case "\"":
-            let endingCodePoint = try tokenizer.consume()
-            return try consumeStringToken(&tokenizer, endingCodePoint: endingCodePoint)
-        
-        // U+0023 NUMBER SIGN (#)
-        case "#":
+    // U+0022 QUOTATION MARK (")
+    case "\"":
+        let endingCodePoint = try tokenizer.consume()
+        return try consumeStringToken(&tokenizer, endingCodePoint: endingCodePoint)
+
+    // U+0023 NUMBER SIGN (#)
+    case "#":
+        _ = try tokenizer.consume()
+        // FIXME: If the next input code point is an ident code point or the next two input code points are a valid escape, then:
+        // 1. Create a <hash-token>.
+        // 2. If the next 3 input code points would start an ident sequence, set the <hash-token>’s type flag to "id".
+        // 3. Consume an ident sequence, and set the <hash-token>’s value to the returned string.
+        let hash = try consumeIdentSequence(&tokenizer)
+        // 4. Return the <hash-token>.
+        // FIXME: return a <delim-token> with its value set to the current input code point.
+        return Token.hashToken(hash: hash, flag: HashFlag.id)
+
+    // U+0027 APOSTROPHE (')
+    case "'":
+        let endingCodePoint = try tokenizer.consume()
+        return try consumeStringToken(&tokenizer, endingCodePoint: endingCodePoint)
+
+    // U+0028 LEFT PARENTHESIS (()
+    case "(":
+        try tokenizer.consume()
+        // Return a <(-token>.
+        return Token.lparan
+
+    // U+0029 RIGHT PARENTHESIS ())
+    case ")":
+        try tokenizer.consume()
+        // Return a <)-token>.
+        return Token.rparan
+
+    // U+002B PLUS SIGN (+)
+    case "+":
+        // If the input stream starts with a number, reconsume the current input code point, consume a numeric token, and return it.
+        if try checkIfThreeCodePointsWouldStartANumber(
+            c1: tokenizer.peekOrThrow(0),
+            c2: tokenizer.peekOrThrow(1),
+            c3: tokenizer.peekOrThrow(2)
+        ) {
             _ = try tokenizer.consume()
-            // FIXME: If the next input code point is an ident code point or the next two input code points are a valid escape, then:
-            // 1. Create a <hash-token>.
-            // 2. If the next 3 input code points would start an ident sequence, set the <hash-token>’s type flag to "id".
-            // 3. Consume an ident sequence, and set the <hash-token>’s value to the returned string.
-            let hash = try consumeIdentSequence(&tokenizer)
-            // 4. Return the <hash-token>.
-            // FIXME: return a <delim-token> with its value set to the current input code point.
-            return Token.hashToken(hash: hash, flag: HashFlag.id)
-        
-        // U+0027 APOSTROPHE (')
-        case "'":
-            let endingCodePoint = try tokenizer.consume()
-            return try consumeStringToken(&tokenizer, endingCodePoint: endingCodePoint)
+            return try Token.number(number: consumeNumber(&tokenizer))
+        } else {
+            // Otherwise, return a <delim-token> with its value set to the current input code point.
+            let c = try tokenizer.consume()
+            return Token.delim(c)
+        }
 
-        // U+0028 LEFT PARENTHESIS (()
-        case "(":
-            try tokenizer.consume()
-            // Return a <(-token>.
-            return Token.lparan
-        
-        // U+0029 RIGHT PARENTHESIS ())
-        case ")":
-            try tokenizer.consume()
-            // Return a <)-token>.
-            return Token.rparan
+    // U+002C COMMA (,)
+    case ",":
+        try tokenizer.consume()
+        // Return a <comma-token>.
+        return Token.comma
 
-        // U+002B PLUS SIGN (+)
-        case "+":
+    // U+002D HYPHEN-MINUS (-)
+    case "-":
+        if try checkIfThreeCodePointsWouldStartANumber(
+            c1: tokenizer.peekOrThrow(0),
+            c2: tokenizer.peekOrThrow(1),
+            c3: tokenizer.peekOrThrow(2)
+        ) {
             // If the input stream starts with a number, reconsume the current input code point, consume a numeric token, and return it.
-            if checkIfThreeCodePointsWouldStartANumber(
-                c1: try tokenizer.peekOrThrow(0),
-                c2: try tokenizer.peekOrThrow(1),
-                c3: try tokenizer.peekOrThrow(2)) {
-                _ = try tokenizer.consume()
-                return Token.number(number: try consumeNumber(&tokenizer))
-            } else {
-                // Otherwise, return a <delim-token> with its value set to the current input code point.
-                let c = try tokenizer.consume()
-                return Token.delim(c)
-            }
-
-        // U+002C COMMA (,)
-        case ",":
-            try tokenizer.consume()
-            // Return a <comma-token>.
-            return Token.comma
-        
-        // U+002D HYPHEN-MINUS (-)
-        case "-":
-            if checkIfThreeCodePointsWouldStartANumber(
-                c1: try tokenizer.peekOrThrow(0),
-                c2: try tokenizer.peekOrThrow(1),
-                c3: try tokenizer.peekOrThrow(2)) {
-                // If the input stream starts with a number, reconsume the current input code point, consume a numeric token, and return it.
-                _ = try tokenizer.consume()
-                return Token.number(number: try consumeNumber(&tokenizer))
+            _ = try tokenizer.consume()
+            return try Token.number(number: consumeNumber(&tokenizer))
             // FIXME: Otherwise, if the next 2 input code points are U+002D HYPHEN-MINUS U+003E GREATER-THAN SIGN (->), consume them and return a <CDC-token>.
             // Otherwise, if the input stream starts with an ident sequence, reconsume the current input code point, consume an ident-like token, and return it.
-            } else if checkIfThreeCodePointsWouldStartIdentSequence(
-                c1: try tokenizer.peekOrThrow(0),
-                c2: try tokenizer.peekOrThrow(1),
-                c3: try tokenizer.peekOrThrow(2)) {
-                _ = try tokenizer.consume()
-                return Token.ident(try consumeIdentSequence(&tokenizer))
-            } else {
-                let c = try tokenizer.consume()
-                return Token.delim(c)
-            }
-
-        // U+002E FULL STOP (.)
-        case ".":
-            // If the input stream starts with a number, reconsume the current input code point, consume a numeric token, and return it.
-            if checkIfThreeCodePointsWouldStartANumber(
-                c1: try tokenizer.peekOrThrow(0),
-                c2: try tokenizer.peekOrThrow(1),
-                c3: try tokenizer.peekOrThrow(2)) {
-                _ = try tokenizer.consume()
-                return Token.number(number: try consumeNumber(&tokenizer))
-            } else {
-                // Otherwise, return a <delim-token> with its value set to the current input code point.
-                let c = try tokenizer.consume()
-                return Token.delim(c)
-            }
-        // U+003A COLON (:)
-        case ":":
-            try tokenizer.consume()
-            // Return a <colon-token>.
-            return Token.colon
-        
-        // U+003B SEMICOLON (;)
-        case ";":
-            try tokenizer.consume()
-            // Return a <semicolon-token>.
-            return Token.semicolon
-        
-        // U+003C LESS-THAN SIGN (<)
-        case "<":
-            let c = try tokenizer.consume()
-            // FIXME: If the next 3 input code points are U+0021 EXCLAMATION MARK U+002D HYPHEN-MINUS U+002D HYPHEN-MINUS (!--), consume them and return a <CDO-token>.
-            // Otherwise, return a <delim-token> with its value set to the current input code point.
-            return Token.delim(c)
-
-        // U+0040 COMMERCIAL AT (@)
-        case "@":
-            // If the next 3 input code points would start an ident sequence, consume an ident sequence, create an <at-keyword-token> with its value set to the returned value, and return it.
-            if checkIfThreeCodePointsWouldStartIdentSequence(
-                c1: try tokenizer.peekOrThrow(0),
-                c2: try tokenizer.peekOrThrow(1),
-                c3: try tokenizer.peekOrThrow(2)) {
-                return Token.atKeyword(keyword: try consumeIdentSequence(&tokenizer))
-            }
-            // Otherwise, return a <delim-token> with its value set to the current input code point.
+        } else if try checkIfThreeCodePointsWouldStartIdentSequence(
+            c1: tokenizer.peekOrThrow(0),
+            c2: tokenizer.peekOrThrow(1),
+            c3: tokenizer.peekOrThrow(2)
+        ) {
+            _ = try tokenizer.consume()
+            return try Token.ident(consumeIdentSequence(&tokenizer))
+        } else {
             let c = try tokenizer.consume()
             return Token.delim(c)
-
-        // U+005B LEFT SQUARE BRACKET ([)
-        case "[":
-            try tokenizer.consume()
-            // Return a <[-token>.
-            return Token.lbracket
-
-        // U+005C REVERSE SOLIDUS (\)
-        case "\\":
-            try tokenizer.consume()
-            // FIXME: If the input stream starts with a valid escape, reconsume the current input code point, consume an ident-like token, and return it.
-            // FIXME: Otherwise, this is a parse error. Return a <delim-token> with its value set to the current input code point.
-            return Token.string("FIXME: \\")
-
-        // U+005D RIGHT SQUARE BRACKET (])
-        case "]":
-            try tokenizer.consume()
-            // Return a <]-token>.
-            return Token.rbracket
-
-        // U+007B LEFT CURLY BRACKET ({)
-        case "{":
-            try tokenizer.consume()
-            // Return a <{-token>.
-            return Token.lcurlybracket
-
-        // U+007D RIGHT CURLY BRACKET (})
-        case "}":
-            try tokenizer.consume()
-            // Return a <}-token>.
-            return Token.rcurlybracket
-
-        // digit
-        case let c where c.isDigit:
-            // Reconsume the current input code point, consume a numeric token, and return it.
-            return try consumeNumeric(&tokenizer);
-
-        // ident-start code point
-        case let c where c.isIdentStartCodePoint:
-            // Reconsume the current input code point, consume an ident-like token, and return it.
-            return try consumeIdentLikeToken(&tokenizer);
-
-        // anything else
-        case _:
-            // Return a <delim-token> with its value set to the current input code point.
-            return Token.delim(try tokenizer.consume())
         }
-}
 
+    // U+002E FULL STOP (.)
+    case ".":
+        // If the input stream starts with a number, reconsume the current input code point, consume a numeric token, and return it.
+        if try checkIfThreeCodePointsWouldStartANumber(
+            c1: tokenizer.peekOrThrow(0),
+            c2: tokenizer.peekOrThrow(1),
+            c3: tokenizer.peekOrThrow(2)
+        ) {
+            _ = try tokenizer.consume()
+            return try Token.number(number: consumeNumber(&tokenizer))
+        } else {
+            // Otherwise, return a <delim-token> with its value set to the current input code point.
+            let c = try tokenizer.consume()
+            return Token.delim(c)
+        }
+    // U+003A COLON (:)
+    case ":":
+        try tokenizer.consume()
+        // Return a <colon-token>.
+        return Token.colon
+
+    // U+003B SEMICOLON (;)
+    case ";":
+        try tokenizer.consume()
+        // Return a <semicolon-token>.
+        return Token.semicolon
+
+    // U+003C LESS-THAN SIGN (<)
+    case "<":
+        let c = try tokenizer.consume()
+        // FIXME: If the next 3 input code points are U+0021 EXCLAMATION MARK U+002D HYPHEN-MINUS U+002D HYPHEN-MINUS (!--), consume them and return a <CDO-token>.
+        // Otherwise, return a <delim-token> with its value set to the current input code point.
+        return Token.delim(c)
+
+    // U+0040 COMMERCIAL AT (@)
+    case "@":
+        // If the next 3 input code points would start an ident sequence, consume an ident sequence, create an <at-keyword-token> with its value set to the returned value, and return it.
+        if try checkIfThreeCodePointsWouldStartIdentSequence(
+            c1: tokenizer.peekOrThrow(0),
+            c2: tokenizer.peekOrThrow(1),
+            c3: tokenizer.peekOrThrow(2)
+        ) {
+            return try Token.atKeyword(keyword: consumeIdentSequence(&tokenizer))
+        }
+        // Otherwise, return a <delim-token> with its value set to the current input code point.
+        let c = try tokenizer.consume()
+        return Token.delim(c)
+
+    // U+005B LEFT SQUARE BRACKET ([)
+    case "[":
+        try tokenizer.consume()
+        // Return a <[-token>.
+        return Token.lbracket
+
+    // U+005C REVERSE SOLIDUS (\)
+    case "\\":
+        try tokenizer.consume()
+        // FIXME: If the input stream starts with a valid escape, reconsume the current input code point, consume an ident-like token, and return it.
+        // FIXME: Otherwise, this is a parse error. Return a <delim-token> with its value set to the current input code point.
+        return Token.string("FIXME: \\")
+
+    // U+005D RIGHT SQUARE BRACKET (])
+    case "]":
+        try tokenizer.consume()
+        // Return a <]-token>.
+        return Token.rbracket
+
+    // U+007B LEFT CURLY BRACKET ({)
+    case "{":
+        try tokenizer.consume()
+        // Return a <{-token>.
+        return Token.lcurlybracket
+
+    // U+007D RIGHT CURLY BRACKET (})
+    case "}":
+        try tokenizer.consume()
+        // Return a <}-token>.
+        return Token.rcurlybracket
+
+    // digit
+    case let c where c.isDigit:
+        // Reconsume the current input code point, consume a numeric token, and return it.
+        return try consumeNumeric(&tokenizer)
+
+    // ident-start code point
+    case let c where c.isIdentStartCodePoint:
+        // Reconsume the current input code point, consume an ident-like token, and return it.
+        return try consumeIdentLikeToken(&tokenizer)
+
+    // anything else
+    case _:
+        // Return a <delim-token> with its value set to the current input code point.
+        return try Token.delim(tokenizer.consume())
+    }
+}
 
 // 4.3.2 https://www.w3.org/TR/css-syntax-3/#consume-comment
 func consumeComments(_ tokenizer: inout Tokenizer) throws {
-    
     // If the next two input code point are U+002F SOLIDUS (/) followed by a U+002A ASTERISK (*),
     if try tokenizer.matches("/*") {
         // consume them and all following code points up to and including the first U+002A ASTERISK (*)
@@ -432,29 +432,29 @@ func consumeComments(_ tokenizer: inout Tokenizer) throws {
 
 // 4.3.3 https://www.w3.org/TR/css-syntax-3/#consume-numeric-token
 func consumeNumeric(_ tokenizer: inout Tokenizer) throws -> Token {
-    
     // Consume a number and let number be the result.
     let number = try consumeNumber(&tokenizer)
 
     // If the next 3 input code points would start an ident sequence, then:
-    if checkIfThreeCodePointsWouldStartIdentSequence(
-        c1: try tokenizer.peekOrThrow(0),
-        c2: try tokenizer.peekOrThrow(1),
-        c3: try tokenizer.peekOrThrow(2)) {
+    if try checkIfThreeCodePointsWouldStartIdentSequence(
+        c1: tokenizer.peekOrThrow(0),
+        c2: tokenizer.peekOrThrow(1),
+        c3: tokenizer.peekOrThrow(2)
+    ) {
         // Create a <dimension-token> with the same value and type flag as number, and a unit set initially to the empty string.
 
         // Consume an ident sequence. Set the <dimension-token>’s unit to the returned value.
         let unit = try consumeIdentSequence(&tokenizer)
-        
+
         // Return the <dimension-token>.
         return Token.dimension(number: number, unit: unit)
 
-    // Otherwise, if the next input code point is U+0025 PERCENTAGE SIGN (%), consume it. Create a <percentage-token> with the same value as number, and return it.
+        // Otherwise, if the next input code point is U+0025 PERCENTAGE SIGN (%), consume it. Create a <percentage-token> with the same value as number, and return it.
     } else if let c = tokenizer.peek(), c == "%" {
         try tokenizer.consume()
         return Token.percentage(number: number)
     }
-    
+
     // Otherwise, create a <number-token> with the same value and type flag as number, and return it.
     return Token.number(number: number)
 }
@@ -463,7 +463,7 @@ func consumeNumeric(_ tokenizer: inout Tokenizer) throws -> Token {
 func consumeIdentLikeToken(_ tokenizer: inout Tokenizer) throws -> Token {
     // Consume an ident sequence, and let string be the result.
     let string = try consumeIdentSequence(&tokenizer)
-    
+
     // If string’s value is an ASCII case-insensitive match for "url",
     // and the next input code point is U+0028 LEFT PARENTHESIS ((),
     // consume it. While the next two input code points are whitespace,
@@ -471,11 +471,11 @@ func consumeIdentLikeToken(_ tokenizer: inout Tokenizer) throws -> Token {
     if string.lowercased() == "url" {
         if let nextChar = tokenizer.peek(), nextChar == "(" {
             try tokenizer.consume()
-            
+
             while let nextTwoChars = tokenizer.peekMany(2), nextTwoChars.allSatisfy(\.isWhitespace) {
                 try tokenizer.consume()
             }
-            
+
             // If the next one or two input code points are U+0022 QUOTATION MARK ("),
             // U+0027 APOSTROPHE ('), or whitespace followed by U+0022 QUOTATION MARK (") or
             // U+0027 APOSTROPHE ('), then create a <function-token> with its value
@@ -487,7 +487,7 @@ func consumeIdentLikeToken(_ tokenizer: inout Tokenizer) throws -> Token {
             }
         }
     }
-    
+
     // Otherwise, if the next input code point is U+0028 LEFT PARENTHESIS ((), consume it.
     // Create a <function-token> with its value set to string and return it.
     if let nextChar = tokenizer.peek(), nextChar == "(" {
@@ -506,7 +506,6 @@ func consumeStringToken(_ tokenizer: inout Tokenizer, endingCodePoint: Codepoint
     // Repeatedly consume the next input code point from the stream:
     while true {
         switch tokenizer.peek() {
-
         // ending code point, Return the <string-token>.
         case endingCodePoint:
             try tokenizer.consume()
@@ -533,13 +532,13 @@ func consumeStringToken(_ tokenizer: inout Tokenizer, endingCodePoint: Codepoint
             // Otherwise, (the stream starts with a valid escape) consume an escaped code point and append the returned code point to the <string-token>’s value.
             default:
                 if let nextChar = tokenizer.peek(), checkIfTwoCodePointsAreAValidEscape(c1: "\\", c2: nextChar) {
-                    string.append(Character(try consumeEscapedCodePoint(&tokenizer)))
+                    try string.append(Character(consumeEscapedCodePoint(&tokenizer)))
                 }
             }
 
         // anything else, Append the current input code point to the <string-token>’s value.
         default:
-            string.append(Character(try tokenizer.peekOrThrow()))
+            try string.append(Character(tokenizer.peekOrThrow()))
             try tokenizer.consume()
         }
     }
@@ -558,12 +557,11 @@ func consumeURLToken(_ tokenizer: inout Tokenizer) throws -> Token {
     // Repeatedly consume the next input code point from the stream:
     repeat {
         switch try tokenizer.peekOrThrow() {
-    
         // U+0029 RIGHT PARENTHESIS ()) or EOF, Return the <url-token>.
         case ")":
             try tokenizer.consume()
             return Token.url(url)
-    
+
         // whitespace
         case let c where c.isWhitespace:
             while let nextChar = tokenizer.peek(), nextChar.isWhitespace {
@@ -590,7 +588,7 @@ func consumeURLToken(_ tokenizer: inout Tokenizer) throws -> Token {
         // U+005C REVERSE SOLIDUS (\)
         case "\\":
             if checkIfTwoCodePointsAreAValidEscape(&tokenizer) {
-                url.append(Character(try consumeEscapedCodePoint(&tokenizer)))
+                try url.append(Character(consumeEscapedCodePoint(&tokenizer)))
             } else {
                 try consumeBadURLRemnants(&tokenizer)
                 return Token.badUrl
@@ -604,52 +602,52 @@ func consumeURLToken(_ tokenizer: inout Tokenizer) throws -> Token {
     } while true
 }
 
-
 // 4.3.7 https://www.w3.org/TR/css-syntax-3/#consume-escaped-code-point
 func consumeEscapedCodePoint(_ tokenizer: inout Tokenizer) throws -> Codepoint {
     // Consume the next input code point.
     do {
-        try tokenizer.consume();
+        try tokenizer.consume()
     } catch TokenizerError.eof {
         // This is a parse error. Return U+FFFD REPLACEMENT CHARACTER (�).
-        return "�";
+        return "�"
     } catch {
         throw TokenizerError.unknown
     }
-    
+
     switch tokenizer.peek() {
-        // hex digit
-        case .some(let c) where c.isHexDigit:
-            // Consume as many hex digits as possible, but no more than 5.
-            var value = String(c)
-            for _ in 0..<5 {
-                //  If the next input code point is whitespace, consume it as well
-                if let n = tokenizer.peek(), n.isHexDigit || n.isWhitespace {
-                    value.append(String(try tokenizer.consume()))
-                } else {
-                    break
-                }
-            }
-            
-            // Interpret the hex digits as a hexadecimal number.
-            let hexValue = UInt32(value, radix: 16)!
-            
-            // If this number is zero, or is for a surrogate, or is greater than the maximum allowed code point
-            if hexValue == 0
-                // FIXME: Surrogate
-                || hexValue > Codepoint.maximumAllowedCodePoint {
-                // return U+FFFD REPLACEMENT CHARACTER (�)
-                return Codepoint.replacementCharacter
+    // hex digit
+    case let .some(c) where c.isHexDigit:
+        // Consume as many hex digits as possible, but no more than 5.
+        var value = String(c)
+        for _ in 0 ..< 5 {
+            //  If the next input code point is whitespace, consume it as well
+            if let n = tokenizer.peek(), n.isHexDigit || n.isWhitespace {
+                try value.append(String(tokenizer.consume()))
             } else {
-                // Otherwise, return the code point with that value.
-                return Codepoint(hexValue)!
+                break
             }
-        // EOF
-        case .none:
-            throw TokenizerError.eof
-        // anything else
-        case .some(let c):
-            return c
+        }
+
+        // Interpret the hex digits as a hexadecimal number.
+        let hexValue = UInt32(value, radix: 16)!
+
+        // If this number is zero, or is for a surrogate, or is greater than the maximum allowed code point
+        if hexValue == 0
+            // FIXME: Surrogate
+            || hexValue > Codepoint.maximumAllowedCodePoint
+        {
+            // return U+FFFD REPLACEMENT CHARACTER (�)
+            return Codepoint.replacementCharacter
+        } else {
+            // Otherwise, return the code point with that value.
+            return Codepoint(hexValue)!
+        }
+    // EOF
+    case .none:
+        throw TokenizerError.eof
+    // anything else
+    case let .some(c):
+        return c
     }
 }
 
@@ -657,10 +655,10 @@ func consumeEscapedCodePoint(_ tokenizer: inout Tokenizer) throws -> Codepoint {
 func checkIfTwoCodePointsAreAValidEscape(_ tokenizer: inout Tokenizer) -> Bool {
     // If the first code point is not U+005C REVERSE SOLIDUS (\), return false.
     guard let c1 = tokenizer.peek() else { return false }
-    
+
     // Otherwise, if the second code point is a newline, return false.
     guard let c2 = tokenizer.peek() else { return false }
-    
+
     return checkIfTwoCodePointsAreAValidEscape(c1: c1, c2: c2)
 }
 
@@ -669,49 +667,48 @@ func checkIfTwoCodePointsAreAValidEscape(c1: Codepoint, c2: Codepoint) -> Bool {
     if c1 != "\\" {
         return false
     }
-    
+
     // Otherwise, if the second code point is a newline, return false.
     if c2 == "\n" {
         return false
     }
-    
+
     return true
 }
 
 // 4.3.9 https://www.w3.org/TR/css-syntax-3/#would-start-an-identifier
 func checkIfThreeCodePointsWouldStartIdentSequence(c1: Codepoint, c2: Codepoint, c3: Codepoint) -> Bool {
     return switch c1 {
-        // U+002D HYPHEN-MINUS
-        case "-":
-            switch c2 {
-                // If the second code point is an ident-start code point
-                case _ where c2.isIdentStartCodePoint: true
-                // or a U+002D HYPHEN-MINUS
-                case "-": true
-                // or the second and third code points are a valid escape,
-                // return true
-                case _ where checkIfTwoCodePointsAreAValidEscape(c1: c2, c2: c3): true
-                default: false
-            }
-        // ident-start code point
-        case _ where c1.isIdentStartCodePoint:
-            // Return true.
-            true
-        // U+005C REVERSE SOLIDUS (\)
-        case "\\":
-            // If the first and second code points are a valid escape, return true. Otherwise, return false.
-            checkIfTwoCodePointsAreAValidEscape(c1: c1, c2: c2)
-        // anything else
-        default:
-            // Return false.
-            false
+    // U+002D HYPHEN-MINUS
+    case "-":
+        switch c2 {
+        // If the second code point is an ident-start code point
+        case _ where c2.isIdentStartCodePoint: true
+        // or a U+002D HYPHEN-MINUS
+        case "-": true
+        // or the second and third code points are a valid escape,
+        // return true
+        case _ where checkIfTwoCodePointsAreAValidEscape(c1: c2, c2: c3): true
+        default: false
+        }
+    // ident-start code point
+    case _ where c1.isIdentStartCodePoint:
+        // Return true.
+        true
+    // U+005C REVERSE SOLIDUS (\)
+    case "\\":
+        // If the first and second code points are a valid escape, return true. Otherwise, return false.
+        checkIfTwoCodePointsAreAValidEscape(c1: c1, c2: c2)
+    // anything else
+    default:
+        // Return false.
+        false
     }
 }
 
 // 4.3.10 https://www.w3.org/TR/css-syntax-3/#starts-with-a-number
 func checkIfThreeCodePointsWouldStartANumber(c1: Codepoint, c2: Codepoint, c3: Codepoint) -> Bool {
     return switch c1 {
-        
     // U+002B PLUS SIGN (+)
     // U+002D HYPHEN-MINUS
     case "+", "-":
@@ -725,7 +722,7 @@ func checkIfThreeCodePointsWouldStartANumber(c1: Codepoint, c2: Codepoint, c3: C
         } else {
             false
         }
-        
+
     // U+002E FULL STOP (.)
     case ".":
         // If the second code point is a digit, return true.
@@ -735,17 +732,16 @@ func checkIfThreeCodePointsWouldStartANumber(c1: Codepoint, c2: Codepoint, c3: C
         } else {
             false
         }
-        
-        // digit
+
+    // digit
     case _ where c1.isDigit:
         // Return true.
         true
-        
-        // anything else
+
+    // anything else
     default:
         false
     }
-
 }
 
 // 4.3.11 https://www.w3.org/TR/css-syntax-3/#consume-name
@@ -753,21 +749,21 @@ func consumeIdentSequence(_ tokenizer: inout Tokenizer) throws -> String {
     // Let result initially be an empty string.
     var result = ""
     // Repeatedly consume the next input code point from the stream:
-    while (true) {
+    while true {
         let codePoint = try tokenizer.peekOrThrow()
         switch codePoint {
-            // ident code point
-            case _ where codePoint.isIdentCodePoint():
-                // Append the code point to result.
-                result.append(String(try tokenizer.consume()))
-            // the stream starts with a valid escape
-            case _ where checkIfTwoCodePointsAreAValidEscape(&tokenizer):
-                // Consume an escaped code point. Append the returned code point to result.
-                result.append(String(try consumeEscapedCodePoint(&tokenizer)))
-            // anything else
-            default:
-                // Reconsume the current input code point. Return result.
-                return result
+        // ident code point
+        case _ where codePoint.isIdentCodePoint():
+            // Append the code point to result.
+            try result.append(String(tokenizer.consume()))
+        // the stream starts with a valid escape
+        case _ where checkIfTwoCodePointsAreAValidEscape(&tokenizer):
+            // Consume an escaped code point. Append the returned code point to result.
+            try result.append(String(consumeEscapedCodePoint(&tokenizer)))
+        // anything else
+        default:
+            // Reconsume the current input code point. Return result.
+            return result
         }
     }
 }
@@ -777,36 +773,36 @@ func consumeNumber(_ tokenizer: inout Tokenizer) throws -> Number {
     // 1. Initially set type to "integer". Let repr be the empty string.
     var type: NumericType = .integer
     var repr = ""
-    
+
     // 2. If the next input code point is U+002B PLUS SIGN (+) or U+002D HYPHEN-MINUS (-), consume it and append it to repr.
-    let c = try tokenizer.peekOrThrow();
+    let c = try tokenizer.peekOrThrow()
     if c.isSign {
-        repr.append(String(try tokenizer.consume()))
+        try repr.append(String(tokenizer.consume()))
     }
-    
+
     // 3. While the next input code point is a digit, consume it and append it to repr.
     while try tokenizer.peekOrThrow().isDigit {
-        repr.append(String(try tokenizer.consume()))
+        try repr.append(String(tokenizer.consume()))
     }
-    
+
     // 4. If the next 2 input code points are U+002E FULL STOP (.) followed by a digit, then:
     if try tokenizer.peekOrThrow() == "." && tokenizer.peekOrThrow(1).isDigit {
         // 4.1 Consume them
         let dotAndDigit = try tokenizer.consumeMany(2)
-        
+
         // 4.2 Append them to repr.
         repr.append(dotAndDigit)
-        
+
         // 4.3 Set type to "number".
         type = .number
-        
+
         // 4.4 While the next input code point is a digit, consume it and append it to repr.
         while try tokenizer.peekOrThrow().isDigit {
-            repr.append(String(try tokenizer.consume()))
+            try repr.append(String(tokenizer.consume()))
         }
     }
-    
-    // 5 If the next 2 or 3 input code points are 
+
+    // 5 If the next 2 or 3 input code points are
     // - U+0045 LATIN CAPITAL LETTER E (E) or U+0065 LATIN SMALL LETTER E (e),
     // - optionally followed by U+002D HYPHEN-MINUS (-) or U+002B PLUS SIGN (+),
     // - followed by a digit, then:
@@ -820,19 +816,19 @@ func consumeNumber(_ tokenizer: inout Tokenizer) throws -> Number {
 
         // 5.3 Set type to "number".
         type = .number
-        
+
         // 5.4 While the next input code point is a digit, consume it and append it to repr.
         while try tokenizer.peekOrThrow().isDigit {
-            repr.append(String(try tokenizer.consume()))
+            try repr.append(String(tokenizer.consume()))
         }
     }
 
     // 6. Convert repr to a number, and set the value to the returned value.
     let numericType = switch type {
-        case .integer: Number.Integer(Int64(repr)!)
-        case .number: Number.Number(Double(repr)!)
-    };
-    
+    case .integer: Number.Integer(Int64(repr)!)
+    case .number: Number.Number(Double(repr)!)
+    }
+
     // 7. Return value and type
     return numericType
 }
@@ -861,7 +857,7 @@ func consumeBadURLRemnants(_ tokenizer: inout Tokenizer) throws {
 
 func tokenize(_ tokenizer: inout Tokenizer) throws -> [Token] {
     var tokens: [Token] = []
-    for _ in 0..<1000 { // Limit to 1000 tokens to prevent infinite loops
+    for _ in 0 ..< 1000 { // Limit to 1000 tokens to prevent infinite loops
         let token = try consumeToken(&tokenizer)
         if token == .eof {
             break

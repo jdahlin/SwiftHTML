@@ -21,7 +21,7 @@ extension Tokenizer {
         case ">":
             // Switch to the data state. Emit the current tag token.
             state = .data
-            delegate?.didReceiveToken(currentToken!)
+            emitCurrentToken()
 
         // ASCII upper alpha
         // Append the lowercase version of the current input character (add 0x0020 to the character's code point) to the current tag token's tag name.

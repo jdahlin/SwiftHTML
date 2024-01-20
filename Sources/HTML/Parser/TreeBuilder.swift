@@ -38,6 +38,11 @@ enum FramesetFlag {
     case notOk
 }
 
+enum GenericParsingAlgoritm {
+    case rawText
+    case rcData
+}
+
 class TreeBuilder: TokenReceiver {
     var tokenizer: Tokenizer
     var document: Document = .init()
@@ -128,7 +133,7 @@ class TreeBuilder: TokenReceiver {
     }
 
     // https://html.spec.whatwg.org/multipage/parsing.html#insert-a-character
-    func insertACharachter(_ data: [Character]? = nil) {
+    func insertACharacter(_ data: [Character]? = nil) {
         // 1. Let data be the characters passed to the algorithm, or, if no
         //    characters were explicitly specified, the character of the character
         //    token being processed.
@@ -214,6 +219,29 @@ class TreeBuilder: TokenReceiver {
         return element
     }
 
+    // https://html.spec.whatwg.org/multipage/parsing.html#parsing-elements-that-contain-only-text
+    func genericElementParsingAlgorithm(_ token: Token, algorithm: GenericParsingAlgoritm) {
+        // Insert an HTML element for the token.
+        insertHTMLElement(token)
+
+        // If the algorithm that was invoked is the generic raw text element
+        // parsing algorithm, switch the tokenizer to the RAWTEXT state;
+        // otherwise the algorithm invoked was the generic RCDATA element
+        // parsing algorithm, switch the tokenizer to the RCDATA state.
+        switch algorithm {
+        case .rawText:
+            tokenizer.state = .rawText
+        case .rcData:
+            tokenizer.state = .rcData
+        }
+
+        // Let the original insertion mode be the current insertion mode.
+        originalInsertionMode = insertionMode
+
+        // Then, switch the insertion mode to "text".
+        insertionMode = .text
+    }
+
     // https://html.spec.whatwg.org/multipage/parsing.html#insert-an-html-element
     @discardableResult
     func insertHTMLElement(_ token: Token) -> Element {
@@ -236,6 +264,7 @@ class TreeBuilder: TokenReceiver {
 
     func handleToken(_ token: Token) {
         // print("\(#function): \(insertionMode) \(token)")
+        print("\(#function): \(tokenizer.state) \(token)")
         // Handle the token
         switch insertionMode {
         case .initial:
@@ -250,6 +279,8 @@ class TreeBuilder: TokenReceiver {
             handleInHead(token)
         case .inBody:
             handleInBody(token)
+        case .text:
+            handleText(token)
         case .afterBody:
             handleAfterBody(token)
         case .afterAfterBody:
