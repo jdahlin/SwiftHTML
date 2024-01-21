@@ -64,7 +64,7 @@ public class Document: Node {
     // https://dom.spec.whatwg.org/#concept-create-element
     func createElement(
         localName: DOMString,
-        namespace _: DOMString?,
+        namespace: DOMString?,
         prefix: DOMString? = nil,
         is _: DOMString? = nil,
         synchronousCustomElements _: Bool = false
@@ -146,15 +146,18 @@ public class Document: Node {
 
         // 6.2. Otherwise:
 
-        // 6.2.1. Set result to a new element that implements the HTMLElement interface, with no attributes, namespace set to the HTML namespace, namespace prefix set to prefix, local name set to localName, custom element state set to "undefined", custom element definition set to null, is value set to null, and node document set to document.
+        // 6.2.1. Set result to a new element that implements the HTMLElement
+        // interface, with no attributes, namespace set to the HTML namespace,
+        // namespace prefix set to prefix, local name set to localName, custom
+        // element state set to "undefined", custom element definition set to
+        // null, is value set to null, and node document set to document.
 
         // 6.2.2. Enqueue a custom element upgrade reaction given result and definition.
 
         // 7. Otherwise:
 
         // 7.1 Let interface be the element interface for localName and namespace.
-
-        let iface: Element.Type = Element.self
+        let iface: Element.Type = elementInterface(localName: localName, namespace: namespace)
 
         // 7.1.2. Set result to a new element that implements interface, with no
         //        attributes, namespace set to namespace, namespace prefix set

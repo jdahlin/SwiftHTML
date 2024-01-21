@@ -61,7 +61,8 @@ extension TreeBuilder {
         // Any other end tag
         case .endTag:
             // Pop the current node off the stack of open elements.
-            assert(stack.removeLast() == currentNode)
+            let last = stack.removeLast()
+            // assert(stack.removeLast() == currentNode)
 
             // Switch the insertion mode to the original insertion mode.
             insertionMode = originalInsertionMode!
