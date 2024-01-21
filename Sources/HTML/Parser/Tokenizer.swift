@@ -83,14 +83,17 @@ public enum TokenizerState {
     case rawTextLessThanSign
     case rawTextEndTagOpen
     case rawTextEndTagName
+    case scriptDataLessThanSign
+    case scriptDataEndTagOpen
+    case scriptDataEndTagName
     case scriptDataEscapeStart
     case scriptDataEscapeStartDash
-    case scriptDataEscaped
-    case scriptDataEscapedDash
-    case scriptDataEscapedDashDash
-    case scriptDataEscapedLessThanSign
-    case scriptDataEscapedEndTagOpen
-    case scriptDataEscapedEndTagName
+    case scriptDataEscape
+    case scriptDataEscapeDash
+    case scriptDataEscapeDashDash
+    case scriptDataEscapeLessThanSign
+    case scriptDataEscapeEndTagOpen
+    case scriptDataEscapeEndTagName
     case scriptDataDoubleEscapeStart
     case scriptDataDoubleEscaped
     case scriptDataDoubleEscapedDash
@@ -357,7 +360,10 @@ class Tokenizer {
         case .rawText:
             handleRawTextState()
 
-    // 13.2.5.4 Script data state
+        // 13.2.5.4 Script data state
+        case .scriptData:
+            handleScriptDataState()
+
     // 13.2.5.5 PLAINTEXT state
 
         // 13.2.5.6 Tag open state
@@ -389,8 +395,17 @@ class Tokenizer {
             handleRawTextEndTagNameState()
 
         // 13.2.5.15 Script data less-than sign state
+        case .scriptDataLessThanSign:
+            handleScriptDataLessThanSignState()
+
         // 13.2.5.16 Script data end tag open state
+        case .scriptDataEndTagOpen:
+            handleScriptDataEndTagOpenState()
+
         // 13.2.5.17 Script data end tag name state
+        case .scriptDataEndTagName:
+            handleScriptDataEndTagNameState()
+
         // 13.2.5.18 Script data escape start state
         // 13.2.5.19 Script data escape start dash state
         // 13.2.5.20 Script data escaped state

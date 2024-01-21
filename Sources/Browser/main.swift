@@ -66,6 +66,7 @@ enum Browser {
         let html = """
         <html>
           <head>
+            <script>console.log("Hello World!")</script>
             <style>div { color: white }</style>
           </head>
           <body>

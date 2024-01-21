@@ -264,7 +264,7 @@ class TreeBuilder: TokenReceiver {
 
     func handleToken(_ token: Token) {
         // print("\(#function): \(insertionMode) \(token)")
-        print("\(#function): \(tokenizer.state) \(token)")
+        // print("\(#function): \(tokenizer.state) \(token)")
         // Handle the token
         switch insertionMode {
         case .initial:
