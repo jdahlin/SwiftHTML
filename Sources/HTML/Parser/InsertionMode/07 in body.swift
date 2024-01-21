@@ -137,17 +137,61 @@ extension TreeBuilder {
 
         // An end tag whose tag name is "html"
         case .endTag("html", _, _):
-            FIXME("endTag html")
             // If the stack of open elements does not have a body element in
             // scope, this is a parse error; ignore the token.
+            if !stack.contains(where: { $0.tagName == "body" }) {
+                break
+            }
 
             // Otherwise, if there is a node in the stack of open elements that
-            // is not either a dd element, a dt element, an li element, an
-            // optgroup element, an option element, a p element, an rb element,
-            // an rp element, an rt element, an rtc element, a tbody element, a
-            // td element, a tfoot element, a th element, a thead element, a tr
-            // element, the body element, or the html element, then this is a
-            // parse error.
+            // is not either
+            let validElements = [
+                // a dd element,
+                "dd",
+                // a dt element,
+                "dt",
+                // an li element,
+                "li",
+                // an optgroup element,
+                "optgroup",
+                // an option element,
+                "option",
+                // a p element,
+                "p",
+                // an rb element,
+                "rb",
+                // an rp element,
+                "rp",
+                // an rt element,
+                "rt",
+                // an rtc element,
+                "rtc",
+                // a tbody element,
+                "tbody",
+                // a td element,
+                "td",
+                // a tfoot element,
+                "tfoot",
+                // a th element,
+                "th",
+                // a thead element,
+                "thead",
+                // a tr element,
+                "tr",
+                // the body element,
+                "body",
+                // or the html element,
+                "html",
+            ]
+            // then this is a parse error.
+            guard
+                stack.contains(where: { element in
+                    validElements.contains(element.tagName)
+                })
+            else {
+                // This is a parse error.
+                break
+            }
 
             // Switch the insertion mode to "after body".
             insertionMode = .afterBody
