@@ -25,6 +25,6 @@ struct StackOfOpenElements {
     }
 
     public func hasElementsInScope(withTagNames: [String]) -> Bool {
-        stack.contains(where: { withTagNames.contains($0.tagName) })
+        stack.contains { withTagNames.contains($0.tagName) }
     }
 }

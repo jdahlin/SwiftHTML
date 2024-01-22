@@ -85,7 +85,7 @@ func preInsertBeforeChild(node: Node, parent: Node, child: Node?) -> Node {
     insertNodeIntoParent(
         node: node,
         parent: parent,
-        before: referenceChild,
+        child: referenceChild,
         suppressObservers: false
     )
 
@@ -96,7 +96,7 @@ func preInsertBeforeChild(node: Node, parent: Node, child: Node?) -> Node {
 // https://dom.spec.whatwg.org/#concept-node-insert
 func insertNodeIntoParent(node: Node,
                           parent: Node,
-                          before child: Node?,
+                          child: Node?,
                           suppressObservers _: Bool)
 {
     // 1. Let nodes be node’s children, if node is a DocumentFragment node; otherwise « node ».
@@ -274,7 +274,7 @@ func replaceChild(child: Node, node: Node, parent _: Node) -> Node {
     }
 
     // 13. Insert node into parent before referenceChild with the suppress observers flag set.
-    insertNodeIntoParent(node: node, parent: child.parentNode!, before: child.nextSibling,
+    insertNodeIntoParent(node: node, parent: child.parentNode!, child: child.nextSibling,
                          suppressObservers: true)
 
     // 14. Queue a tree mutation record for parent with nodes, removedNodes, previousSibling, and referenceChild.
@@ -313,7 +313,7 @@ func replaceAll(node: Node?, parent: Node) {
     // 6. If node is non-null, then insert node into parent before null with the
     //    suppress observers flag set.
     if node != nil {
-        insertNodeIntoParent(node: node!, parent: parent, before: nil,
+        insertNodeIntoParent(node: node!, parent: parent, child: nil,
                              suppressObservers: true)
     }
 
