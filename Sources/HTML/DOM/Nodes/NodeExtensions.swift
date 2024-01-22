@@ -35,8 +35,9 @@ extension Node: Equatable {
                 && /* a.prefix == b.prefix && a.localName == b.localName && */ a.value == b.value
 
         // ProcessingInstruction
-
-        // Its target and data.
+        case let (a, b) as (ProcessingInstruction, ProcessingInstruction):
+            // Its target and data.
+            return a.target == b.target && a.data == b.data
 
         // Text
         case let (a, b) as (Text, Text):

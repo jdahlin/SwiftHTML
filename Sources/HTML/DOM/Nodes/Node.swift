@@ -49,7 +49,6 @@ enum DocumentPosition: UInt16 {
 //   readonly attribute Element? parentElement;
 
 //   [CEReactions] attribute DOMString? nodeValue;
-//   [CEReactions] attribute DOMString? textContent;
 //   [CEReactions] undefined normalize();
 
 //   [CEReactions, NewObject] Node cloneNode(optional boolean deep = false);
@@ -93,8 +92,8 @@ public class Node: EventTarget {
             return NodeType.TEXT_NODE.rawValue
         // case is CDATASection:
         //     return .CDATA_SECTION_NODE
-        // case is ProcessingInstruction:
-        //     return .PROCESSING_INSTRUCTION_NODE
+        case is ProcessingInstruction:
+            return NodeType.PROCESSING_INSTRUCTION_NODE.rawValue
         case is Comment:
             return NodeType.COMMENT_NODE.rawValue
         case is Document:
@@ -127,8 +126,10 @@ public class Node: EventTarget {
     // CDATASection
     //   "#cdata-section".
 
-    // ProcessingInstruction
-    //   Its target.
+        // ProcessingInstruction
+        case let processingInstruction as ProcessingInstruction:
+            // Its target.
+            return processingInstruction.target
 
         // Comment
         case is Comment:
@@ -148,6 +149,26 @@ public class Node: EventTarget {
 
         default:
             DIE("\(type(of: self)): not implemented")
+        }
+    }
+
+    // https://dom.spec.whatwg.org/#dom-node-textcontent
+    var textContent: String? {
+        return switch self {
+        case is DocumentFragment:
+            // The descendant text content of this.
+            descendantTextContent(node: self)
+        case is Element:
+            // The descendant text content of this.
+            descendantTextContent(node: self)
+        case let attr as Attr:
+            // The value of this.
+            attr.value
+        case let charData as CharacterData:
+            // The data of this.
+            charData.data
+        default:
+            nil
         }
     }
 
@@ -226,7 +247,7 @@ public class Node: EventTarget {
 
     // [CEReactions] Node appendChild(Node node);
     // https://dom.spec.whatwg.org/#dom-node-appendchild
-    func appendChild(_ node: Node) -> Node {
+    @discardableResult func appendChild(_ node: Node) -> Node {
         // The appendChild(node) method steps are to return the result of
         // appending node to this.
         return appendNodeToParent(node: node, parent: self)

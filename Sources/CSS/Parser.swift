@@ -171,6 +171,11 @@ public func parseAStylesheet(_ tokenStream: inout TokenStream, location: URL? = 
     return ParsedStyleSheet(rules: rules, location: location)
 }
 
+public func parseAStylesheet(_ data: String, location: URL? = .none) throws -> ParsedStyleSheet {
+    var tokenStream = CSS.TokenStream(data)
+    return try parseAStylesheet(&tokenStream, location: location)
+}
+
 // 5.4.1 https://www.w3.org/TR/css-syntax-3/#consume-list-of-rules
 func consumeListOfRules(_ tokenStream: inout TokenStream,
                         toplevelFlag: ToplevelFlag = ToplevelFlag.unset) throws -> [Rule]

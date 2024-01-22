@@ -9,6 +9,6 @@
 //   undefined replaceData(unsigned long offset, unsigned long count, DOMString data);
 // };
 
-class CharacterData: Node {
+public class CharacterData: Node {
     var data: DOMString = ""
 }
