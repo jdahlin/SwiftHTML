@@ -205,12 +205,11 @@ public class Document: Node {
 
         // 2. If node’s parent is non-null, then remove node.
         if node.parentNode != nil {
-            // FIXME: node.remove()
-            FIXME("node.remove()")
+            removeNode(node: node)
         }
+
         // 3. If document is not oldDocument, then:
         if self != oldDocument {
-            FIXME("shadow root")
             // 3.1. For each inclusiveDescendant in node’s shadow-including
             // inclusive descendants:
 

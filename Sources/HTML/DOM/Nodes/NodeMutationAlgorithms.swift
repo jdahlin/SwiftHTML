@@ -82,14 +82,23 @@ func preInsertBeforeChild(node: Node, parent: Node, child: Node?) -> Node {
     }
 
     // 4. Insert node into parent before referenceChild.
-    insertNodeIntoParent(node: node, parent: parent, before: referenceChild)
+    insertNodeIntoParent(
+        node: node,
+        parent: parent,
+        before: referenceChild,
+        suppressObservers: false
+    )
 
     // 5. Return node.
     return node
 }
 
 // https://dom.spec.whatwg.org/#concept-node-insert
-func insertNodeIntoParent(node: Node, parent: Node, before child: Node?) {
+func insertNodeIntoParent(node: Node,
+                          parent: Node,
+                          before child: Node?,
+                          suppressObservers _: Bool)
+{
     // 1. Let nodes be node’s children, if node is a DocumentFragment node; otherwise « node ».
     let nodes = if let fragment = node as? DocumentFragment {
         fragment.childNodes.array
@@ -107,23 +116,26 @@ func insertNodeIntoParent(node: Node, parent: Node, before child: Node?) {
 
     // 4. If node is a DocumentFragment node, then:
     if let _ = node as? DocumentFragment {
-        FIXME("DocumentFragment not implemented")
-        // 4.1 Remove its children with the suppress observers flag set.
+        // 4.1. Remove its children with the suppress observers flag set.
+        for child in nodes {
+            removeNode(node: child, suppressObservers: true)
+        }
 
-        // 4.2 Queue a tree mutation record for node with « », nodes, null, and null.
+        // 4.2. Queue a tree mutation record for node with « », nodes, null, and null.
+        queueMutationRecord(addedNodes: [], removedNodes: nodes, previousSibling: nil, nextSibling: nil)
 
-        // 4.3 This step intentionally does not pay attention to the suppress observers flag.
+        // Note: This step intentionally does not pay attention to the suppress observers flag.
     }
 
     // 5. If child is non-null, then:
     if let child = child {
         // FIXME:
         _ = child
-        // 5.1 For each live range whose start node is parent and start offset
-        // is greater than child’s index, increase its start offset by count.
+        // 5.1. For each live range whose start node is parent and start offset
+        //      is greater than child’s index, increase its start offset by count.
 
-        // 5.2 For each live range whose end node is parent and end offset
-        // is greater than child’s index, increase its end offset by count.
+        // 5.2. For each live range whose end node is parent and end offset
+        //      is greater than child’s index, increase its end offset by count.
     }
 
     // 6. Let previousSibling be child’s previous sibling or parent’s last child if child is null.
@@ -189,7 +201,7 @@ func appendNodeToParent(node: Node, parent: Node) -> Node {
 }
 
 // https://dom.spec.whatwg.org/#concept-node-replace
-func replaceChild(child: Node, node: Node, parent _: Node) {
+func replaceChild(child: Node, node: Node, parent _: Node) -> Node {
     // 1. If parent is not a Document, DocumentFragment, or Element node, then
     //    throw a "HierarchyRequestError" DOMException.
 
@@ -230,27 +242,51 @@ func replaceChild(child: Node, node: Node, parent _: Node) {
     }
 
     // 7. Let referenceChild be child’s next sibling.
+    var referenceChild = child.nextSibling
 
     // 8. If referenceChild is node, then set referenceChild to node’s next sibling.
+    if referenceChild == node {
+        referenceChild = node.nextSibling
+    }
 
     // 9. Let previousSibling be child’s previous sibling.
+    let previousSibling = child.previousSibling
 
     // 10. Let removedNodes be the empty set.
+    var removedNodes = Set<Node>()
 
     // 11. If child’s parent is non-null, then:
     if child.parentNode != nil {
         // 11.1 Set removedNodes to « child ».
+        removedNodes.insert(child)
+
         // 11.2. Remove child with the suppress observers flag set.
+        removeNode(node: child, suppressObservers: true)
+
         // Note: The above can only be false if child is node.
     }
 
     // 12. Let nodes be node’s children if node is a DocumentFragment node; otherwise « node ».
+    let nodes = if let fragment = node as? DocumentFragment {
+        fragment.childNodes.array
+    } else {
+        [node]
+    }
 
     // 13. Insert node into parent before referenceChild with the suppress observers flag set.
+    insertNodeIntoParent(node: node, parent: child.parentNode!, before: child.nextSibling,
+                         suppressObservers: true)
 
     // 14. Queue a tree mutation record for parent with nodes, removedNodes, previousSibling, and referenceChild.
+    queueMutationRecord(
+        addedNodes: nodes,
+        removedNodes: Array(removedNodes),
+        previousSibling: previousSibling,
+        nextSibling: referenceChild
+    )
 
     // 15. Return child.
+    return child
 }
 
 // https://dom.spec.whatwg.org/#concept-node-replace-all
@@ -277,28 +313,37 @@ func replaceAll(node: Node?, parent: Node) {
     // 6. If node is non-null, then insert node into parent before null with the
     //    suppress observers flag set.
     if node != nil {
-        insertNodeIntoParent(node: node!, parent: parent, before: nil)
+        insertNodeIntoParent(node: node!, parent: parent, before: nil,
+                             suppressObservers: true)
     }
 
     // 7. If either addedNodes or removedNodes is not empty, then queue a tree
     //    mutation record for parent with addedNodes, removedNodes, null, and
     //    null.
     if !addedNodes.isEmpty || removedNodes.array.isEmpty {
-        FIXME("queue a mutation record")
+        queueMutationRecord(
+            addedNodes: Array(addedNodes),
+            removedNodes: Array(removedNodes),
+            previousSibling: nil,
+            nextSibling: nil
+        )
     }
 
     // Note: This algorithm does not make any checks with regards to the node
     // tree constraints. Specification authors need to use it wisely.
 }
 
-func removeNode(node _: Node, suppressObservers _: Bool = false) {
-    FIXME("not implemented")
-
+func removeNode(node: Node, suppressObservers _: Bool = false) {
     // 1. Let parent be node’s parent.
+    let parentOrNil = node.parentNode
 
     // 2. Assert: parent is non-null.
+    assert(parentOrNil != nil)
+
+    let parent = parentOrNil!
 
     // 3. Let index be node’s index.
+    let index = parent.childNodes.array.firstIndex(of: node)
 
     // 4. For each live range whose start node is an inclusive descendant of
     //    node, set its start to (parent, index).
@@ -317,10 +362,14 @@ func removeNode(node _: Node, suppressObservers _: Bool = false) {
     //    node and iterator.
 
     // 9. Let oldPreviousSibling be node’s previous sibling.
+    _ = node.previousSibling
 
     // 10. Let oldNextSibling be node’s next sibling.
+    _ = node.nextSibling
 
     // 11. Remove node from its parent’s children.
+    parent.childNodes.array.remove(at: index!)
+    node.parentNode = nil
 
     // 12. If node is assigned, then run assign slottables for node’s assigned slot.
 
