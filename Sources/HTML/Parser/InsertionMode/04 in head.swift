@@ -116,19 +116,24 @@ extension TreeBuilder {
 
             // Insert the newly created element at the adjusted insertion location.
             adjustedInsertionLocation.insert(element)
+
             // Push the element onto the stack of open elements so that it is the new current node.
-            stack.append(element)
+            stackOfOpenElements.push(element: element)
+
             // Switch the tokenizer to the script data state.
             tokenizer.state = .scriptData
+
             // Let the original insertion mode be the current insertion mode.
             originalInsertionMode = insertionMode
+
             // Switch the insertion mode to "text".
             insertionMode = .text
 
         // An end tag whose tag name is "head"
         case .endTag("head", _, _):
-            // Pop the current node (which will be the head element) off the stack of open elements.
-            stack.removeLast()
+            // Pop the current node (which will be the head element) off the
+            // stack of open elements.
+            stackOfOpenElements.pop()
 
             // Switch the insertion mode to "after head".
             insertionMode = .afterHead
@@ -137,7 +142,7 @@ extension TreeBuilder {
         case let .endTag(tagName, _, _) where tagName == "body" || tagName == "html" || tagName == "br":
             // Act as described in the "anything else" entry below. (inlined)
             // Pop the current node (which will be the head element) off the stack of open elements.
-            stack.removeLast()
+            stackOfOpenElements.pop()
 
             // Switch the insertion mode to "after head".
             insertionMode = .afterHead
@@ -197,7 +202,7 @@ extension TreeBuilder {
         // Anything else
         default:
             // Pop the current node (which will be the head element) off the stack of open elements.
-            stack.removeLast()
+            stackOfOpenElements.pop()
 
             // Switch the insertion mode to "after head".
             insertionMode = .afterHead

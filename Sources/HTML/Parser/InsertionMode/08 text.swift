@@ -19,7 +19,7 @@ extension TreeBuilder {
             // }
 
             // Pop the current node off the stack of open elements.
-            stack.removeLast()
+            stackOfOpenElements.pop()
 
             // Switch the insertion mode to the original insertion mode and reprocess the token.
             insertionMode = originalInsertionMode!
@@ -61,7 +61,9 @@ extension TreeBuilder {
         // Any other end tag
         case .endTag:
             // Pop the current node off the stack of open elements.
-            let last = stack.removeLast()
+            stackOfOpenElements.pop()
+
+            // Note: This might be related to == and subclasses
             // assert(stack.removeLast() == currentNode)
 
             // Switch the insertion mode to the original insertion mode.

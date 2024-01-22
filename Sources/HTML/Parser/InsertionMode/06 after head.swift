@@ -55,16 +55,15 @@ extension TreeBuilder {
             // parseError("Unexpected start tag '\(tagName)' in 'in head' insertion mode.")
 
             // Push the node pointed to by the head element pointer onto the stack of open elements.
-            stack.append(headElementPointer!)
+            stackOfOpenElements.push(element: headElementPointer!)
 
             // Process the token using the rules for the "in head" insertion mode.
             handleInHead(token)
 
-            // Remove the node pointed to by the head element pointer from the stack of open elements.
-            // (It might not be the current node at this point.)
-            if let index = stack.lastIndex(of: headElementPointer!) {
-                stack.remove(at: index)
-            }
+            // Remove the node pointed to by the head element pointer from the
+            // stack of open elements. (It might not be the current node at this
+            // point.)
+            stackOfOpenElements.removePointedBy(element: headElementPointer!)
 
             // The head element pointer cannot be null at this point.
             assert(headElementPointer != nil)

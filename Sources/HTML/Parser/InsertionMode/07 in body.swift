@@ -67,7 +67,7 @@ extension TreeBuilder {
             // element, if the stack of open elements has only one node on it, or if
             // there is a template element on the stack of open elements, then ignore
             // the token. (fragment case or there is a template element on the stack)
-            let openElements = stack
+            let openElements = stackOfOpenElements.stack
             if openElements.count > 1, openElements[1].tagName != "body",
                !openElements.contains(where: { $0.tagName == "template" })
             {
@@ -109,7 +109,7 @@ extension TreeBuilder {
         // An end tag whose tag name is "body"
         case .endTag("body", _, _):
             // If the stack of open elements does not have a body element in scope, this
-            guard stack.contains(where: { $0.tagName == "body" }) else {
+            guard stackOfOpenElements.hasElementInScope(withTagName: "body") else {
                 // is a parse error; ignore the token.
                 break
             }
@@ -124,11 +124,7 @@ extension TreeBuilder {
                 "dd", "dt", "li", "optgroup", "option", "p", "rb", "rp", "rt", "rtc",
                 "tbody", "td", "tfoot", "th", "thead", "tr", "body", "html",
             ]
-            guard
-                stack.contains(where: { element in
-                    validElements.contains(element.tagName)
-                })
-            else {
+            guard stackOfOpenElements.hasElementsInScope(withTagNames: validElements) else {
                 // This is a parse error.
                 break
             }
@@ -139,7 +135,7 @@ extension TreeBuilder {
         case .endTag("html", _, _):
             // If the stack of open elements does not have a body element in
             // scope, this is a parse error; ignore the token.
-            if !stack.contains(where: { $0.tagName == "body" }) {
+            if !stackOfOpenElements.hasElementInScope(withTagName: "body") {
                 break
             }
 
@@ -184,10 +180,7 @@ extension TreeBuilder {
                 "html",
             ]
             // then this is a parse error.
-            guard
-                stack.contains(where: { element in
-                    validElements.contains(element.tagName)
-                })
+            guard stackOfOpenElements.hasElementsInScope(withTagNames: validElements)
             else {
                 // This is a parse error.
                 break
@@ -294,7 +287,7 @@ extension TreeBuilder {
             // If the stack of open elements does not have a p element in button
             // scope, then this is a parse error; insert an HTML element for a "p"
             // start tag token with no attributes.
-            if !stack.contains(where: { $0.tagName == "p" }) {
+            if stackOfOpenElements.hasElementInScope(withTagName: "p") {
                 insertHTMLElement(Token.startTag("p", attributes: []))
             }
 
@@ -453,11 +446,15 @@ extension TreeBuilder {
         case let .startTag(_, _, isSelfClosing):
             // Reconstruct the active formatting elements, if any.
             reconstructActiveFormattingElements()
+
             // Insert an HTML element for the token.
             insertHTMLElement(token)
-            // If the token has its self-closing flag set, pop the current node off the stack of open elements and acknowledge the token's self-closing flag.
+
+            // If the token has its self-closing flag set, pop the current node
+            // off the stack of open elements and acknowledge the token's
+            // self-closing flag.
             if isSelfClosing {
-                stack.removeLast()
+                stackOfOpenElements.pop()
                 acknowledgeTokenSelfClosingFlag()
             }
     // This element will be an ordinary element. With one exception: if the
@@ -479,10 +476,11 @@ extension TreeBuilder {
                     break
                 }
 
-                // Pop elements from the stack of open elements until node has been popped from the stack.
+                // Pop elements from the stack of open elements until node has
+                // been popped from the stack.
                 var removedNode: Node?
                 while removedNode != node {
-                    removedNode = stack.removeLast()
+                    removedNode = stackOfOpenElements.pop()
                 }
                 break
             }

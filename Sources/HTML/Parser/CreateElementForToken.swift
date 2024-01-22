@@ -40,14 +40,14 @@ extension TreeBuilder {
         _ = result
 
         // 3. Let document be intended parent's node document.
-        let document = intendedParent.ownerDocument
+        let _ = intendedParent.ownerDocument
 
         // 4. Let local name be the tag name of the token.
         let localName = tagName
 
         // 5. Let is be the value of the "is" attribute in the given token, if such
         //    an attribute exists, or null otherwise.
-        let is_ = attributes.first(where: { $0.name == "is" })?.value
+        let _ = attributes.first(where: { $0.name == "is" })?.value
 
         // 6. Let definition be the result of looking up a custom element definition
         //    given document, given namespace, local name, and is.
@@ -71,7 +71,7 @@ extension TreeBuilder {
         //    localName, given namespace, null, and is. If will execute script is
         //    true, set the synchronous custom elements flag; otherwise, leave it
         //    unset.
-        let element = self.document.createElement(
+        let element = document.createElement(
             localName: localName,
             namespace: namespace
         )

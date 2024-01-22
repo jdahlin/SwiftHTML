@@ -46,7 +46,7 @@ enum GenericParsingAlgoritm {
 class TreeBuilder: TokenReceiver {
     var tokenizer: Tokenizer
     var document: Document = .init()
-    var stack: [Element] = []
+    var stackOfOpenElements = StackOfOpenElements()
     var insertionMode: InsertionMode = .initial
     var fosterParenting = false
     var activeSpeculativeHTMLParser: TreeBuilder? = nil
@@ -73,7 +73,8 @@ class TreeBuilder: TokenReceiver {
 
     // https://html.spec.whatwg.org/multipage/parsing.html#current-node
     var currentNode: Node? {
-        return stack.last
+        // The current node is the bottommost node in this stack of open elements.
+        return stackOfOpenElements.bottommost
     }
 
     // https://html.spec.whatwg.org/multipage/parsing.html#appropriate-place-for-inserting-a-node
@@ -212,8 +213,9 @@ class TreeBuilder: TokenReceiver {
             appropriatePlaceForInsertingANode.insert(element)
         }
 
-        // Push element onto the stack of open elements so that it is the new current node.
-        stack.append(element)
+        // Push element onto the stack of open elements so that it is the new
+        // current node.
+        stackOfOpenElements.push(element: element)
 
         // Return element.
         return element

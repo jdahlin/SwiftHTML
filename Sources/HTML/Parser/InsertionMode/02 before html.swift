@@ -37,7 +37,7 @@ extension TreeBuilder {
             document.appendChild(element)
 
             // Put this element in the stack of open elements.
-            stack.append(element)
+            stackOfOpenElements.push(element: element)
 
             // Switch the insertion mode to "before head".
             insertionMode = .beforeHead
@@ -62,7 +62,7 @@ extension TreeBuilder {
             document.appendChild(element)
 
             // Put this element in the stack of open elements.
-            stack.append(element)
+            stackOfOpenElements.push(element: element)
 
             // Switch the insertion mode to "before head", then reprocess the token.
             insertionMode = .beforeHead
