@@ -135,3 +135,9 @@ class HTMLStyleElement: HTMLElement {
         //    element.
     }
 }
+
+extension HTMLStyleElement: StackOfOpenElementsNotification {
+    func wasRemoved() {
+        updateStyleBlock()
+    }
+}

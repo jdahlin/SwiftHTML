@@ -119,3 +119,7 @@ public class Element: Node {
         attributes.setNamedItem(Attr(name: qualifiedName, value: value))
     }
 }
+
+protocol StackOfOpenElementsNotification {
+    func wasRemoved()
+}

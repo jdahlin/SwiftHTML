@@ -10,7 +10,11 @@ struct StackOfOpenElements {
     }
 
     @discardableResult public mutating func pop() -> Element? {
-        stack.removeLast()
+        let element = stack.removeLast()
+        if let instance = element as? StackOfOpenElementsNotification {
+            instance.wasRemoved()
+        }
+        return element
     }
 
     public mutating func removePointedBy(element: Element) {
