@@ -8,7 +8,12 @@
 //   readonly attribute DOMString wholeText;
 // };
 
-class Text: CharacterData {}
+class Text: CharacterData {
+    init(data: DOMString = "", ownerDocument: Document? = nil) {
+        super.init(ownerDocument: ownerDocument)
+        self.data = data
+    }
+}
 
 // The descendant text content of a node node is the concatenation of the data
 // of all the Text node descendants of node, in tree order.

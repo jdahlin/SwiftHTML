@@ -7,47 +7,62 @@
 
 // DocumentType includes ChildNode;
 
+enum NodeOrString {
+    case node(Node)
+    case string(DOMString)
+}
+
 protocol ChildNode {
-    func before(_ nodes: Node...)
-    func before(_ nodes: DOMString...)
-    func after(_ nodes: Node...)
-    func after(_ nodes: DOMString...)
-    func replaceWith(_ nodes: Node...)
-    func replaceWith(_ nodes: DOMString...)
+    func before(_ nodes: NodeOrString...)
+    func after(_ nodes: NodeOrString...)
+    func replaceWith(_ nodes: NodeOrString...)
     func remove()
 }
 
 // Element includes ChildNode;
 extension Element: ChildNode {
-    func before(_: Node...) {
+    func before(_: NodeOrString...) {
         FIXME("not implemented")
     }
 
-    func before(_: DOMString...) {
-        FIXME("not implemented")
-    }
-
-    func after(_ nodes: Node...) {
-        // Inserts nodes just after node, while replacing strings in nodes with
-        // equivalent Text nodes.
-        for child in nodes {
-            if let parent = parentNode {
-                let index = parent.childNodes.array.firstIndex(of: self)
-                parent.childNodes.array.insert(child, at: index! + 1)
-                child.parentNode = parent
+    func viableNextSibling(nodes: [NodeOrString]) -> Node? {
+        // first following sibling not in nodes
+        var sibling = nextSibling
+        while let currentSibling = sibling {
+            for case let .node(node) in nodes {
+                if node == currentSibling {
+                    break
+                }
             }
+            sibling = currentSibling.nextSibling
         }
+        // otherwise null.
+        return nil
     }
 
-    func after(_: DOMString...) {
-        FIXME("not implemented")
+    // https://dom.spec.whatwg.org/#dom-childnode-after
+    func after(_ nodes: NodeOrString...) {
+        // 1. Let parent be this’s parent.
+        let parent = parentNode
+
+        // 2. If parent is null, then return.
+        if parent == nil {
+            return
+        }
+
+        // 3. Let viableNextSibling be this’s first following sibling not in
+        //    nodes; otherwise null.
+        let viableNextSibling = viableNextSibling(nodes: nodes)
+
+        // 4. Let node be the result of converting nodes into a node, given
+        //    nodes and this’s node document.
+        let node = convertNodesIntoNode(nodes: nodes, document: ownerDocument!)
+
+        // 5. Pre-insert node into parent before viableNextSibling.
+        preInsertBeforeChild(node: node, parent: parent!, child: viableNextSibling)
     }
 
-    func replaceWith(_: Node...) {
-        FIXME("not implemented")
-    }
-
-    func replaceWith(_: DOMString...) {
+    func replaceWith(_: NodeOrString...) {
         FIXME("not implemented")
     }
 
@@ -58,35 +73,13 @@ extension Element: ChildNode {
 
 // CharacterData includes ChildNode;
 extension CharacterData: ChildNode {
-    func before(_: Node...) {
+    func before(_: NodeOrString...) {
         FIXME("not implemented")
     }
 
-    func before(_: DOMString...) {
-        FIXME("not implemented")
-    }
+    func after(_: NodeOrString...) {}
 
-    func after(_ nodes: Node...) {
-        // Inserts nodes just after node, while replacing strings in nodes with
-        // equivalent Text nodes.
-        for child in nodes {
-            if let parent = parentNode {
-                let index = parent.childNodes.array.firstIndex(of: self)
-                parent.childNodes.array.insert(child, at: index! + 1)
-                child.parentNode = parent
-            }
-        }
-    }
-
-    func after(_: DOMString...) {
-        FIXME("not implemented")
-    }
-
-    func replaceWith(_: Node...) {
-        FIXME("not implemented")
-    }
-
-    func replaceWith(_: DOMString...) {
+    func replaceWith(_: NodeOrString...) {
         FIXME("not implemented")
     }
 

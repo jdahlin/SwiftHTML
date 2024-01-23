@@ -64,7 +64,7 @@ enum DocumentPosition: UInt16 {
 
 public class Node: EventTarget {
     // [SameObject] readonly attribute NodeList childNodes;
-    let childNodes: NodeList<Node> = .init()
+    let childNodes: LiveNodeList<Node>
 
     // readonly attribute Document? ownerDocument;
     var ownerDocument: Document?
@@ -75,7 +75,9 @@ public class Node: EventTarget {
     init(ownerDocument: Document? = nil, parentNode _: Node? = nil) {
         self.ownerDocument = ownerDocument
         parentNode = nil
+        childNodes = LiveNodeList()
         super.init()
+        childNodes.root = self
     }
 
     // readonly attribute unsigned short nodeType;
@@ -174,25 +176,18 @@ public class Node: EventTarget {
 
     // readonly attribute Node? firstChild;
     // https://dom.spec.whatwg.org/#dom-node-firstchild
-    var firstChild: Node? {
-        // The first child of an object is its first child or null if it has no children.
-        return childNodes.array.first
-    }
+    var firstChild: Node?
 
     // readonly attribute Node? lastChild;
     // https://dom.spec.whatwg.org/#dom-node-lastchild
-    var lastChild: Node? {
-        // The last child of an object is its last child or null if it has no
-        // children.
-        return childNodes.array.last
-    }
+    var lastChild: Node?
 
     // boolean hasChildNodes();
     // https://dom.spec.whatwg.org/#dom-node-haschildnodes
     func hasChildNodes() -> Bool {
         // The hasChildNodes() method steps are to return true if this has
         // children; otherwise false.
-        !childNodes.array.isEmpty
+        childNodes.length > 0
     }
 
     // boolean isEqualNode(Node? otherNode);
@@ -211,35 +206,15 @@ public class Node: EventTarget {
 
     // readonly attribute Node? previousSibling;tree
     // https://dom.spec.whatwg.org/#concept-tree-previous-sibling
-    var previousSibling: Node? {
-        // The previous sibling of an object is its first preceding sibling or
-        // null if it has no preceding sibling.
-        if let parentNode = parentNode,
-           let index = parentNode.childNodes.array.firstIndex(of: self)
-        {
-            return parentNode.childNodes.array[index - 1]
-        }
-
-        return nil
-    }
+    var previousSibling: Node?
 
     // readonly attribute Node? nextSibling;
     // https://dom.spec.whatwg.org/#concept-tree-next-sibling
-    var nextSibling: Node? {
-        // The next sibling of an object is its first following sibling or null
-        // if it has no following sibling.
-        if let parentNode = parentNode,
-           let index = parentNode.childNodes.array.firstIndex(of: self)
-        {
-            return parentNode.childNodes.array[index + 1]
-        }
-
-        return nil
-    }
+    var nextSibling: Node?
 
     // [CEReactions] Node insertBefore(Node node, Node? child);
     // https://dom.spec.whatwg.org/#dom-node-insertbefore
-    func insertBefore(_ node: Node, before child: Node?) -> Node {
+    @discardableResult func insertBefore(node: Node, before child: Node?) -> Node {
         // The insertBefore(node, child) method steps are to return the result
         // of pre-inserting node into this before child.
         return preInsertBeforeChild(node: node, parent: self, child: child)
@@ -247,7 +222,7 @@ public class Node: EventTarget {
 
     // [CEReactions] Node appendChild(Node node);
     // https://dom.spec.whatwg.org/#dom-node-appendchild
-    @discardableResult func appendChild(_ node: Node) -> Node {
+    @discardableResult func appendChild(node: Node) -> Node {
         // The appendChild(node) method steps are to return the result of
         // appending node to this.
         return appendNodeToParent(node: node, parent: self)

@@ -34,7 +34,7 @@ extension TreeBuilder {
             )
 
             // Append it to the Document object.
-            document.appendChild(element)
+            document.appendChild(node: element)
 
             // Put this element in the stack of open elements.
             stackOfOpenElements.push(element: element)
@@ -59,7 +59,7 @@ extension TreeBuilder {
             let element = document.createElement(localName: "html", namespace: HTML_NS)
 
             // Append it to the Document object.
-            document.appendChild(element)
+            document.appendChild(node: element)
 
             // Put this element in the stack of open elements.
             stackOfOpenElements.push(element: element)

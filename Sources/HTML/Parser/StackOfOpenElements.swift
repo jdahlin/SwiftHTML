@@ -2,7 +2,7 @@ struct StackOfOpenElements {
     var stack: [Element] = []
 
     public var bottommost: Element? {
-        stack.first
+        stack.last
     }
 
     public mutating func push(element: Element) {

@@ -79,6 +79,8 @@ class TreeBuilder: TokenReceiver {
 
     // https://html.spec.whatwg.org/multipage/parsing.html#appropriate-place-for-inserting-a-node
     func appropriatePlaceForInsertingANode(overrideTarget: Node? = nil) -> AdjustedInsertionLocation {
+        var adjustedInsertionLocation: AdjustedInsertionLocation
+
         // If there was an override target specified, then let target be the override target.
         var target = overrideTarget
 
@@ -90,41 +92,46 @@ class TreeBuilder: TokenReceiver {
         // 2. Determine the adjusted insertion location using the first matching steps from the following list:
 
         // FIXME: If foster parenting is enabled and target is a table, tbody, tfoot, thead, or tr element
-        // Foster parenting happens when content is misnested in tables.
+        if fosterParenting && target?.nodeName == "table" {
+            // Foster parenting happens when content is misnested in tables.
+            // Adjust the insertion location accordingly.
+            // ...
 
-        // Run these substeps:
-        // 2.1. Let last template be the last template element in the stack of open elements, if any.
-        // 2.2. Let last table be the last table element in the stack of open elements, if any.
+            // Run these substeps:
+            // 2.1. Let last template be the last template element in the stack of open elements, if any.
+            // 2.2. Let last table be the last table element in the stack of open elements, if any.
 
-        // 2.3. If there is a last template and either there is no last table, or
-        //      there is one, but last template is lower (more recently added) than
-        //      last table in the stack of open elements, then: let adjusted
-        //      insertion location be inside last template's template contents,
-        //      after its last child (if any), and abort these steps.
+            // 2.3. If there is a last template and either there is no last table, or
+            //      there is one, but last template is lower (more recently added) than
+            //      last table in the stack of open elements, then: let adjusted
+            //      insertion location be inside last template's template contents,
+            //      after its last child (if any), and abort these steps.
 
-        // 2.4. If there is no last table, then let adjusted insertion location be
-        //      inside the first element in the stack of open elements (the html
-        //      element), after its last child (if any), and abort these steps.
-        //      (fragment case)
+            // 2.4. If there is no last table, then let adjusted insertion location be
+            //      inside the first element in the stack of open elements (the html
+            //      element), after its last child (if any), and abort these steps.
+            //      (fragment case)
 
-        // 2.5. If last table has a parent node, then let adjusted insertion
-        //      location be inside last table's parent node, immediately before last
-        //      table, and abort these steps.
+            // 2.5. If last table has a parent node, then let adjusted insertion
+            //      location be inside last table's parent node, immediately before last
+            //      table, and abort these steps.
 
-        // 2.6. Let previous element be the element immediately above last table in the stack of open elements.
+            // 2.6. Let previous element be the element immediately above last table in the stack of open elements.
 
-        // 2.7 Let adjusted insertion location be inside previous element, after its last child (if any).
-
-        if fosterParenting {
+            // 2.7 Let adjusted insertion location be inside previous element, after its last child (if any).
             FIXME("foster parenting not implemented")
+            adjustedInsertionLocation = AdjustedInsertionLocation(
+                parent: target,
+                insertBeforeSibling: nil
+            )
+        } else {
+            // Otherwise
+            // Let adjusted insertion location be inside target, after its last child (if any).
+            adjustedInsertionLocation = AdjustedInsertionLocation(
+                parent: target,
+                insertBeforeSibling: nil
+            )
         }
-
-        // Otherwise
-        // Let adjusted insertion location be inside target, after its last child (if any).
-        let adjustedInsertionLocation = AdjustedInsertionLocation(
-            node: target,
-            afterSibling: target?.lastChild
-        )
 
         // FIXME: 3. If the adjusted insertion location is inside a template element,
         // let it instead be inside the template element's template contents, after its last child (if any).
@@ -144,24 +151,24 @@ class TreeBuilder: TokenReceiver {
         let adjustedInsertionLocation = appropriatePlaceForInsertingANode()
 
         // 3. If the adjusted insertion location is in a Document node, then return.
-        if adjustedInsertionLocation.node is Document {
+        if adjustedInsertionLocation.parent is Document {
             return
         }
 
-        // FIXME: 4. If there is a Text node immediately before the adjusted insertion
+        // 4. If there is a Text node immediately before the adjusted insertion
         //    location, then append data to that Text node's data.
-        if let previousSibling = adjustedInsertionLocation.node?.lastChild,
-           previousSibling is Text
-        {
-            let textNode = previousSibling as! Text
+        // FIXME: Assumes adjustedInsertionLocation.insertBeforeSibling is always nil
+        if adjustedInsertionLocation.parent?.lastChild is Text {
+            let textNode = adjustedInsertionLocation.parent?.lastChild as! Text
             textNode.data += DOMString(data!)
-            // 5. Otherwise, create a new Text node whose data is data and whose node
-            //    document is the same as that of the node in which the adjusted insertion
-            //    location finds itself, and insert the newly created node at the adjusted insertion location.
-        } else {
+        }
+        // 5. Otherwise, create a new Text node whose data is data and whose node
+        //    document is the same as that of the node in which the adjusted insertion
+        //    location finds itself, and insert the newly created node at the adjusted insertion location.
+        else {
             let textNode = Text()
             textNode.data = DOMString(data!)
-            textNode.ownerDocument = adjustedInsertionLocation.node?.ownerDocument
+            textNode.ownerDocument = adjustedInsertionLocation.parent?.ownerDocument
             adjustedInsertionLocation.insert(textNode)
         }
     }
@@ -183,7 +190,7 @@ class TreeBuilder: TokenReceiver {
         //    location finds it
         let commentNode = Comment()
         commentNode.data = DOMString(data)
-        commentNode.ownerDocument = adjustedInsertionLocation.node?.ownerDocument
+        commentNode.ownerDocument = adjustedInsertionLocation.parent?.ownerDocument
 
         // 4. Insert the newly created node at the adjusted insertion location.
         adjustedInsertionLocation.insert(commentNode)
@@ -200,7 +207,7 @@ class TreeBuilder: TokenReceiver {
         // Let element be the result of creating an element for the token in the
         // given namespace, with the intended parent being the element in which the
         // adjusted insertion location finds it
-        let intendedParent = appropriatePlaceForInsertingANode.node! as! Element
+        let intendedParent = appropriatePlaceForInsertingANode.parent! as! Element
         let element = createElementForToken(
             token: token,
             namespace: HTML_NS,

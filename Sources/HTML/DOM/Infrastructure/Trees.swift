@@ -28,11 +28,11 @@ func isInclusiveAncestor(node: Node, ancestor: Node) -> Bool {
     return false
 }
 
-func nodesInTreeOrder(nodes: [Node], visit: (Node) -> Void) {
-    for node in nodes {
-        visit(node)
-        if let element = node as? Element {
-            nodesInTreeOrder(nodes: element.childNodes.array, visit: visit)
-        }
-    }
-}
+// func nodesInTreeOrder(nodes: [Node], visit: (Node) -> Void) {
+//     for node in nodes {
+//         visit(node)
+//         if let element = node as? Element {
+//             nodesInTreeOrder(nodes: element.childNodes, visit: visit)
+//         }
+//     }
+// }

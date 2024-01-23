@@ -32,7 +32,7 @@ extension TreeBuilder {
                 DIE("doctype: non html not implemented")
             }
             let doctypeNode = DocumentType(name: name, publicId: publicId, systemId: systemId)
-            document.appendChild(doctypeNode)
+            document.appendChild(node: doctypeNode)
             // Then, if the document is not an iframe srcdoc document, and the parser
             // cannot change the mode flag is false, and the DOCTYPE token matches one
             // of the conditions in the following list, then set the Document to

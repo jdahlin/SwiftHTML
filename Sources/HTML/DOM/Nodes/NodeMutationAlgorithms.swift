@@ -51,7 +51,7 @@ func ensurePreInsertValidation(node: Node, parent: Node, child: Node?) throws {
         case is Element:
             // parent has an element child, child is a doctype, or child is non-null
             // and a doctype is following child.
-            if parent.childNodes.array.allSatisfy({ $0 is Element }), child is DocumentType /* || (child != nil && parent.hasFollowingDoctype(child!) )*/
+            if Array(parent.childNodes).allSatisfy({ $0 is Element }), child is DocumentType /* || (child != nil && parent.hasFollowingDoctype(child!) )*/
             {
                 throw DOMException.hierarchyRequestError
             }
@@ -65,7 +65,7 @@ func ensurePreInsertValidation(node: Node, parent: Node, child: Node?) throws {
 }
 
 // https://dom.spec.whatwg.org/#concept-node-pre-insert
-func preInsertBeforeChild(node: Node, parent: Node, child: Node?) -> Node {
+@discardableResult func preInsertBeforeChild(node: Node, parent: Node, child: Node?) -> Node {
     // 1. Ensure pre-insertion validity of node into parent before child.
     let result = Result { try ensurePreInsertValidation(node: node, parent: parent, child: child) }
     guard case .success = result else {
@@ -101,7 +101,7 @@ func insertNodeIntoParent(node: Node,
 {
     // 1. Let nodes be node’s children, if node is a DocumentFragment node; otherwise « node ».
     let nodes = if let fragment = node as? DocumentFragment {
-        fragment.childNodes.array
+        Array(fragment.childNodes)
     } else {
         [node]
     }
@@ -145,18 +145,15 @@ func insertNodeIntoParent(node: Node,
 
     for node in nodes {
         // 7.1. Adopt node into parent’s node document.
-        _ = parent.ownerDocument?.adoptNode(node: node)
+        _ = parent.ownerDocument!.adoptNode(node: node)
 
         // 7.2. If child is null, then append node to parent’s children.
         if child == nil {
-            parent.childNodes.array.append(node)
-            node.parentNode = parent
+            appendChildImpl(parent: parent, node: node)
         }
         // 7.3. Otherwise, insert node into parent’s children before child’s index.
         else {
-            let index = parent.childNodes.array.firstIndex(of: child!)
-            parent.childNodes.array.insert(node, at: index!)
-            node.parentNode = parent
+            insertBeforeImpl(parent: parent, node: node, child: child)
         }
 
         // 7.4. If parent is a shadow host whose shadow root’s slot
@@ -268,7 +265,7 @@ func replaceChild(child: Node, node: Node, parent _: Node) -> Node {
 
     // 12. Let nodes be node’s children if node is a DocumentFragment node; otherwise « node ».
     let nodes = if let fragment = node as? DocumentFragment {
-        fragment.childNodes.array
+        Array(fragment.childNodes)
     } else {
         [node]
     }
@@ -299,14 +296,14 @@ func replaceAll(node: Node?, parent: Node) {
 
     // 3. If node is a DocumentFragment node, then set addedNodes to node’s children.
     if let fragment = node as? DocumentFragment {
-        addedNodes = Set(fragment.childNodes.array)
+        addedNodes = Set(fragment.childNodes)
         // 4. Otherwise, if node is non-null, set addedNodes to « node ».
     } else if node != nil {
         addedNodes = Set([node!])
     }
 
     // 5. Remove all parent’s children, in tree order, with the suppress observers flag set.
-    for child in parent.childNodes.array {
+    for child in parent.childNodes {
         removeNode(node: child, suppressObservers: true)
     }
 
@@ -320,7 +317,7 @@ func replaceAll(node: Node?, parent: Node) {
     // 7. If either addedNodes or removedNodes is not empty, then queue a tree
     //    mutation record for parent with addedNodes, removedNodes, null, and
     //    null.
-    if !addedNodes.isEmpty || removedNodes.array.isEmpty {
+    if !addedNodes.isEmpty || removedNodes.length > 0 {
         queueMutationRecord(
             addedNodes: Array(addedNodes),
             removedNodes: Array(removedNodes),
@@ -343,7 +340,7 @@ func removeNode(node: Node, suppressObservers _: Bool = false) {
     let parent = parentOrNil!
 
     // 3. Let index be node’s index.
-    let index = parent.childNodes.array.firstIndex(of: node)
+    _ = Array(parent.childNodes).firstIndex(of: node)
 
     // 4. For each live range whose start node is an inclusive descendant of
     //    node, set its start to (parent, index).
@@ -368,8 +365,7 @@ func removeNode(node: Node, suppressObservers _: Bool = false) {
     _ = node.nextSibling
 
     // 11. Remove node from its parent’s children.
-    parent.childNodes.array.remove(at: index!)
-    node.parentNode = nil
+    removeChildImpl(parent: parent, node: node)
 
     // 12. If node is assigned, then run assign slottables for node’s assigned slot.
 
@@ -414,4 +410,80 @@ func removeNode(node: Node, suppressObservers _: Bool = false) {
     //     oldNextSibling.
 
     // 21. Run the children changed steps for parent.
+}
+
+func isChildAllowed(node: Node) -> Bool {
+    return switch node {
+    case is Document: false
+    case is Text: true
+    case is Comment: true
+    case is DocumentType: !(node.firstChild is DocumentType)
+    case is Element: !(node.firstChild is Element)
+    default: false
+    }
+}
+
+func appendChildImpl(parent: Node, node: Node) {
+    assert(node.parentNode == nil)
+
+    guard isChildAllowed(node: node) else {
+        return
+    }
+
+    if parent.lastChild != nil {
+        parent.lastChild!.nextSibling = node
+    }
+
+    node.previousSibling = parent.lastChild
+    node.parentNode = parent
+
+    parent.lastChild = node
+    if parent.firstChild == nil {
+        parent.firstChild = parent.lastChild
+    }
+}
+
+func insertBeforeImpl(parent: Node, node: Node, child childOrNone: Node?) {
+    if childOrNone == nil {
+        appendChildImpl(parent: parent, node: node)
+        return
+    }
+
+    let child = childOrNone!
+    assert(node.parentNode == nil)
+    assert(child.parentNode == parent)
+
+    node.previousSibling = child.previousSibling
+    node.nextSibling = child
+
+    if child.previousSibling != nil {
+        child.previousSibling!.nextSibling = node
+    }
+    if parent.firstChild == child {
+        parent.firstChild = node
+    }
+    child.previousSibling = node
+
+    node.parentNode = parent
+}
+
+func removeChildImpl(parent: Node, node: Node) {
+    if parent.firstChild == node {
+        parent.firstChild = node.nextSibling
+    }
+
+    if parent.lastChild == node {
+        parent.lastChild = node.previousSibling
+    }
+
+    if node.nextSibling != nil {
+        node.nextSibling!.previousSibling = node.previousSibling
+    }
+
+    if node.previousSibling != nil {
+        node.previousSibling!.nextSibling = node.nextSibling
+    }
+    node.nextSibling = nil
+    node.previousSibling = nil
+    node.parentNode = nil
 }

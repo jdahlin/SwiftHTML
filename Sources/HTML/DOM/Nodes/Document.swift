@@ -51,6 +51,12 @@ public class Document: Node {
 
     var browsingContext: BrowsingContext?
 
+    init() {
+        super.init()
+        // A document’s node document is itself.
+        ownerDocument = self
+    }
+
     // [CEReactions, NewObject] Element createElement(DOMString localName, optional (DOMString or ElementCreationOptions) options = {});
     func createElement(_ localName: DOMString,
                        options _: ElementCreationOptions? = nil) -> Element
@@ -186,7 +192,7 @@ public class Document: Node {
     var body: Element? {
         // The body element of a Document object is its first element child whose
         // local name is body and whose namespace is the HTML namespace.
-        for item in childNodes.array {
+        for item in childNodes {
             if let element = item as? Element,
                element.localName == "body",
                element.namespaceURI == HTML_NS
