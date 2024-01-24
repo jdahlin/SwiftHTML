@@ -30,42 +30,42 @@ extension Character {
     // https://infra.spec.whatwg.org/#ascii-alphanumeric
     // An ASCII digit is a code point in the range U+0030 (0) to U+0039 (9), inclusive.
     var isASCIIDigit: Bool {
-        return "0" ... "9" ~= self
+        "0" ... "9" ~= self
     }
 
     // An ASCII upper hex digit is an ASCII digit or a code point in the range U+0041 (A) to U+0046 (F), inclusive.
     var isASCIIUpperHexDigit: Bool {
-        return isASCIIDigit || "A" ... "F" ~= self
+        isASCIIDigit || "A" ... "F" ~= self
     }
 
     // An ASCII lower hex digit is an ASCII digit or a code point in the range U+0061 (a) to U+0066 (f), inclusive.
     var isASCIILowerHexDigit: Bool {
-        return isASCIIDigit || "a" ... "f" ~= self
+        isASCIIDigit || "a" ... "f" ~= self
     }
 
     // An ASCII hex digit is an ASCII upper hex digit or ASCII lower hex digit.
     var isASCIIHexDigit: Bool {
-        return isASCIIUpperHexDigit || isASCIILowerHexDigit
+        isASCIIUpperHexDigit || isASCIILowerHexDigit
     }
 
     // An ASCII upper alpha is a code point in the range U+0041 (A) to U+005A (Z), inclusive.
     var isASCIIUpperAlpha: Bool {
-        return "A" ... "Z" ~= self
+        "A" ... "Z" ~= self
     }
 
     // An ASCII lower alpha is a code point in the range U+0061 (a) to U+007A (z), inclusive.
     var isASCIILowerAlpha: Bool {
-        return "a" ... "z" ~= self
+        "a" ... "z" ~= self
     }
 
     // An ASCII alpha is an ASCII upper alpha or ASCII lower alpha.
     var isASCIIAlpha: Bool {
-        return isASCIIUpperAlpha || isASCIILowerAlpha
+        isASCIIUpperAlpha || isASCIILowerAlpha
     }
 
     // An ASCII alphanumeric is an ASCII digit or ASCII alpha.
     var isASCIIAlphanumeric: Bool {
-        return isASCIIDigit || isASCIIAlpha
+        isASCIIDigit || isASCIIAlpha
     }
 }
 
@@ -184,7 +184,7 @@ class Tokenizer {
     }
 
     func isEOF() -> Bool {
-        return data.count <= position
+        data.count <= position
     }
 
     func consumeNextInputCharacter() -> Character? {

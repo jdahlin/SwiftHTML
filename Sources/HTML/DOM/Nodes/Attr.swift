@@ -51,7 +51,7 @@ public class Attr: Node {
         // is null, and its namespace prefix, followed by ":", followed by its local
         // name, otherwise.
         var qualifiedName = localName
-        if let prefix = prefix {
+        if let prefix {
             qualifiedName = "\(prefix):\(qualifiedName)"
         }
         return qualifiedName

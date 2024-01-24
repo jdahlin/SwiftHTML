@@ -85,23 +85,23 @@ public class Node: EventTarget {
     var nodeType: UInt16 {
         switch self {
         case is DocumentType:
-            return NodeType.DOCUMENT_TYPE_NODE.rawValue
+            NodeType.DOCUMENT_TYPE_NODE.rawValue
         case is Element:
-            return NodeType.ELEMENT_NODE.rawValue
+            NodeType.ELEMENT_NODE.rawValue
         case is Attr:
-            return NodeType.ATTRIBUTE_NODE.rawValue
+            NodeType.ATTRIBUTE_NODE.rawValue
         case is Text:
-            return NodeType.TEXT_NODE.rawValue
+            NodeType.TEXT_NODE.rawValue
         // case is CDATASection:
         //     return .CDATA_SECTION_NODE
         case is ProcessingInstruction:
-            return NodeType.PROCESSING_INSTRUCTION_NODE.rawValue
+            NodeType.PROCESSING_INSTRUCTION_NODE.rawValue
         case is Comment:
-            return NodeType.COMMENT_NODE.rawValue
+            NodeType.COMMENT_NODE.rawValue
         case is Document:
-            return NodeType.DOCUMENT_NODE.rawValue
+            NodeType.DOCUMENT_NODE.rawValue
         case is DocumentFragment:
-            return NodeType.DOCUMENT_FRAGMENT_NODE.rawValue
+            NodeType.DOCUMENT_FRAGMENT_NODE.rawValue
         default:
             DIE("\(type(of: self)): not implemented")
         }
@@ -114,16 +114,16 @@ public class Node: EventTarget {
         // Element
         case let element as Element:
             // Its HTML-uppercased qualified name.
-            return element.qualifiedName.uppercased()
+            element.qualifiedName.uppercased()
 
         // Attr
         case let attr as Attr:
             // Its qualified name.
-            return attr.qualifiedName
+            attr.qualifiedName
 
         // An exclusive Text node
         case is Text /* , is !CDATASection.Type */:
-            return "#text"
+            "#text"
 
     // CDATASection
     //   "#cdata-section".
@@ -131,23 +131,23 @@ public class Node: EventTarget {
         // ProcessingInstruction
         case let processingInstruction as ProcessingInstruction:
             // Its target.
-            return processingInstruction.target
+            processingInstruction.target
 
         // Comment
         case is Comment:
-            return "#comment"
+            "#comment"
 
         // Document
         case is Document:
-            return "#document"
+            "#document"
 
         // DocumentType
         case is DocumentType:
-            return "#document"
+            "#document"
 
         // DocumentFragment
         case is DocumentFragment:
-            return "#document-fragment"
+            "#document-fragment"
 
         default:
             DIE("\(type(of: self)): not implemented")
@@ -156,7 +156,7 @@ public class Node: EventTarget {
 
     // https://dom.spec.whatwg.org/#dom-node-textcontent
     var textContent: String? {
-        return switch self {
+        switch self {
         case is DocumentFragment:
             // The descendant text content of this.
             descendantTextContent(node: self)
@@ -217,7 +217,7 @@ public class Node: EventTarget {
     @discardableResult func insertBefore(node: Node, before child: Node?) -> Node {
         // The insertBefore(node, child) method steps are to return the result
         // of pre-inserting node into this before child.
-        return preInsertBeforeChild(node: node, parent: self, child: child)
+        preInsertBeforeChild(node: node, parent: self, child: child)
     }
 
     // [CEReactions] Node appendChild(Node node);
@@ -225,7 +225,7 @@ public class Node: EventTarget {
     @discardableResult func appendChild(node: Node) -> Node {
         // The appendChild(node) method steps are to return the result of
         // appending node to this.
-        return appendNodeToParent(node: node, parent: self)
+        appendNodeToParent(node: node, parent: self)
     }
 
     // [CEReactions] Node replaceChild(Node node, Node child);

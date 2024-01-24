@@ -45,6 +45,6 @@ class DOMTokenList {
 
     // boolean contains(DOMString token);
     func contains(_ token: DOMString) -> Bool {
-        return tokenSet.contains(String.SubSequence(token))
+        tokenSet.contains(String.SubSequence(token))
     }
 }

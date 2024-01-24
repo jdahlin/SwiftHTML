@@ -18,12 +18,12 @@ class LiveNodeList<T: Node>: Sequence {
     // readonly attribute unsigned long length;
     var length: UInt {
         // Returns the number of nodes in the collection.
-        return UInt(collection().count)
+        UInt(collection().count)
     }
 
     subscript(index: UInt) -> T? {
         // Returns the specific node at the given zero-based index into the list.
-        return item(index: index)
+        item(index: index)
     }
 
     // getter Node? item(unsigned long index);
@@ -40,6 +40,6 @@ class LiveNodeList<T: Node>: Sequence {
 
     // iterable<Node>;
     func makeIterator() -> Array<T>.Iterator {
-        return collection().makeIterator()
+        collection().makeIterator()
     }
 }

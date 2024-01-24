@@ -20,7 +20,7 @@ func isInclusiveAncestor(node: Node, ancestor: Node) -> Bool {
     if parent == ancestor {
         return true
     }
-    while let parent = parent {
+    while let parent {
         if parent == ancestor {
             return true
         }

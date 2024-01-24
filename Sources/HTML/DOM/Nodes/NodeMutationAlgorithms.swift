@@ -16,7 +16,7 @@ func ensurePreInsertValidation(node: Node, parent: Node, child: Node?) throws {
 
     // If child is non-null and its parent is not parent, then throw a
     // "NotFoundError" DOMException.
-    if let child = child, child.parentNode != parent {
+    if let child, child.parentNode != parent {
         throw DOMException.notFoundError
     }
 
@@ -128,7 +128,7 @@ func insertNodeIntoParent(node: Node,
     }
 
     // 5. If child is non-null, then:
-    if let child = child {
+    if let child {
         // FIXME:
         _ = child
         // 5.1. For each live range whose start node is parent and start offset
@@ -194,7 +194,7 @@ func insertNodeIntoParent(node: Node,
 // https://dom.spec.whatwg.org/#concept-node-append
 func appendNodeToParent(node: Node, parent: Node) -> Node {
     // To append a node to a parent, pre-insert node into parent before null.
-    return preInsertBeforeChild(node: node, parent: parent, child: nil)
+    preInsertBeforeChild(node: node, parent: parent, child: nil)
 }
 
 // https://dom.spec.whatwg.org/#concept-node-replace
@@ -413,7 +413,7 @@ func removeNode(node: Node, suppressObservers _: Bool = false) {
 }
 
 func isChildAllowed(node: Node) -> Bool {
-    return switch node {
+    switch node {
     case is Document: false
     case is Text: true
     case is Comment: true

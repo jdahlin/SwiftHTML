@@ -116,7 +116,7 @@ public class Element: Node {
     // local name.
     var qualifiedName: DOMString {
         var qualifiedName = localName
-        if let prefix = prefix {
+        if let prefix {
             qualifiedName = "\(prefix):\(qualifiedName)"
         }
         return qualifiedName
@@ -124,11 +124,11 @@ public class Element: Node {
 
     // Element interface
     func hasAttribute(_ qualifiedName: DOMString) -> Bool {
-        return attributes.getNamedItem(qualifiedName) != nil
+        attributes.getNamedItem(qualifiedName) != nil
     }
 
     func getAttribute(_ qualifiedName: DOMString) -> DOMString? {
-        return attributes.getNamedItem(qualifiedName)?.value
+        attributes.getNamedItem(qualifiedName)?.value
     }
 
     func setAttribute(_ qualifiedName: DOMString, _ value: DOMString) {

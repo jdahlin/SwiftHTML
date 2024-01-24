@@ -36,7 +36,7 @@ class HTMLStyleElement: HTMLElement {
             // 2. If this's associated CSS style sheet's disabled flag is set, return true.
 
             // 3. Return false.
-            return false
+            false
         }
         set {
             // 1. If this does not have an associated CSS style sheet, return.

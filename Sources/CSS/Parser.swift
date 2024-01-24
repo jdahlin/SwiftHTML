@@ -53,7 +53,7 @@ public indirect enum ComponentValue: CustomStringConvertible {
     case simpleBlock(SimpleBlock)
 
     public var description: String {
-        return switch self {
+        switch self {
         case let .token(token): "CV(\(token))"
         case let .function(f): "CV(\(f))"
         case let .simpleBlock(simpleBlock): "CV(\(simpleBlock))"
@@ -68,7 +68,7 @@ public indirect enum ComponentValue: CustomStringConvertible {
     }
 
     public func token() -> Token? {
-        return switch self {
+        switch self {
         case let .token(
             token): token
         default: nil
@@ -76,7 +76,7 @@ public indirect enum ComponentValue: CustomStringConvertible {
     }
 
     public func isToken(_ token: Token) -> Bool {
-        return switch self {
+        switch self {
         case .token(token): true
         default: false
         }
@@ -88,7 +88,7 @@ public enum Rule: CustomStringConvertible {
     case qualified(QualifiedRule)
 
     public var description: String {
-        return switch self {
+        switch self {
         case let .at(at): "R: \(at)"
         case let .qualified(qualified): "R: \(qualified)"
         }
@@ -549,17 +549,17 @@ func consumeComponentValue(_ tokenStream: inout TokenStream) throws -> Component
     // If the current input token is a <{-token>, <[-token>, or <(-token>,
     case .token(.lcurlybracket), .token(.lbracket), .token(.lparan):
         // consume a simple block and return it.
-        return try ComponentValue.simpleBlock(consumeSimpleBlock(&tokenStream))
+        try ComponentValue.simpleBlock(consumeSimpleBlock(&tokenStream))
 
     // Otherwise, if the current input token is a <function-token>
     case let .token(.function(name)):
         // consume a function and return it.
-        return try ComponentValue.function(consumeFunction(&tokenStream, name: name))
+        try ComponentValue.function(consumeFunction(&tokenStream, name: name))
 
     // Otherwise
     case let inputToken:
         // return the current input token.
-        return switch inputToken {
+        switch inputToken {
         case let .componentValue(componentValue): componentValue
         case let .token(token): ComponentValue.token(token)
         }

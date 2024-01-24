@@ -17,9 +17,9 @@ public struct TokenStream: Sequence, IteratorProtocol {
         tokens = AnyIterator<InputToken?> {
             switch iterator.next() {
             case .none:
-                return nil
+                nil
             case let .some(inputToken):
-                return inputToken
+                inputToken
             }
         }
     }
@@ -29,9 +29,9 @@ public struct TokenStream: Sequence, IteratorProtocol {
         tokens = AnyIterator<InputToken?> {
             switch tokenizerIterator.next() {
             case .none:
-                return nil
+                nil
             case let .some(token):
-                return InputToken.token(token as! Token)
+                InputToken.token(token as! Token)
             }
         }
     }
@@ -53,9 +53,9 @@ public struct TokenStream: Sequence, IteratorProtocol {
         self.tokens = AnyIterator<InputToken?> {
             switch tokensIterator.next() {
             case .none:
-                return nil
+                nil
             case let .some(token):
-                return InputToken.token(token)
+                InputToken.token(token)
             }
         }
     }

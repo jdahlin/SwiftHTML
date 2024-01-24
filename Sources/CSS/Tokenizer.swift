@@ -90,7 +90,7 @@ public extension Codepoint {
     // https://www.w3.org/TR/css-syntax-3/#ident-start-code-point
     var isIdentStartCodePoint: Bool {
         // A letter,
-        return isLetter
+        isLetter
             // a non-ASCII code point,
             || isNonASCIICodePoint
             // or U+005F LOW LINE (_).
@@ -100,7 +100,7 @@ public extension Codepoint {
     // https://www.w3.org/TR/css-syntax-3/#ident-code-point
     func isIdentCodePoint() -> Bool {
         // An ident-start code point,
-        return isIdentStartCodePoint
+        isIdentStartCodePoint
             // a digit,
             || isDigit
             // or U+002D HYPHEN-MINUS (-).
@@ -154,7 +154,7 @@ struct Tokenizer: Sequence {
     }
 
     func peek(_ nth: Int = 0) -> Codepoint? {
-        let pos = stream.index(self.pos, offsetBy: nth, limitedBy: stream.endIndex)
+        let pos = stream.index(pos, offsetBy: nth, limitedBy: stream.endIndex)
         if pos == nil || pos == stream.endIndex {
             return .none
         } else {
@@ -191,7 +191,7 @@ struct Tokenizer: Sequence {
     }
 
     func makeIterator() -> some IteratorProtocol {
-        return TokenizerTokenIterator(self)
+        TokenizerTokenIterator(self)
     }
 }
 
@@ -678,7 +678,7 @@ func checkIfTwoCodePointsAreAValidEscape(c1: Codepoint, c2: Codepoint) -> Bool {
 
 // 4.3.9 https://www.w3.org/TR/css-syntax-3/#would-start-an-identifier
 func checkIfThreeCodePointsWouldStartIdentSequence(c1: Codepoint, c2: Codepoint, c3: Codepoint) -> Bool {
-    return switch c1 {
+    switch c1 {
     // U+002D HYPHEN-MINUS
     case "-":
         switch c2 {
@@ -708,7 +708,7 @@ func checkIfThreeCodePointsWouldStartIdentSequence(c1: Codepoint, c2: Codepoint,
 
 // 4.3.10 https://www.w3.org/TR/css-syntax-3/#starts-with-a-number
 func checkIfThreeCodePointsWouldStartANumber(c1: Codepoint, c2: Codepoint, c3: Codepoint) -> Bool {
-    return switch c1 {
+    switch c1 {
     // U+002B PLUS SIGN (+)
     // U+002D HYPHEN-MINUS
     case "+", "-":
@@ -716,7 +716,7 @@ func checkIfThreeCodePointsWouldStartANumber(c1: Codepoint, c2: Codepoint, c3: C
         if c2.isDigit {
             true
             // Otherwise, if the second code point is a U+002E FULL STOP (.) and the third code point is a digit, return true.
-        } else if c2 == "." && c3.isDigit {
+        } else if c2 == ".", c3.isDigit {
             true
             // Otherwise, return false.
         } else {

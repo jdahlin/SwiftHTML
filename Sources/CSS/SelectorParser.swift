@@ -39,7 +39,7 @@ public enum PseudoClassSelector {
 // - a#selected
 // - [type=checkbox]:checked:focus
 public struct CompoundSelector {
-    public var typeSelector: WQName? = nil
+    public var typeSelector: WQName?
     public var subclassSelectors: [SubclassSelector] = []
     public var pseudoSelectors: [(String, PseudoClassSelector)] = []
 }
@@ -139,7 +139,7 @@ public enum AttrModifier {
 // Qualified Name that allows wildcards
 public struct WQName {
     public var name: String
-    public var nsPrefix: NSPrefix? = nil
+    public var nsPrefix: NSPrefix?
 }
 
 public struct NSPrefix {
@@ -164,7 +164,7 @@ struct ComponentValues {
     }
 
     func peek(_ i: Int = 0) -> ComponentValue? {
-        let pos = self.pos + i
+        let pos = pos + i
         return if pos > count - 1 {
             nil
         } else {
@@ -173,7 +173,7 @@ struct ComponentValues {
     }
 
     mutating func next() -> ComponentValue? {
-        let pos = self.pos
+        let pos = pos
         if pos > count - 1 {
             return nil
         } else {
@@ -249,7 +249,7 @@ func consumeCompoundSelector(_ values: inout ComponentValues) -> CompoundSelecto
 // <type-selector> = <wq-name> | <ns-prefix>? '*'
 func consumeTypeSelector(_ values: inout ComponentValues) -> WQName? {
     // FIXME: ns-prefix
-    return consumeWQName(&values)
+    consumeWQName(&values)
 }
 
 // <ns-prefix>? <ident-token>

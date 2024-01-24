@@ -61,7 +61,7 @@ public class Document: Node {
     func createElement(_ localName: DOMString,
                        options _: ElementCreationOptions? = nil) -> Element
     {
-        return createElement(
+        createElement(
             localName: localName,
             namespace: nil
         )
@@ -88,7 +88,7 @@ public class Document: Node {
         // 5. If definition is non-null, and definition’s name is not equal to
         //    its local name (i.e., definition represents a customized built-in
         //    element), then:
-        if definition != nil && definition!.name != localName {
+        if definition != nil, definition!.name != localName {
             // 5.1 Let interface be the element interface for localName and the HTML namespace.
 
             // 5.2 Set result to a new element that implements interface, with no
@@ -204,7 +204,7 @@ public class Document: Node {
         // The body element of a document is the first of the html element's
         // children that is either a body element or a frameset element, or null
         // if there is no such element.
-        guard let documentElement = documentElement else {
+        guard let documentElement else {
             return nil
         }
         for item in documentElement.childNodes {

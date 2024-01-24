@@ -74,7 +74,7 @@ class TreeBuilder: TokenReceiver {
     // https://html.spec.whatwg.org/multipage/parsing.html#current-node
     var currentNode: Node? {
         // The current node is the bottommost node in this stack of open elements.
-        return stackOfOpenElements.bottommost
+        stackOfOpenElements.bottommost
     }
 
     // https://html.spec.whatwg.org/multipage/parsing.html#appropriate-place-for-inserting-a-node
@@ -92,7 +92,7 @@ class TreeBuilder: TokenReceiver {
         // 2. Determine the adjusted insertion location using the first matching steps from the following list:
 
         // FIXME: If foster parenting is enabled and target is a table, tbody, tfoot, thead, or tr element
-        if fosterParenting && target?.nodeName == "table" {
+        if fosterParenting, target?.nodeName == "table" {
             // Foster parenting happens when content is misnested in tables.
             // Adjust the insertion location accordingly.
             // ...
@@ -257,7 +257,7 @@ class TreeBuilder: TokenReceiver {
         // When the steps below require the user agent to insert an HTML element for
         // a token, the user agent must insert a foreign element for the token, with
         // the HTML namespace and false.
-        return insertForeignElement(
+        insertForeignElement(
             token: token,
             namespace: HTML_NS,
             onlyAddElementToStack: false
