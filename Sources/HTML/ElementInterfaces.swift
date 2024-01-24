@@ -11,6 +11,8 @@ func elementInterface(localName: String, namespace _: String?) -> Element.Type {
         return HTMLHtmlElement.self
     case "script":
         return HTMLScriptElement.self
+    case "span":
+        return HTMLSpanElement.self
     case "style":
         return HTMLStyleElement.self
     default:

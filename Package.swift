@@ -9,11 +9,19 @@ let package = Package(
         .library(name: "CSS", targets: ["CSS"]),
         .library(name: "HTML", targets: ["HTML"]),
     ],
+    dependencies: [
+        .package(url: "https://github.com/apple/swift-collections.git",
+                 .upToNextMajor(from: "1.0.0")),
+    ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
         .target(name: "CSS", path: "Sources/CSS"),
-        .target(name: "HTML", path: "Sources/HTML"),
+        .target(name: "HTML",
+                dependencies: [
+                    .product(name: "Collections", package: "swift-collections"),
+                ],
+                path: "Sources/HTML"),
         .executableTarget(name: "Browser", dependencies: ["HTML", "CSS"], path: "Sources/Browser"),
         .testTarget(name: "CSSTests", dependencies: ["CSS"], path: "Sources/CSSTests"),
     ]

@@ -83,7 +83,7 @@ public enum Combinator {
 // - a#selected > .icon
 // - .box h2 + p
 public struct ComplexSelector {
-    public var selector: CompoundSelector
+    public var compound: CompoundSelector
     public var elements: [(Combinator, CompoundSelector)]
 }
 
@@ -138,8 +138,8 @@ public enum AttrModifier {
 
 // Qualified Name that allows wildcards
 public struct WQName {
-    var name: String
-    var nsPrefix: NSPrefix? = nil
+    public var name: String
+    public var nsPrefix: NSPrefix? = nil
 }
 
 public struct NSPrefix {
@@ -148,10 +148,10 @@ public struct NSPrefix {
 }
 
 public struct AttributeSelector {
-    var name: WQName
-    var attrMatcher: AttrMatcher?
-    var value: String?
-    var modifier: AttrModifier = .sensitive
+    public var name: WQName
+    public var attrMatcher: AttrMatcher?
+    public var value: String?
+    public var modifier: AttrModifier = .sensitive
 }
 
 struct ComponentValues {
@@ -223,7 +223,7 @@ func consumeComplexSelector(_ values: inout ComponentValues) -> ComplexSelector?
         _ = values.next()
         elements.append((combinator, compound))
     }
-    return ComplexSelector(selector: selector, elements: elements)
+    return ComplexSelector(compound: selector, elements: elements)
 }
 
 // <compound-selector> = [

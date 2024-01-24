@@ -1,8 +1,6 @@
 // interface Element : Node {
 
-//   [CEReactions] attribute DOMString id;
 //   [CEReactions] attribute DOMString className;
-//   [SameObject, PutForwards=value] readonly attribute DOMTokenList classList;
 //   [CEReactions, Unscopable] attribute DOMString slot;
 
 //   boolean hasAttributes();
@@ -77,6 +75,24 @@ public class Element: Node {
     }
 
     var attributes: NamedNodeMap
+
+    // [CEReactions] attribute DOMString id;
+    lazy var id: DOMString = attributes.getNamedItem("id")?.value ?? ""
+
+    // [SameObject, PutForwards=value] readonly attribute DOMTokenList classList;
+    // The classList getter steps are to return a DOMTokenList object whose
+    // associated element is this and whose associated attribute’s local
+    // name is class. The token set of this particular DOMTokenList object
+    // are also known as the element’s classes.
+    var classList: DOMTokenList {
+        set {
+            FIXME("Element.classList setter")
+        }
+        get {
+            let attribute = attributes.getNamedItem("class") ?? Attr(name: "class", value: "")
+            return DOMTokenList(element: self, attribute: attribute)
+        }
+    }
 
     required init(localName: DOMString,
                   attributes: [Attr] = [],

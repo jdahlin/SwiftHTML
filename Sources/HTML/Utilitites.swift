@@ -50,7 +50,7 @@ public func printDOMTree(_ node: Node, _ indent: String = "") {
             let text = child as! Text
             print(indent + text.data.debugDescription)
         default:
-            let nodeName = child.nodeName ?? "nil"
+            let nodeName = child.nodeName?.lowercased() ?? "nil"
             var extra = ""
             if let element = child as? Element, element.attributes.length > 0 {
                 for i in 0 ..< element.attributes.length {

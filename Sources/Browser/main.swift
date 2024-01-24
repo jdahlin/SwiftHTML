@@ -71,7 +71,8 @@ enum Browser {
           </head>
           <body>
           1
-          <div class=foo>2</div>
+          <div id=mine class=foo>2</div>
+          <span>Paragraph</span>
           3
           </body>
           </html>
@@ -82,5 +83,7 @@ enum Browser {
         let post = String(decoding: data, as: UTF8.self)
         print(post)
         HTML.printDOMTree(document)
+        let elements = document.body!.querySelectorAll("*")
+        print(elements)
     }
 }

@@ -188,15 +188,31 @@ public class Document: Node {
         return result!
     }
 
-    // https://html.spec.whatwg.org/multipage/dom.html#the-body-element-2
-    var body: Element? {
-        // The body element of a Document object is its first element child whose
-        // local name is body and whose namespace is the HTML namespace.
+    // https://dom.spec.whatwg.org/#document-element
+    public var documentElement: Element? {
+        // The document element of a document is its first element child.
         for item in childNodes {
-            if let element = item as? Element,
-               element.localName == "body",
-               element.namespaceURI == HTML_NS
-            {
+            if let element = item as? Element {
+                return element
+            }
+        }
+        return nil
+    }
+
+    // https://html.spec.whatwg.org/multipage/dom.html#the-body-element-2
+    public var body: Element? {
+        // The body element of a document is the first of the html element's
+        // children that is either a body element or a frameset element, or null
+        // if there is no such element.
+        guard let documentElement = documentElement else {
+            return nil
+        }
+        for item in documentElement.childNodes {
+            guard item is Element else {
+                continue
+            }
+            let element = item as! Element
+            if element.localName == "body", element.namespaceURI == HTML_NS {
                 return element
             }
         }
