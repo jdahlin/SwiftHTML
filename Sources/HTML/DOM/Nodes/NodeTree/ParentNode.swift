@@ -62,30 +62,26 @@ struct Selector {
         if compound.typeSelector != nil {
             let typeSelector = compound.typeSelector!
             assert(typeSelector.nsPrefix == nil)
-            if typeSelector.name != nil,
-               typeSelector.name == "*" || element.localName == typeSelector.name
-            {
+            if typeSelector.name == "*" || element.localName == typeSelector.name {
                 return true
             }
         }
-        if compound.subclassSelectors != nil {
-            for subclassSelector in compound.subclassSelectors {
-                switch subclassSelector {
-                case .id("*"):
+        for subclassSelector in compound.subclassSelectors {
+            switch subclassSelector {
+            case .id("*"):
+                return true
+            case let .id(id):
+                if element.id == id {
                     return true
-                case let .id(id):
-                    if element.id == id {
-                        return true
-                    }
-                case let .class_(className):
-                    if element.classList.contains(className) {
-                        return true
-                    }
-                case let .attribute(attribute):
-                    FIXME("attribute selectors not implemented")
-                case .psuedo:
-                    FIXME("psuedo selectors not implemented")
                 }
+            case let .class_(className):
+                if element.classList.contains(className) {
+                    return true
+                }
+            case .attribute:
+                FIXME("attribute selectors not implemented")
+            case .psuedo:
+                FIXME("psuedo selectors not implemented")
             }
         }
         if compound.pseudoSelectors.count > 0 {
