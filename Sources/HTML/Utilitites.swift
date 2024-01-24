@@ -1,6 +1,6 @@
 import Foundation
 
-public func FIXME(
+package func FIXME(
     _ message: String? = nil,
     function: String = #function,
     file: String = #fileID,
@@ -9,7 +9,7 @@ public func FIXME(
     print("FIXME: \(message ?? "") in \(function) at \(file):\(line)")
 }
 
-func DIE(
+package func DIE(
     _ message: String? = nil,
     function: String = #function,
     file: String = #fileID,

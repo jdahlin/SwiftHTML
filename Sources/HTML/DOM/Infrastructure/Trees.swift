@@ -28,6 +28,31 @@ func isInclusiveAncestor(node: Node, ancestor: Node) -> Bool {
     return false
 }
 
+func getDescendants(element: Element) -> [Element] {
+    var descendants: [Element] = []
+    if element.firstChild != nil {
+        var node = element.firstChild
+        repeat {
+            node = node?.nextSibling
+            if node is Element {
+                descendants.append(node as! Element)
+            }
+        } while node?.nextSibling != nil
+    }
+    return descendants
+}
+
+func isDescendantOf(element: Element, ancestor: Element) -> Bool {
+    var node = element.parentNode
+    while node != nil {
+        if node == ancestor {
+            return true
+        }
+        node = node?.parentNode
+    }
+    return false
+}
+
 // func nodesInTreeOrder(nodes: [Node], visit: (Node) -> Void) {
 //     for node in nodes {
 //         visit(node)
