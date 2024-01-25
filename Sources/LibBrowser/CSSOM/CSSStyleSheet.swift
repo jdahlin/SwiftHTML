@@ -18,4 +18,6 @@
 // };
 
 // https://drafts.csswg.org/cssom/#cssstylesheet
-class CSSStyleSheet: StyleSheet {}
+extension CSS {
+    class CSSStyleSheet: StyleSheet {}
+}

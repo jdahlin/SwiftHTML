@@ -8,8 +8,6 @@
 // };
 // HTMLStyleElement includes LinkStyle;
 
-import CSS
-
 extension HTML {
     class StyleElement: Element {
         // The media attribute says which media the styles apply to. The value must
@@ -73,7 +71,7 @@ extension HTML {
             //    content, then return. [CSP]
 
             // Create a CSS style sheet with the following properties:
-            let cssStyleSheet = CSSStyleSheet()
+            let cssStyleSheet = CSS.CSSStyleSheet()
             // type
             // text/css
             cssStyleSheet.type = "text/css"

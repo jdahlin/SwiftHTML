@@ -6,8 +6,7 @@ import PackageDescription
 let package = Package(
     name: "SwiftHTML",
     products: [
-        .library(name: "CSS", targets: ["CSS"]),
-        .library(name: "HTML", targets: ["HTML"]),
+        .library(name: "LibBrowser", targets: ["LibBrowser"]),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-collections.git",
@@ -16,13 +15,12 @@ let package = Package(
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
-        .target(name: "CSS", path: "Sources/CSS"),
-        .target(name: "HTML",
+        .target(name: "LibBrowser",
                 dependencies: [
                     .product(name: "Collections", package: "swift-collections"),
                 ],
-                path: "Sources/HTML"),
-        .executableTarget(name: "Browser", dependencies: ["HTML", "CSS"], path: "Sources/Browser"),
-        .testTarget(name: "CSSTests", dependencies: ["CSS"], path: "Sources/CSSTests"),
+                path: "Sources/LibBrowser"),
+        .executableTarget(name: "Browser", dependencies: ["LibBrowser"], path: "Sources/Browser"),
+        // .testTarget(name: "CSSTests", dependencies: ["CSS"], path: "Sources/CSSTests"),
     ]
 )

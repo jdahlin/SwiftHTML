@@ -8,8 +8,8 @@
 // 4.13.5 Upgrades
 // 4.13.6 Custom element reactions
 
-package extension HTML {
-    package struct CustomElementDefinition {
+extension HTML {
+    struct CustomElementDefinition {
         // A name
         // A valid custom element name
         var name: String

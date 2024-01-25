@@ -19,7 +19,7 @@ package extension DOM.Element {
         // The querySelector(selectors) method steps are to return the first
         // result of running scope-match a selectors string selectors against
         // this, if the result is not an empty list; otherwise null.
-        let result = scopeMatchSelectorsString(selectors: selectors, node: self)
+        let result = CSS.scopeMatchSelectorsString(selectors: selectors, node: self)
         if result.isEmpty {
             return nil
         }
@@ -33,7 +33,7 @@ package extension DOM.Element {
         // result of running scope-match a selectors string selectors against
         // this.
         FIXME("Return a NodeList instead of [DOM.Element]")
-        return scopeMatchSelectorsString(selectors: selectors, node: self)
+        return CSS.scopeMatchSelectorsString(selectors: selectors, node: self)
     }
 }
 

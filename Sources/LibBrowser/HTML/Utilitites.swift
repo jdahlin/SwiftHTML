@@ -19,8 +19,8 @@ package func DIE(
     exit(1)
 }
 
-package extension HTML {
-    package static func parseHTML(_ data: inout Data) -> DOM.Document {
+extension HTML {
+    static func parseHTML(_ data: inout Data) -> DOM.Document {
         // let context = JSContext()
         // if let globalObject = context?.evaluateScript("this") {
         //   print(type(of: globalObject))
