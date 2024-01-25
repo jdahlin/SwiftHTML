@@ -108,7 +108,7 @@ extension DOM {
 
     struct BrowsingContext {}
 
-    public class Document: Node {
+    class Document: Node {
         var mode: HTML.DocumentMode = .noQuirks
 
         var browsingContext: BrowsingContext?
@@ -251,7 +251,7 @@ extension DOM {
         }
 
         // https://dom.spec.whatwg.org/#document-element
-        public var documentElement: DOM.Element? {
+        var documentElement: DOM.Element? {
             // The document element of a document is its first element child.
             for item in childNodes {
                 if let element = item as? DOM.Element {
@@ -262,7 +262,7 @@ extension DOM {
         }
 
         // https://html.spec.whatwg.org/multipage/dom.html#the-body-element-2
-        public var body: DOM.Element? {
+        var body: DOM.Element? {
             // The body element of a document is the first of the html element's
             // children that is either a body element or a frameset element, or null
             // if there is no such element.

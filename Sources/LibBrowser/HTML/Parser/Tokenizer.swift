@@ -43,7 +43,7 @@ extension Character {
     }
 }
 
-public protocol TokenReceiver {
+protocol TokenReceiver {
     func didReceiveToken(_ token: HTML.Token)
 }
 
@@ -74,7 +74,7 @@ extension HTML {
         }
     }
 
-    public enum TokenizerState {
+    enum TokenizerState {
         case data
         case rcData
         case plaintext
@@ -157,12 +157,12 @@ extension HTML {
         case numericCharacterReferenceEnd
     }
 
-    public struct TokenizerAttr {
-        public var name: String
-        public var value: String
+    struct TokenizerAttr {
+        var name: String
+        var value: String
     }
 
-    public enum Token {
+    enum Token {
         case character(Character)
         case startTag(_ tagName: String, attributes: [TokenizerAttr] = [], isSelfClosing: Bool = false)
         case endTag(_ tagName: String, attributes: [TokenizerAttr] = [], isSelfClosing: Bool = false)
@@ -179,7 +179,7 @@ extension HTML {
         var data: Data
         var state: TokenizerState = .data
         var returnState: TokenizerState = .data
-        public var delegate: TokenReceiver?
+        var delegate: TokenReceiver?
         var currentToken: HTML.Token?
         var reconsumeNext = false
         var temporaryBuffer = ""
@@ -506,12 +506,12 @@ extension HTML {
                 handleDoctypeNameState()
 
             // 13.2.5.56 After DOCTYPE name state
-            // 13.2.5.57 After DOCTYPE public keyword state
-            // 13.2.5.58 Before DOCTYPE public identifier state
-            // 13.2.5.59 DOCTYPE public identifier (double-quoted) state
-            // 13.2.5.60 DOCTYPE public identifier (single-quoted) state
-            // 13.2.5.61 After DOCTYPE public identifier state
-            // 13.2.5.62 Between DOCTYPE public and system identifiers state
+            // 13.2.5.57 After DOCTYPE keyword state
+            // 13.2.5.58 Before DOCTYPE identifier state
+            // 13.2.5.59 DOCTYPE identifier (double-quoted) state
+            // 13.2.5.60 DOCTYPE identifier (single-quoted) state
+            // 13.2.5.61 After DOCTYPE identifier state
+            // 13.2.5.62 Between DOCTYPE and system identifiers state
             // 13.2.5.63 After DOCTYPE system keyword state
             // 13.2.5.64 Before DOCTYPE system identifier state
             // 13.2.5.65 DOCTYPE system identifier (double-quoted) state

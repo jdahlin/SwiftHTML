@@ -1,4 +1,4 @@
-public extension DOM {
+extension DOM {
     // [Exposed=Window]
     // interface ProcessingInstruction : CharacterData {
     //   readonly attribute DOM.String target;

@@ -9,7 +9,7 @@
 //   undefined replaceData(unsigned long offset, unsigned long count, DOM.String data);
 // };
 
-public extension DOM {
+extension DOM {
     class CharacterData: Node {
         var data: DOM.String = ""
     }

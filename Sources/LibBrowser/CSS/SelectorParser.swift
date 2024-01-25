@@ -40,9 +40,9 @@ extension CSS {
     // - a#selected
     // - [type=checkbox]:checked:focus
     struct CompoundSelector {
-        public var typeSelector: WQName?
-        public var subclassSelectors: [SubclassSelector] = []
-        public var pseudoSelectors: [(String, PseudoClassSelector)] = []
+        var typeSelector: WQName?
+        var subclassSelectors: [SubclassSelector] = []
+        var pseudoSelectors: [(String, PseudoClassSelector)] = []
     }
 
     // combine two selectors and match depending on their relationship
@@ -143,7 +143,7 @@ extension CSS {
         var nsPrefix: NSPrefix?
     }
 
-    public struct NSPrefix {
+    struct NSPrefix {
         var prefix: String?
         var wildcard = false
     }

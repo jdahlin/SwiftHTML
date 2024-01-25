@@ -7,7 +7,7 @@ extension DOM {
 
     class NamedNodeMap {
         var attributes: [DOM.String: DOM.String] = [:]
-        public var ownerElement: DOM.Element?
+        var ownerElement: DOM.Element?
 
         // readonly attribute unsigned long length;
         var length: UInt { UInt(attributes.count) }

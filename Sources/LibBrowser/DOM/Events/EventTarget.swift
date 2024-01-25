@@ -21,6 +21,6 @@
 //   AbortSignal signal;
 // };
 
-public extension DOM {
+extension DOM {
     class EventTarget {}
 }

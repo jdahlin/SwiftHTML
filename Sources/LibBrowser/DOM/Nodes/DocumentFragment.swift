@@ -4,7 +4,7 @@ extension DOM {
     //   constructor();
     // };
 
-    public class DocumentFragment: Node {}
+    class DocumentFragment: Node {}
 
     // https://dom.spec.whatwg.org/#concept-tree-host-including-inclusive-ancestor
     static func isHostIncludingInclusiveAncestor(a: Node, b: Node) -> Bool {

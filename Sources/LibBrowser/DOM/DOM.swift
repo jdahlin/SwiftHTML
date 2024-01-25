@@ -1,10 +1,10 @@
 let HTML_NS = "http://www.w3.org/1999/xhtml"
 
 // Fake namespace in Swift
-public enum DOM {
-    public typealias String = Swift.String
+enum DOM {
+    typealias String = Swift.String
 
-    public static func printTree(_ node: DOM.Node, _ indent: String = "") {
+    static func printTree(_ node: DOM.Node, _ indent: String = "") {
         for child in node.childNodes {
             switch child {
             case is DOM.Text:

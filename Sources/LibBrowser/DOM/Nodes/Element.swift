@@ -54,7 +54,7 @@ extension DOM {
         case custom
     }
 
-    public class Element: Node {
+    class Element: Node {
         // readonly attribute DOM.String? namespaceURI;
         var namespaceURI: DOM.String
 

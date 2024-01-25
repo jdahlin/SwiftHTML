@@ -1,4 +1,4 @@
-public typealias Codepoint = Unicode.Scalar
+typealias Codepoint = Unicode.Scalar
 
 extension Codepoint {
     var isSign: Bool {
@@ -76,23 +76,23 @@ extension Codepoint {
 }
 
 extension CSS {
-    public enum NumericType {
+    enum NumericType {
         case number
         case integer
     }
 
-    public enum Number: Equatable {
+    enum Number: Equatable {
         case Integer(Int64)
         case Number(Double)
     }
 
-    public enum HashFlag: Equatable {
+    enum HashFlag: Equatable {
         case id
         case unrestricted
     }
 
     // https://www.w3.org/TR/css-syntax-3/#tokenization
-    public enum Token: Equatable {
+    enum Token: Equatable {
         case ident(String)
         case function(String)
         case atKeyword(keyword: String)

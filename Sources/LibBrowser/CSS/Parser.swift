@@ -53,7 +53,7 @@ extension CSS {
         case function(Function)
         case simpleBlock(SimpleBlock)
 
-        public var description: String {
+        var description: String {
             switch self {
             case let .token(token): "CV(\(token))"
             case let .function(f): "CV(\(f))"
@@ -61,14 +61,14 @@ extension CSS {
             }
         }
 
-        public func ident() -> String? {
+        func ident() -> String? {
             if case let .token(.ident(ident)) = self {
                 return ident
             }
             return nil
         }
 
-        public func token() -> Token? {
+        func token() -> Token? {
             switch self {
             case let .token(
                 token): token
@@ -76,7 +76,7 @@ extension CSS {
             }
         }
 
-        public func isToken(_ token: Token) -> Bool {
+        func isToken(_ token: Token) -> Bool {
             switch self {
             case .token(token): true
             default: false
@@ -88,7 +88,7 @@ extension CSS {
         case at(AtRule)
         case qualified(QualifiedRule)
 
-        public var description: String {
+        var description: String {
             switch self {
             case let .at(at): "R: \(at)"
             case let .qualified(qualified): "R: \(qualified)"

@@ -62,7 +62,7 @@ enum DocumentPosition: UInt16 {
 
 // };
 
-public extension DOM {
+extension DOM {
     class Node: EventTarget {
         // [SameObject] readonly attribute NodeList childNodes;
         let childNodes: DOM.LiveNodeList<Node>

@@ -37,7 +37,7 @@ extension CSS {
             }
         }
 
-        public mutating func next() -> Token? {
+        mutating func next() -> Token? {
             do {
                 return try consumeNextToken()
             } catch {
@@ -45,7 +45,7 @@ extension CSS {
             }
         }
 
-        public init(_ string: String) {
+        init(_ string: String) {
             self.init(tokenizer: Tokenizer(string))
         }
 

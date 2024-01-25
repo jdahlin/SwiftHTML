@@ -1,1 +1,1 @@
-public enum HTML {}
+enum HTML {}

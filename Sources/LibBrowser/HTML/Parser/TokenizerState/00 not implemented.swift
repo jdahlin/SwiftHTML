@@ -291,21 +291,21 @@
 // EOF
 // This is an eof-in-doctype parse error. Set the current DOCTYPE token's force-quirks flag to on. Emit the current DOCTYPE token. Emit an end-of-file token.
 // Anything else
-// If the six characters starting from the current input character are an ASCII case-insensitive match for the word "PUBLIC", then consume those characters and switch to the after DOCTYPE public keyword state.
+// If the six characters starting from the current input character are an ASCII case-insensitive match for the word "PUBLIC", then consume those characters and switch to the after DOCTYPE keyword state.
 // Otherwise, if the six characters starting from the current input character are an ASCII case-insensitive match for the word "SYSTEM", then consume those characters and switch to the after DOCTYPE system keyword state.
 // Otherwise, this is an invalid-character-sequence-after-doctype-name parse error. Set the current DOCTYPE token's force-quirks flag to on. Reconsume in the bogus DOCTYPE state.
 
-// 13.2.5.57 After DOCTYPE public keyword state
+// 13.2.5.57 After DOCTYPE keyword state
 // Consume the next input character:
 // U+0009 CHARACTER TABULATION (tab)
 // U+000A LINE FEED (LF)
 // U+000C FORM FEED (FF)
 // U+0020 SPACE
-// Switch to the before DOCTYPE public identifier state.
+// Switch to the before DOCTYPE identifier state.
 // U+0022 QUOTATION MARK (")
-// This is a missing-whitespace-after-doctype-public-keyword parse error. Set the current DOCTYPE token's public identifier to the empty string (not missing), then switch to the DOCTYPE public identifier (double-quoted) state.
+// This is a missing-whitespace-after-doctype-public-keyword parse error. Set the current DOCTYPE token's identifier to the empty string (not missing), then switch to the DOCTYPE identifier (double-quoted) state.
 // U+0027 APOSTROPHE (')
-// This is a missing-whitespace-after-doctype-public-keyword parse error. Set the current DOCTYPE token's public identifier to the empty string (not missing), then switch to the DOCTYPE public identifier (single-quoted) state.
+// This is a missing-whitespace-after-doctype-public-keyword parse error. Set the current DOCTYPE token's identifier to the empty string (not missing), then switch to the DOCTYPE identifier (single-quoted) state.
 // U+003E GREATER-THAN SIGN (>)
 // This is a missing-doctype-public-identifier parse error. Set the current DOCTYPE token's force-quirks flag to on. Switch to the data state. Emit the current DOCTYPE token.
 // EOF
@@ -313,7 +313,7 @@
 // Anything else
 // This is a missing-quote-before-doctype-public-identifier parse error. Set the current DOCTYPE token's force-quirks flag to on. Reconsume in the bogus DOCTYPE state.
 
-// 13.2.5.58 Before DOCTYPE public identifier state
+// 13.2.5.58 Before DOCTYPE identifier state
 // Consume the next input character:
 // U+0009 CHARACTER TABULATION (tab)
 // U+000A LINE FEED (LF)
@@ -321,9 +321,9 @@
 // U+0020 SPACE
 // Ignore the character.
 // U+0022 QUOTATION MARK (")
-// Set the current DOCTYPE token's public identifier to the empty string (not missing), then switch to the DOCTYPE public identifier (double-quoted) state.
+// Set the current DOCTYPE token's identifier to the empty string (not missing), then switch to the DOCTYPE identifier (double-quoted) state.
 // U+0027 APOSTROPHE (')
-// Set the current DOCTYPE token's public identifier to the empty string (not missing), then switch to the DOCTYPE public identifier (single-quoted) state.
+// Set the current DOCTYPE token's identifier to the empty string (not missing), then switch to the DOCTYPE identifier (single-quoted) state.
 // U+003E GREATER-THAN SIGN (>)
 // This is a missing-doctype-public-identifier parse error. Set the current DOCTYPE token's force-quirks flag to on. Switch to the data state. Emit the current DOCTYPE token.
 // EOF
@@ -331,39 +331,39 @@
 // Anything else
 // This is a missing-quote-before-doctype-public-identifier parse error. Set the current DOCTYPE token's force-quirks flag to on. Reconsume in the bogus DOCTYPE state.
 
-// 13.2.5.59 DOCTYPE public identifier (double-quoted) state
+// 13.2.5.59 DOCTYPE identifier (double-quoted) state
 // Consume the next input character:
 // U+0022 QUOTATION MARK (")
-// Switch to the after DOCTYPE public identifier state.
+// Switch to the after DOCTYPE identifier state.
 // U+0000 NULL
-// This is an unexpected-null-character parse error. Append a U+FFFD REPLACEMENT CHARACTER character to the current DOCTYPE token's public identifier.
+// This is an unexpected-null-character parse error. Append a U+FFFD REPLACEMENT CHARACTER character to the current DOCTYPE token's identifier.
 // U+003E GREATER-THAN SIGN (>)
 // This is an abrupt-doctype-public-identifier parse error. Set the current DOCTYPE token's force-quirks flag to on. Switch to the data state. Emit the current DOCTYPE token.
 // EOF
 // This is an eof-in-doctype parse error. Set the current DOCTYPE token's force-quirks flag to on. Emit the current DOCTYPE token. Emit an end-of-file token.
 // Anything else
-// Append the current input character to the current DOCTYPE token's public identifier.
+// Append the current input character to the current DOCTYPE token's identifier.
 
-// 13.2.5.60 DOCTYPE public identifier (single-quoted) state
+// 13.2.5.60 DOCTYPE identifier (single-quoted) state
 // Consume the next input character:
 // U+0027 APOSTROPHE (')
-// Switch to the after DOCTYPE public identifier state.
+// Switch to the after DOCTYPE identifier state.
 // U+0000 NULL
-// This is an unexpected-null-character parse error. Append a U+FFFD REPLACEMENT CHARACTER character to the current DOCTYPE token's public identifier.
+// This is an unexpected-null-character parse error. Append a U+FFFD REPLACEMENT CHARACTER character to the current DOCTYPE token's identifier.
 // U+003E GREATER-THAN SIGN (>)
 // This is an abrupt-doctype-public-identifier parse error. Set the current DOCTYPE token's force-quirks flag to on. Switch to the data state. Emit the current DOCTYPE token.
 // EOF
 // This is an eof-in-doctype parse error. Set the current DOCTYPE token's force-quirks flag to on. Emit the current DOCTYPE token. Emit an end-of-file token.
 // Anything else
-// Append the current input character to the current DOCTYPE token's public identifier.
+// Append the current input character to the current DOCTYPE token's identifier.
 
-// 13.2.5.61 After DOCTYPE public identifier state
+// 13.2.5.61 After DOCTYPE identifier state
 // Consume the next input character:
 // U+0009 CHARACTER TABULATION (tab)
 // U+000A LINE FEED (LF)
 // U+000C FORM FEED (FF)
 // U+0020 SPACE
-// Switch to the between DOCTYPE public and system identifiers state.
+// Switch to the between DOCTYPE and system identifiers state.
 // U+003E GREATER-THAN SIGN (>)
 // Switch to the data state. Emit the current DOCTYPE token.
 // U+0022 QUOTATION MARK (")
@@ -375,7 +375,7 @@
 // Anything else
 // This is a missing-quote-before-doctype-system-identifier parse error. Set the current DOCTYPE token's force-quirks flag to on. Reconsume in the bogus DOCTYPE state.
 
-// 13.2.5.62 Between DOCTYPE public and system identifiers state
+// 13.2.5.62 Between DOCTYPE and system identifiers state
 // Consume the next input character:
 // U+0009 CHARACTER TABULATION (tab)
 // U+000A LINE FEED (LF)

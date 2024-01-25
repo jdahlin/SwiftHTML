@@ -24,8 +24,8 @@ extension HTML.TreeBuilder {
         case let .doctype(name, publicId, systemId, _):
             // Append a DocumentType node to the Document node, with its name set to the
             // name given in the DOCTYPE token, or the empty string if the name was
-            // missing; its public ID set to the public identifier given in the DOCTYPE
-            // token, or the empty string if the public identifier was missing; and its
+            // missing; its ID set to the identifier given in the DOCTYPE
+            // token, or the empty string if the identifier was missing; and its
             // system ID set to the system identifier given in the DOCTYPE token, or the
             // empty string if the system identifier was missing.
             guard name == "html" else {
@@ -41,11 +41,11 @@ extension HTML.TreeBuilder {
 
       // Otherwise, if the document is not an iframe srcdoc document, and the parser cannot change the mode flag is false, and the DOCTYPE token matches one of the conditions in the following list, then then set the Document to limited-quirks mode:
 
-      // The public identifier starts with: "-//W3C//DTD XHTML 1.0 Frameset//"
-      // The public identifier starts with: "-//W3C//DTD XHTML 1.0 Transitional//"
-      // The system identifier is not missing and the public identifier starts with: "-//W3C//DTD HTML 4.01 Frameset//"
-      // The system identifier is not missing and the public identifier starts with: "-//W3C//DTD HTML 4.01 Transitional//"
-      // The system identifier and public identifier strings must be compared to the values given in the lists above in an ASCII case-insensitive manner. A system identifier whose value is the empty string is not considered missing for the purposes of the conditions above.
+      // The identifier starts with: "-//W3C//DTD XHTML 1.0 Frameset//"
+      // The identifier starts with: "-//W3C//DTD XHTML 1.0 Transitional//"
+      // The system identifier is not missing and the identifier starts with: "-//W3C//DTD HTML 4.01 Frameset//"
+      // The system identifier is not missing and the identifier starts with: "-//W3C//DTD HTML 4.01 Transitional//"
+      // The system identifier and identifier strings must be compared to the values given in the lists above in an ASCII case-insensitive manner. A system identifier whose value is the empty string is not considered missing for the purposes of the conditions above.
 
       // Then, switch the insertion mode to "before html".
 

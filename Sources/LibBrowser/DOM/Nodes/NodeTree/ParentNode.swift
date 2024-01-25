@@ -12,7 +12,7 @@
 // DocumentFragment includes ParentNode;
 // DOM.Element includes ParentNode;
 
-package extension DOM.Element {
+extension DOM.Element {
     // DOM.Element? querySelector(DOM.String selectors);
     // https://dom.spec.whatwg.org/#dom-parentnode-queryselector
     func querySelector(_ selectors: DOM.String) -> DOM.Element? {
