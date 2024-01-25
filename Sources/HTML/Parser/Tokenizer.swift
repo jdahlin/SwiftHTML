@@ -356,6 +356,9 @@ class Tokenizer {
             handleDataState()
 
         // 13.2.5.2 RCDATA state
+        case .rcData:
+            handleRCDataState()
+
         // 13.2.5.3 RAWTEXT state
         case .rawText:
             handleRawTextState()
@@ -364,7 +367,9 @@ class Tokenizer {
         case .scriptData:
             handleScriptDataState()
 
-    // 13.2.5.5 PLAINTEXT state
+        // 13.2.5.5 PLAINTEXT state
+        case .plaintext:
+            handlePlaintextState()
 
         // 13.2.5.6 Tag open state
         case .tagOpen:
