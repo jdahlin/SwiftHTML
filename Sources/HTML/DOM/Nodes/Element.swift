@@ -100,7 +100,7 @@ extension DOM {
                       prefix _: DOM.String? = nil,
                       parentNode: Node? = nil,
                       customElementState _: CustomElementState = .undefined,
-                      customElementDefinition _: CustomElementDefinition? = nil,
+                      customElementDefinition _: HTML.CustomElementDefinition? = nil,
                       isValue _: DOM.String? = nil,
                       nodeDocument: Document)
         {

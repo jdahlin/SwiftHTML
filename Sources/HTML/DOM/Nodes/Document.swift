@@ -109,7 +109,7 @@ extension DOM {
     struct BrowsingContext {}
 
     public class Document: Node {
-        var mode: DocumentMode = .noQuirks
+        var mode: HTML.DocumentMode = .noQuirks
 
         var browsingContext: BrowsingContext?
 
@@ -145,7 +145,7 @@ extension DOM {
 
             // 4. Let definition be the result of looking up a custom element
             //    definition given document, namespace, localName, and is.
-            let definition: CustomElementDefinition? = nil
+            let definition: HTML.CustomElementDefinition? = nil
 
             // 5. If definition is non-null, and definition’s name is not equal to
             //    its local name (i.e., definition represents a customized built-in
@@ -223,7 +223,7 @@ extension DOM {
                 // 7. Otherwise:
 
                 // 7.1 Let interface be the element interface for localName and namespace.
-                let iface: DOM.Element.Type = elementInterface(localName: localName, namespace: namespace)
+                let iface: DOM.Element.Type = HTML.elementInterface(localName: localName, namespace: namespace)
 
                 // 7.1.2. Set result to a new element that implements interface, with no
                 //        attributes, namespace set to namespace, namespace prefix set

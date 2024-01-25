@@ -87,7 +87,7 @@ enum Browser {
         let document = HTML.parseHTML(&data)
         let post = String(decoding: data, as: UTF8.self)
         print(post)
-        HTML.printDOMTree(document)
+        DOM.printTree(document)
         let elements = document.body!.querySelectorAll("*")
         print(elements)
     }
