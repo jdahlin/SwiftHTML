@@ -10,6 +10,7 @@ extension HTML.Tokenizer {
             // script data end tag open state.
             temporaryBuffer = ""
             state = .scriptDataEndTagOpen
+
         // U+0021 EXCLAMATION MARK (!)
         case "!":
             // Switch to the script data escape start state. Emit a U+003C
@@ -18,6 +19,7 @@ extension HTML.Tokenizer {
             state = .scriptDataEscapeStart
             emitCharacterToken("<")
             emitCharacterToken("!")
+
         // Anything else
         default:
             // Emit a U+003C LESS-THAN SIGN character token.

@@ -43,10 +43,11 @@ extension DOM {
             // DocumentFragment
             case is DOM.DocumentFragment:
                 DIE("DocumentFragment not implemented")
-    // If node has more than one element child or has a Text node child.
-    // Otherwise, if node has one element child and either parent has an
-    // element child, child is a doctype, or child is non-null and a doctype
-    // is following child.
+
+            // If node has more than one element child or has a Text node child.
+            // Otherwise, if node has one element child and either parent has an
+            // element child, child is a doctype, or child is non-null and a doctype
+            // is following child.
 
             // DOM.Element
             case is DOM.Element:
@@ -58,7 +59,14 @@ extension DOM {
                 }
             // DocumentType
             case is DOM.DocumentType:
-                DIE("DocumentType not implemented")
+                // parent has a doctype child, child is non-null and an element
+                // is preceding child, or child is null and parent has an
+                // element child.
+                if Array(parent.childNodes).allSatisfy({ $0 is DOM.DocumentType }), child is DOM.Element /* || (child == nil && parent.hasElementChild()) */
+                {
+                    throw DOMException.hierarchyRequestError
+                }
+
             default:
                 break
             }

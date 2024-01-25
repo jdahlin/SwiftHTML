@@ -32,4 +32,19 @@ extension DOM {
 
         return textContent
     }
+
+    // The child text content of a node node is the concatenation of the data of
+    // all the Text node children of node, in tree order.
+    // https://dom.spec.whatwg.org/#concept-descendant-text-content
+    static func childTextContent(node: Node) -> String {
+        var textContent = ""
+
+        for childNode in node.childNodes {
+            if let textNode = childNode as? Text {
+                textContent += textNode.data
+            }
+        }
+
+        return textContent
+    }
 }

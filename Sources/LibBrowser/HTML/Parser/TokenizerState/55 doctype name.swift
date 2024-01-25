@@ -14,35 +14,41 @@ extension HTML.Tokenizer {
 
         // U+003E GREATER-THAN SIGN (>)
         case ">":
-            // Switch to the data state. Emit the current DOCTYPE token.
+            // Switch to the data state.
             state = .data
-            emitCurrentToken()
+
+            // Emit the current DOCTYPE token.
+            emitCurrentDocTypeToken()
 
         // ASCII upper alpha
         case let character where character!.isASCIIUpperAlpha:
-            // Append the lowercase version of the current input character (add 0x0020 to the character's code point) to the current DOCTYPE token's name.
-            currentDocTypeAppendToName(character!.lowercased())
+            // Append the lowercase version of the current input character (add
+            // 0x0020 to the character's code point) to the current DOCTYPE
+            // token's name.
+            currentDocTypeToken.name!.append(character!.lowercased())
 
         // U+0000 NULL
         case "\u{0000}":
             // This is an unexpected-null-character parse error.
             // Append a U+FFFD REPLACEMENT CHARACTER character to the current DOCTYPE token's name.
-            currentDocTypeAppendToName("\u{FFFD}")
+            currentDocTypeToken.name!.append("\u{FFFD}")
 
         // EOF
         case nil:
             // This is an eof-in-doctype parse error.
             // Set the current DOCTYPE token's force-quirks flag to on.
-            currentDocTypeSetForceQuirksFlag(true)
+            currentDocTypeToken.forceQuirks = true
+
             // Emit the current DOCTYPE token.
-            emitCurrentToken()
+            emitCurrentDocTypeToken()
+
             // Emit an end-of-file token.
             emitEndOfFileToken()
 
         // Anything else
         // Append the current input character to the current DOCTYPE token's name.
         case let character:
-            currentDocTypeAppendToName(String(character!))
+            currentDocTypeToken.name!.append(character!)
         }
     }
 }

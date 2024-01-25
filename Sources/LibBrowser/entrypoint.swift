@@ -52,34 +52,55 @@ import Foundation
 //     }
 // }
 
+let cssExample122 = """
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<HTML>
+  <HEAD>
+    <TITLE>Examples of margins, padding, and borders</TITLE>
+    <STYLE type="text/css">
+      UL {
+        background: yellow;
+        margin: 12px 12px 12px 12px;
+        padding: 3px 3px 3px 3px;
+                                     /* No borders set */
+      }
+      LI {
+        color: white;                /* text color is white */
+        background: blue;            /* Content, padding will be blue */
+        margin: 12px 12px 12px 12px;
+        padding: 12px 0px 12px 12px; /* Note 0px padding right */
+        list-style: none             /* no glyphs before a list item */
+                                     /* No borders set */
+      }
+      LI.withborder {
+        border-style: dashed;
+        border-width: medium;        /* sets border width on all sides */
+        border-color: lime;
+      }
+    </STYLE>
+  </HEAD>
+  <BODY>
+    <UL>
+      <LI>First element of list
+      <LI class="withborder">Second element of list is
+           a bit longer to illustrate wrapping.
+    </UL>
+  </BODY>
+</HTML>
+"""
+
 public func testEntrypoint() {
     // let html =
     //     "<!doctype html><html><head><title>Test</title></head><body double=\"one\" single='two' unquoted=three><p>Hello, world!</p><!-- foo --></body></html>\r\n"
-    let html = """
-    <html>
-      <head>
-        <script>console.log("Hello World!")</script>
-        <style>div { color: white }</style>
-      </head>
-      <body>
-      1
-      <div id=mine class=foo>2</div>
-      <span>Span2</span>
-      <span>Paragraph</span>
-      3
-      </body>
-      </html>
-    """
-    let filename = FileManager.default.currentDirectoryPath + "/Sources/CSS/default.css"
-    print(filename)
-    _ = Result {
-        try CSS.parseAStylesheet(filename: filename)
-    }
+    let html = cssExample122
+    // let filename = FileManager.default.currentDirectoryPath + "/Resources/CSS/default.css"
+    // print(filename)
+    // _ = Result {
+    //     try CSS.parseAStylesheet(filename: filename)
+    // }
     var data = Data(html.utf8)
     let document = HTML.parseHTML(&data)
-    let post = String(decoding: data, as: UTF8.self)
-    print(post)
     DOM.printTree(document)
-    let elements = document.body!.querySelectorAll("*")
-    print(elements)
+    // let elements = document.body!.querySelectorAll("*")
+    // print(elements)
 }

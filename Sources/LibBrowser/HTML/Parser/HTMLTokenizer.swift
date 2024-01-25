@@ -162,12 +162,19 @@ extension HTML {
         var value: String
     }
 
+    struct DocType {
+        var name: String?
+        var publicIdentifier: String?
+        var systemIdentifier: String?
+        var forceQuirks: Bool = false
+    }
+
     enum Token {
         case character(Character)
         case startTag(_ tagName: String, attributes: [TokenizerAttr] = [], isSelfClosing: Bool = false)
         case endTag(_ tagName: String, attributes: [TokenizerAttr] = [], isSelfClosing: Bool = false)
         case comment(String)
-        case doctype(name: String, publicId: String?, systemId: String?, forceQuirks: Bool)
+        case doctype(DocType)
         case attribute(name: String, value: String)
         case eof
     }
@@ -185,6 +192,7 @@ extension HTML {
         var temporaryBuffer = ""
         var currentEndTagName: String?
         var lastStartTagName: String?
+        lazy var currentDocTypeToken: DocType = .init()
 
         init(data: Data) {
             self.data = data
@@ -232,7 +240,14 @@ extension HTML {
             emitToken(.eof)
         }
 
-        func emitCurrentToken() {
+        func emitCurrentDocTypeToken() {
+            guard case .doctype = currentToken else {
+                fatalError("Expected current token to be a doctype, not \(currentToken.debugDescription)")
+            }
+            emitCurrentToken()
+        }
+
+        func emitCurrentToken(expectedToken _: Token? = nil) {
             guard let token = currentToken else {
                 assertionFailure()
                 return
@@ -246,6 +261,11 @@ extension HTML {
             }
             // FIXME: Confirm that this is correct or just coincidencially works
             return temporaryBuffer == lastStartTagName
+        }
+
+        func createDocTypeToken() {
+            currentDocTypeToken = .init()
+            currentToken = .doctype(currentDocTypeToken)
         }
 
         func createAttribute(name: String = "", value: String = "") {
@@ -298,32 +318,6 @@ extension HTML {
                 currentToken = .comment(name + String(character))
             default:
                 DIE("Implement me: \(currentToken!)")
-            }
-        }
-
-        func currentDocTypeAppendToName(_ s: String) {
-            switch currentToken {
-            case let .doctype(name, publicId, systemId, forceQuirks):
-                currentToken = .doctype(
-                    name: name + s, publicId: publicId, systemId: systemId,
-                    forceQuirks: forceQuirks
-                )
-            default:
-                assertionFailure()
-                exit(0)
-            }
-        }
-
-        func currentDocTypeSetForceQuirksFlag(_ forceQuirks: Bool) {
-            switch currentToken {
-            case let .doctype(name, publicId, systemId, _):
-                currentToken = .doctype(
-                    name: name, publicId: publicId, systemId: systemId,
-                    forceQuirks: forceQuirks
-                )
-            default:
-                assertionFailure()
-                exit(0)
             }
         }
 
@@ -390,9 +384,17 @@ extension HTML {
             case .tagName:
                 handleTagNameState()
 
-        // 13.2.5.9 RCDATA less-than sign state
-        // 13.2.5.10 RCDATA end tag open state
-        // 13.2.5.11 RCDATA end tag name state
+            // 13.2.5.9 RCDATA less-than sign state
+            case .rcDataLessThanSign:
+                handleRcDataLessThanSignState()
+
+            // 13.2.5.10 RCDATA end tag open state
+            case .rcDataEndTagOpen:
+                handleRcDataEndTagOpenState()
+
+            // 13.2.5.11 RCDATA end tag name state
+            case .rcDataEndTagName:
+                handleRcDataEndTagNameState()
 
             // 13.2.5.12 RAWTEXT less-than sign state
             case .rawTextLessThanSign:
@@ -506,9 +508,21 @@ extension HTML {
                 handleDoctypeNameState()
 
             // 13.2.5.56 After DOCTYPE name state
-            // 13.2.5.57 After DOCTYPE keyword state
-            // 13.2.5.58 Before DOCTYPE identifier state
+            case .afterDoctypeName:
+                handleAfterDoctypeNameState()
+
+            // 13.2.5.57 After DOCTYPE public keyword state
+            case .afterDoctypePublicKeyword:
+                handleAfterDoctypePublicKeywordState()
+
+            // 13.2.5.58 Before DOCTYPE public identifier state
+            case .beforeDoctypePublicIdentifier:
+                handleBeforeDoctypePublicIdentifierState()
+
             // 13.2.5.59 DOCTYPE identifier (double-quoted) state
+            case .doctypePublicIdentifierDoubleQuoted:
+                handleDoctypePublicIdentifierDoubleQuotedState()
+
             // 13.2.5.60 DOCTYPE identifier (single-quoted) state
             // 13.2.5.61 After DOCTYPE identifier state
             // 13.2.5.62 Between DOCTYPE and system identifiers state

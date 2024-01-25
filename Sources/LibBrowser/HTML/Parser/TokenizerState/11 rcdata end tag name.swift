@@ -1,7 +1,7 @@
 extension HTML.Tokenizer {
-    // 13.2.5.14 RAWTEXT end tag name state
+    // 13.2.5.11 RCDATA end tag name state
     // https://html.spec.whatwg.org/multipage/parsing.html#rcdata-end-tag-name-state
-    func handleRawTextEndTagNameState() {
+    func handleRcDataEndTagNameState() {
         // Consume the next input character:
         switch consumeNextInputCharacter() {
         // U+0009 CHARACTER TABULATION (tab)
@@ -71,7 +71,7 @@ extension HTML.Tokenizer {
                 emitCharacterToken(c)
             }
             // Reconsume in the RAWTEXT state.
-            reconsume(.rawText)
+            reconsume(.rcData)
         }
     }
 }

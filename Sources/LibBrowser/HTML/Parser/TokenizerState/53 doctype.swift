@@ -19,10 +19,16 @@ extension HTML.Tokenizer {
 
         // EOF
         case nil:
-            // This is an eof-in-doctype parse error. Create a new DOCTYPE token. Set its force-quirks flag to on.
-            currentToken = .doctype(name: "", publicId: nil, systemId: nil, forceQuirks: true)
+            // This is an eof-in-doctype parse error.
+            // Create a new DOCTYPE token.
+            createDocTypeToken()
+
+            // Set its force-quirks flag to on.
+            currentDocTypeToken.forceQuirks = true
+
             // Emit the current token.
             emitCurrentToken()
+
             // Emit an end-of-file token.
             emitEndOfFileToken()
 

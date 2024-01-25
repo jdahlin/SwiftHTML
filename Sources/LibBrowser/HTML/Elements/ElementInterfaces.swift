@@ -10,12 +10,18 @@ extension HTML {
             return HeadElement.self
         case "html":
             return HtmlElement.self
+        case "li":
+            return LIElement.self
         case "script":
             return ScriptElement.self
         case "span":
             return SpanElement.self
         case "style":
             return StyleElement.self
+        case "title":
+            return TitleElement.self
+        case "ul":
+            return ULElement.self
         default:
             FIXME("Unknown element: \(localName)")
             return Element.self
