@@ -171,7 +171,13 @@ public func parseAStylesheet(_ tokenStream: inout TokenStream, location: URL? = 
     return ParsedStyleSheet(rules: rules, location: location)
 }
 
-public func parseAStylesheet(_ data: String, location: URL? = .none) throws -> ParsedStyleSheet {
+public func parseAStylesheet(data: String, location: URL? = .none) throws -> ParsedStyleSheet {
+    var tokenStream = CSS.TokenStream(data)
+    return try parseAStylesheet(&tokenStream, location: location)
+}
+
+public func parseAStylesheet(filename: String, location: URL? = .none) throws -> ParsedStyleSheet {
+    let data = try String(contentsOfFile: filename)
     var tokenStream = CSS.TokenStream(data)
     return try parseAStylesheet(&tokenStream, location: location)
 }

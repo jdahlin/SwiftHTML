@@ -146,7 +146,7 @@ struct Tokenizer: Sequence {
 
     @discardableResult mutating func consumeMany(_ offsetBy: Int) throws -> String {
         var s = ""
-        for _ in 0 ... offsetBy {
+        for _ in 0 ..< offsetBy {
             let codePoint = try self.consume()
             s.append(String(UnicodeScalar(codePoint)))
         }
@@ -214,7 +214,7 @@ struct TokenizerTokenIterator: IteratorProtocol {
                 return Token.eof
             }
         } catch {
-            fatalError()
+            fatalError("\(error)")
         }
     }
 }
@@ -824,13 +824,18 @@ func consumeNumber(_ tokenizer: inout Tokenizer) throws -> Number {
     }
 
     // 6. Convert repr to a number, and set the value to the returned value.
-    let numericType = switch type {
-    case .integer: Number.Integer(Int64(repr)!)
-    case .number: Number.Number(Double(repr)!)
+    switch type {
+    case .integer:
+        guard let value = Int64(repr) else {
+            throw TokenizerError.parseError
+        }
+        return Number.Integer(value)
+    case .number:
+        guard let value = Double(repr) else {
+            throw TokenizerError.parseError
+        }
+        return Number.Number(value)
     }
-
-    // 7. Return value and type
-    return numericType
 }
 
 // 4.3.13 https://www.w3.org/TR/css-syntax-3/#convert-string-to-number

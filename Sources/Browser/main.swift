@@ -72,12 +72,17 @@ enum Browser {
           <body>
           1
           <div id=mine class=foo>2</div>
+          <span>Span2</span>
           <span>Paragraph</span>
           3
           </body>
           </html>
         """
-
+        let filename = FileManager.default.currentDirectoryPath + "/Sources/CSS/default.css"
+        print(filename)
+        let ss = Result {
+            try parseAStylesheet(filename: filename)
+        }
         var data = Data(html.utf8)
         let document = HTML.parseHTML(&data)
         let post = String(decoding: data, as: UTF8.self)

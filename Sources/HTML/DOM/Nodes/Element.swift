@@ -5,7 +5,6 @@
 
 //   boolean hasAttributes();
 //   [SameObject] readonly attribute NamedNodeMap attributes;
-//   sequence<DOMString> getAttributeNames();
 //   DOMString? getAttribute(DOMString qualifiedName);
 //   DOMString? getAttributeNS(DOMString? namespace, DOMString localName);
 //   [CEReactions] undefined setAttribute(DOMString qualifiedName, DOMString value);
@@ -133,6 +132,14 @@ public class Element: Node {
 
     func setAttribute(_ qualifiedName: DOMString, _ value: DOMString) {
         attributes.setNamedItem(Attr(name: qualifiedName, value: value))
+    }
+
+    // sequence<DOMString> getAttributeNames();
+    func getAttributeNames() -> [DOMString] {
+        // The getAttributeNames() method steps are to return the qualified
+        // names of the attributes in this’s attribute list, in order; otherwise
+        // a new list.
+        attributes.attributes.keys.map { $0 }
     }
 }
 

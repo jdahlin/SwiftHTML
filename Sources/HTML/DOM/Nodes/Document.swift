@@ -38,7 +38,68 @@
 //   // NodeFilter.SHOW_ALL = 0xFFFFFFFF
 //   [NewObject] NodeIterator createNodeIterator(Node root, optional unsigned long whatToShow = 0xFFFFFFFF, optional NodeFilter? filter = null);
 //   [NewObject] TreeWalker createTreeWalker(Node root, optional unsigned long whatToShow = 0xFFFFFFFF, optional NodeFilter? filter = null);
+
 // };
+
+// From HTML Spec
+// enum DocumentReadyState { "loading", "interactive", "complete" };
+// enum DocumentVisibilityState { "visible", "hidden" };
+// typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
+
+// [LegacyOverrideBuiltIns]
+// partial interface Document {
+//   static Document parseHTMLUnsafe(DOMString html);
+
+//   // resource metadata management
+//   [PutForwards=href, LegacyUnforgeable] readonly attribute Location? location;
+//   attribute USVString domain;
+//   readonly attribute USVString referrer;
+//   attribute USVString cookie;
+//   readonly attribute DOMString lastModified;
+//   readonly attribute DocumentReadyState readyState;
+
+//   // DOM tree accessors
+//   getter object (DOMString name);
+//   [CEReactions] attribute DOMString title;
+//   [CEReactions] attribute DOMString dir;
+//   [CEReactions] attribute HTMLElement? body;
+//   readonly attribute HTMLHeadElement? head;
+//   [SameObject] readonly attribute HTMLCollection images;
+//   [SameObject] readonly attribute HTMLCollection embeds;
+//   [SameObject] readonly attribute HTMLCollection plugins;
+//   [SameObject] readonly attribute HTMLCollection links;
+//   [SameObject] readonly attribute HTMLCollection forms;
+//   [SameObject] readonly attribute HTMLCollection scripts;
+//   NodeList getElementsByName(DOMString elementName);
+//   readonly attribute HTMLOrSVGScriptElement? currentScript; // classic scripts in a document tree only
+
+//   // dynamic markup insertion
+//   [CEReactions] Document open(optional DOMString unused1, optional DOMString unused2); // both arguments are ignored
+//   WindowProxy? open(USVString url, DOMString name, DOMString features);
+//   [CEReactions] undefined close();
+//   [CEReactions] undefined write(DOMString... text);
+//   [CEReactions] undefined writeln(DOMString... text);
+
+//   // user interaction
+//   readonly attribute WindowProxy? defaultView;
+//   boolean hasFocus();
+//   [CEReactions] attribute DOMString designMode;
+//   [CEReactions] boolean execCommand(DOMString commandId, optional boolean showUI = false, optional DOMString value = "");
+//   boolean queryCommandEnabled(DOMString commandId);
+//   boolean queryCommandIndeterm(DOMString commandId);
+//   boolean queryCommandState(DOMString commandId);
+//   boolean queryCommandSupported(DOMString commandId);
+//   DOMString queryCommandValue(DOMString commandId);
+//   readonly attribute boolean hidden;
+//   readonly attribute DocumentVisibilityState visibilityState;
+
+//   // special event handler IDL attributes that only apply to Document objects
+//   [LegacyLenientThis] attribute EventHandler onreadystatechange;
+//   attribute EventHandler onvisibilitychange;
+
+//   // also has obsolete members
+// };
+// Document includes GlobalEventHandlers;
 
 struct ElementCreationOptions {
     var is_: DOMString?

@@ -119,7 +119,7 @@ class HTMLStyleElement: HTMLElement {
         // Left uninitialized.
         // This doesn't seem right. Presumably we should be using the element's
         // child text content? Tracked as issue #2997.
-        let result = Result { try CSS.parseAStylesheet(element.textContent ?? "") }
+        let result = Result { try CSS.parseAStylesheet(data: element.textContent ?? "") }
         switch result {
         case let .success(parsed):
             cssStyleSheet.rules = parsed.rules

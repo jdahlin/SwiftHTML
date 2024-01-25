@@ -1,9 +1,11 @@
+import CSS
+
 public struct Selector {
     var selectors: [CSS.ComplexSelector] = []
 
     init(source: String) {
         // FIXME: parse selector from string
-        let result = Result { try CSS.parseAStylesheet(source + " {}") }
+        let result = Result { try CSS.parseAStylesheet(data: source + " {}") }
         switch result {
         case let .success(parsed):
             assert(parsed.rules.count == 1)
@@ -27,20 +29,16 @@ public struct Selector {
         }
         for subclassSelector in compound.subclassSelectors {
             switch subclassSelector {
-            case .id("*"):
+            case let .id(id) where element.id == id:
                 return true
-            case let .id(id):
-                if element.id == id {
-                    return true
-                }
-            case let .class_(className):
-                if element.classList.contains(className) {
-                    return true
-                }
+            case let .class_(className) where element.classList.contains(className):
+                return true
             case .attribute:
                 FIXME("attribute selectors not implemented")
             case .psuedo:
                 FIXME("pseudo selectors not implemented")
+            default:
+                continue
             }
         }
         if compound.pseudoSelectors.count > 0 {
@@ -75,14 +73,12 @@ func parseSelector(source: String) -> Result<Selector, Error> {
     return .success(selector)
 }
 
-import CSS
-
 // match a selector against a tree
 // https://drafts.csswg.org/selectors-4/#match-against-tree
 func matchSelectorAgainstTree(selector: Selector,
                               rootElements: [Element],
                               scopingRoots: [Element] = [],
-                              pseudoElements _: [Element] = []) -> [Element]
+                              pseudoElements: [Element] = []) -> [Element]
 {
     // 1. Start with a list of candidate elements, which are the root elements
     //    and all of their descendant elements, sorted in shadow-including tree
@@ -107,22 +103,24 @@ func matchSelectorAgainstTree(selector: Selector,
     }
 
     // 3. Initialize the selector match list to empty.
-    var selectorMatchList: [Element] = []
+    let selectorMatchList: [Element] =
 
-    // 4. For each element in the set of candidate elements:
-    for candidateElement in candidateElements {
-        // 4.1. If the result of match a selector against an element for element and
-        //    selector is success, add element to the selector match list.
-        if selector.match(element: candidateElement) {
-            selectorMatchList.append(candidateElement)
+        // 4. For each element in the set of candidate elements:
+        candidateElements.filter {
+            // 4.1. If the result of match a selector against an element for element and
+            //      selector is success, add element to the selector match list.
+            selector.match(element: $0)
         }
 
-        // 4.2. For each possible pseudo-element associated with element that is one
-        //    of the pseudo-elements allowed to show up in the match list, if the
-        //    result of match a selector against a pseudo-element for the
-        //    pseudo-element and selector is success, add the pseudo-element to the
-        //    selector match list.
+    // 4.2. For each possible pseudo-element associated with element that is one
+    //    of the pseudo-elements allowed to show up in the match list, if the
+    //    result of match a selector against a pseudo-element for the
+    //    pseudo-element and selector is success, add the pseudo-element to the
+    //    selector match list.
+    if !pseudoElements.isEmpty {
+        FIXME("pseudo elements not implemented")
     }
+
     return selectorMatchList
 }
 

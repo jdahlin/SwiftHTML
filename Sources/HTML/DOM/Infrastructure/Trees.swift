@@ -28,18 +28,26 @@ func isInclusiveAncestor(node: Node, ancestor: Node) -> Bool {
     return false
 }
 
-func getDescendants(element: Element) -> [Element] {
-    var descendants: [Element] = []
-    if element.firstChild != nil {
-        var node = element.firstChild
-        repeat {
-            node = node?.nextSibling
-            if node is Element {
-                descendants.append(node as! Element)
-            }
-        } while node?.nextSibling != nil
+struct DescendantsIterator: IteratorProtocol, Sequence {
+    private var currentNode: Node?
+
+    init(element: Element, nodeType _: Node.Type = Element.self) {
+        currentNode = element.firstChild
     }
-    return descendants
+
+    mutating func next() -> Element? {
+        while let node = currentNode {
+            currentNode = node.nextSibling
+            if let element = node as? Element {
+                return element
+            }
+        }
+        return nil
+    }
+}
+
+func getDescendants(element: Element) -> DescendantsIterator {
+    DescendantsIterator(element: element)
 }
 
 func isDescendantOf(element: Element, ancestor: Element) -> Bool {
