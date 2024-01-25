@@ -1,8 +1,8 @@
 struct AdjustedInsertionLocation {
-    var parent: Node?
-    var insertBeforeSibling: Node?
+    var parent: DOM.Node?
+    var insertBeforeSibling: DOM.Node?
 
-    func insert(_ child: Node) {
+    func insert(_ child: DOM.Node) {
         parent!.insertBefore(node: child, before: insertBeforeSibling)
     }
 }

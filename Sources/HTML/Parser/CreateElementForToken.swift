@@ -13,9 +13,9 @@ extension TreeBuilder {
 
     func createElementForToken(
         token: Token,
-        namespace: DOMString,
-        intendedParent: Node
-    ) -> Element {
+        namespace: DOM.String,
+        intendedParent: DOM.Node
+    ) -> DOM.Element {
         guard case let .startTag(tagName, attributes: attributes, _) = token else {
             fatalError("\(#function): unexpected tag: \(token)")
         }
@@ -24,13 +24,16 @@ extension TreeBuilder {
         //    result of creating a speculative mock element given given namespace,
         //    the tag name of the given token, and the attributes of the given
         //    token.
+        let domAttributes: [DOM.Attr] = attributes.map {
+            DOM.Attr(name: $0.name, value: $0.value)
+        }
         let result = if activeSpeculativeHTMLParser != nil {
-            SpeculativeMockElement(namespace: HTML_NS, tagName: tagName, attributes: attributes)
+            SpeculativeMockElement(namespace: HTML_NS, tagName: tagName, attributes: domAttributes)
             // 2. Otherwise, optionally create a speculative mock element given given
             //    namespace, the tag name of the given token, and the attributes of the
             //    given token.
         } else {
-            SpeculativeMockElement(namespace: HTML_NS, tagName: tagName, attributes: attributes)
+            SpeculativeMockElement(namespace: HTML_NS, tagName: tagName, attributes: domAttributes)
         }
         // Note: The result is not used. This step allows for a speculative fetch to
         //       be initiated from non-speculative parsing. The fetch is still
@@ -47,7 +50,7 @@ extension TreeBuilder {
 
         // 5. Let is be the value of the "is" attribute in the given token, if such
         //    an attribute exists, or null otherwise.
-        let _ = attributes.first(where: { $0.name == "is" })?.value
+        // let _ = attributes.first(where: { $0.name == "is" })?.value
 
         // 6. Let definition be the result of looking up a custom element definition
         //    given document, given namespace, local name, and is.

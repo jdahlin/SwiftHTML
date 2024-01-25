@@ -1,4 +1,6 @@
-// interface Comment : CharacterData {
-//   constructor(optional DOMString data = "");
-// };
-class Comment: CharacterData {}
+extension DOM {
+    // interface Comment : CharacterData {
+    //   constructor(optional DOM.String data = "");
+    // };
+    class Comment: CharacterData {}
+}

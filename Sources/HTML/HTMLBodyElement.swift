@@ -5,6 +5,6 @@
 //   // also has obsolete members
 // };
 
-// HTMLBodyElement includes WindowEventHandlers;
+// HTMLBodyDOM.Element includes WindowEventHandlers;
 
 class HTMLBodyElement: HTMLElement {}

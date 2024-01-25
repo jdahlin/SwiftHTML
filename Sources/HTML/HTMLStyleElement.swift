@@ -23,7 +23,7 @@ class HTMLStyleElement: HTMLElement {
     //       use of @media blocks. This specification does not override such
     //       further restrictions or requirements.
 
-    // [CEReactions] attribute DOMString media;
+    // [CEReactions] attribute DOM.String media;
 
     var media: String = "all"
 

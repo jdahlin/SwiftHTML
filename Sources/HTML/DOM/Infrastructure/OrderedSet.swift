@@ -2,18 +2,20 @@
 
 import Collections
 
-func orderedSetParser(input: DOMString) -> OrderedSet<String.SubSequence> {
-    // Let inputTokens be the result of splitting input on ASCII whitespace.
-    let inputTokens = input.split(separator: " ")
+extension DOM {
+    static func orderedSetParser(input: DOM.String) -> OrderedSet<String.SubSequence> {
+        // Let inputTokens be the result of splitting input on ASCII whitespace.
+        let inputTokens = input.split(separator: " ")
 
-    // Let tokens be a new ordered set.
-    var tokens = OrderedSet<String.SubSequence>()
+        // Let tokens be a new ordered set.
+        var tokens = OrderedSet<String.SubSequence>()
 
-    // For each token in inputTokens, append token to tokens.
-    for token in inputTokens {
-        tokens.append(token)
+        // For each token in inputTokens, append token to tokens.
+        for token in inputTokens {
+            tokens.append(token)
+        }
+
+        // Return tokens.
+        return tokens
     }
-
-    // Return tokens.
-    return tokens
 }

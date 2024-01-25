@@ -4,7 +4,7 @@
 //
 // 4.13.1.6 Upgrading elements after their creation
 // 4.13.3 Core concepts
-// 4.13.4 The CustomElementRegistry interface
+// 4.13.4 The CustomDOM.ElementRegistry interface
 // 4.13.5 Upgrades
 // 4.13.6 Custom element reactions
 
@@ -18,11 +18,11 @@ struct CustomElementDefinition {
     var localName: String
 
     // A constructor
-    // A Web IDL CustomElementConstructor callback function type value wrapping the custom element constructor
+    // A Web IDL CustomDOM.ElementConstructor callback function type value wrapping the custom element constructor
 
     // A list of observed attributes
-    // A sequence<DOMString>
-    var observedAttributes: [DOMString]
+    // A sequence<DOM.String>
+    var observedAttributes: [DOM.String]
 
     // A collection of lifecycle callbacks
     // A map, whose keys are the strings "connectedCallback", "disconnectedCallback", "adoptedCallback", "attributeChangedCallback", "formAssociatedCallback", "formDisabledCallback", "formResetCallback", and "formStateRestoreCallback". The corresponding values are either a Web IDL Function callback function type value, or null. By default the value of each entry is null.
@@ -44,7 +44,7 @@ struct CustomElementDefinition {
 
 extension TreeBuilder {
     func lookupCustomElementDefinition(
-        document: Document,
+        document: DOM.Document,
         namespace: String,
         localName _: String
     ) -> CustomElementDefinition? {
@@ -58,7 +58,7 @@ extension TreeBuilder {
         // 2. If document's browsing context is null, return null.
         guard document.browsingContext != nil else { return nil }
 
-        // 3. Let registry be document's relevant global object's CustomElementRegistry object.
+        // 3. Let registry be document's relevant global object's CustomDOM.ElementRegistry object.
 
         // 4. If there is custom element definition in registry with name and local
         //    name both equal to localName, return that custom element definition.

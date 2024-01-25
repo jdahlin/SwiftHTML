@@ -2,9 +2,9 @@
 // interface StyleSheet {
 //   readonly attribute CSSOMString type;
 //   readonly attribute USVString? href;
-//   readonly attribute (Element or ProcessingInstruction)? ownerNode;
+//   readonly attribute (DOM.Element or ProcessingInstruction)? ownerNode;
 //   readonly attribute CSSStyleSheet? parentStyleSheet;
-//   readonly attribute DOMString? title;
+//   readonly attribute DOM.String? title;
 //   [SameObject, PutForwards=mediaText] readonly attribute MediaList media;
 //   attribute boolean disabled;
 // };
@@ -36,7 +36,7 @@ class StyleSheet {
     // Specified when created. The DOM node associated with the CSS style sheet
     // or null if there is no associated DOM node.
     // https://drafts.csswg.org/cssom/#concept-css-style-sheet-parent-css-style-sheet
-    var ownerNode: Element?
+    var ownerNode: DOM.Element?
 
     // Specified when created. The CSS rule in the parent CSS style sheet that
     // caused the inclusion of the CSS style sheet or null if there is no
@@ -60,7 +60,7 @@ class StyleSheet {
     // Specified when created. The title of the CSS style sheet, which can be
     // the empty string.
     // https://drafts.csswg.org/cssom/#concept-css-style-sheet-parent-css-style-sheet
-    var title: DOMString?
+    var title: DOM.String?
 
     // Specified when created. Either set or unset. Unset by default.
     // https://drafts.csswg.org/cssom/#concept-css-style-sheet-alternate-flag
@@ -91,7 +91,7 @@ class StyleSheet {
     // Specified when created. The Document a constructed stylesheet is
     // associated with. Null by default. Only non-null for stylesheets that have
     // constructed flag set.
-    var constructorDocument: Document?
+    var constructorDocument: DOM.Document?
 
     // The base URL to use when resolving relative URLs in the stylesheet. Null
     // by default. Only non-null for stylesheets that have constructed flag set.

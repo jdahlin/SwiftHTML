@@ -19,7 +19,7 @@ public struct Selector {
         }
     }
 
-    public func matchCompoundSelector(compound: CSS.CompoundSelector, element: Element) -> Bool {
+    public func matchCompoundSelector(compound: CSS.CompoundSelector, element: DOM.Element) -> Bool {
         if compound.typeSelector != nil {
             let typeSelector = compound.typeSelector!
             assert(typeSelector.nsPrefix == nil)
@@ -47,7 +47,7 @@ public struct Selector {
         return false
     }
 
-    public func matchComplexSelector(complex: CSS.ComplexSelector, element: Element) -> Bool {
+    public func matchComplexSelector(complex: CSS.ComplexSelector, element: DOM.Element) -> Bool {
         if matchCompoundSelector(compound: complex.compound, element: element) {
             return true
         }
@@ -57,7 +57,7 @@ public struct Selector {
         return false
     }
 
-    func match(element: Element) -> Bool {
+    func match(element: DOM.Element) -> Bool {
         for complex in selectors.reversed() {
             if matchComplexSelector(complex: complex, element: element) {
                 return true
@@ -76,17 +76,17 @@ func parseSelector(source: String) -> Result<Selector, Error> {
 // match a selector against a tree
 // https://drafts.csswg.org/selectors-4/#match-against-tree
 func matchSelectorAgainstTree(selector: Selector,
-                              rootElements: [Element],
-                              scopingRoots: [Element] = [],
-                              pseudoElements: [Element] = []) -> [Element]
+                              rootElements: [DOM.Element],
+                              scopingRoots: [DOM.Element] = [],
+                              pseudoElements: [DOM.Element] = []) -> [DOM.Element]
 {
     // 1. Start with a list of candidate elements, which are the root elements
     //    and all of their descendant elements, sorted in shadow-including tree
     //    order, unless otherwise specified.
-    var candidateElements: [Element] = []
+    var candidateElements: [DOM.Element] = []
     for rootElement in rootElements {
         candidateElements.append(rootElement)
-        candidateElements.append(contentsOf: getDescendants(element: rootElement))
+        candidateElements.append(contentsOf: DOM.getDescendants(element: rootElement))
     }
 
     // 2. If scoping root were provided, then remove from the candidate elements
@@ -94,7 +94,7 @@ func matchSelectorAgainstTree(selector: Selector,
     if !scopingRoots.isEmpty {
         candidateElements = candidateElements.filter { e in
             for root in scopingRoots {
-                if isDescendantOf(element: e, ancestor: root) {
+                if DOM.isDescendantOf(element: e, ancestor: root) {
                     return true
                 }
             }
@@ -103,7 +103,7 @@ func matchSelectorAgainstTree(selector: Selector,
     }
 
     // 3. Initialize the selector match list to empty.
-    let selectorMatchList: [Element] =
+    let selectorMatchList: [DOM.Element] =
 
         // 4. For each element in the set of candidate elements:
         candidateElements.filter {
@@ -125,7 +125,7 @@ func matchSelectorAgainstTree(selector: Selector,
 }
 
 // https://dom.spec.whatwg.org/#scope-match-a-selectors-string
-func scopeMatchSelectorsString(selectors: DOMString, node: Node) -> [Element] {
+func scopeMatchSelectorsString(selectors: DOM.String, node: DOM.Node) -> [DOM.Element] {
     // 1. Let s be the result of parse a selector selectors. [SELECTORS4]
     let s = parseSelector(source: selectors)
     switch s {
@@ -138,8 +138,8 @@ func scopeMatchSelectorsString(selectors: DOMString, node: Node) -> [Element] {
     case let .success(selector):
         return matchSelectorAgainstTree(
             selector: selector,
-            rootElements: [node as! Element],
-            scopingRoots: [node as! Element]
+            rootElements: [node as! DOM.Element],
+            scopingRoots: [node as! DOM.Element]
         )
     }
 }

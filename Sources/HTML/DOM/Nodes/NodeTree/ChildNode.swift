@@ -8,8 +8,8 @@
 // DocumentType includes ChildNode;
 
 enum NodeOrString {
-    case node(Node)
-    case string(DOMString)
+    case node(DOM.Node)
+    case string(DOM.String)
 }
 
 protocol ChildNode {
@@ -20,12 +20,12 @@ protocol ChildNode {
 }
 
 // Element includes ChildNode;
-extension Element: ChildNode {
+extension DOM.Element {
     func before(_: NodeOrString...) {
         FIXME("not implemented")
     }
 
-    func viableNextSibling(nodes: [NodeOrString]) -> Node? {
+    func viableNextSibling(nodes: [NodeOrString]) -> DOM.Node? {
         // first following sibling not in nodes
         var sibling = nextSibling
         while let currentSibling = sibling {
@@ -56,10 +56,10 @@ extension Element: ChildNode {
 
         // 4. Let node be the result of converting nodes into a node, given
         //    nodes and this’s node document.
-        let node = convertNodesIntoNode(nodes: nodes, document: ownerDocument!)
+        let node = DOM.convertNodesIntoNode(nodes: nodes, document: ownerDocument!)
 
         // 5. Pre-insert node into parent before viableNextSibling.
-        preInsertBeforeChild(node: node, parent: parent!, child: viableNextSibling)
+        DOM.preInsertBeforeChild(node: node, parent: parent!, child: viableNextSibling)
     }
 
     func replaceWith(_: NodeOrString...) {
@@ -72,7 +72,7 @@ extension Element: ChildNode {
 }
 
 // CharacterData includes ChildNode;
-extension CharacterData: ChildNode {
+extension DOM.CharacterData: ChildNode {
     func before(_: NodeOrString...) {
         FIXME("not implemented")
     }

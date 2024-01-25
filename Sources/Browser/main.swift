@@ -80,7 +80,7 @@ enum Browser {
         """
         let filename = FileManager.default.currentDirectoryPath + "/Sources/CSS/default.css"
         print(filename)
-        let ss = Result {
+        _ = Result {
             try parseAStylesheet(filename: filename)
         }
         var data = Data(html.utf8)

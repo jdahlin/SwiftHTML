@@ -45,15 +45,15 @@ enum GenericParsingAlgoritm {
 
 class TreeBuilder: TokenReceiver {
     var tokenizer: Tokenizer
-    var document: Document = .init()
+    var document: DOM.Document = .init()
     var stackOfOpenElements = StackOfOpenElements()
     var insertionMode: InsertionMode = .initial
     var fosterParenting = false
     var activeSpeculativeHTMLParser: TreeBuilder? = nil
     var scriptingFlag = true
     var framesetOkFlag: FramesetFlag = .ok
-    var headElementPointer: Element?
-    var formElementPointer: Element?
+    var headElementPointer: DOM.Element?
+    var formElementPointer: DOM.Element?
     var isFragmentParsing = false
 
     // https://html.spec.whatwg.org/multipage/parsing.html#original-insertion-mode
@@ -72,13 +72,13 @@ class TreeBuilder: TokenReceiver {
     }
 
     // https://html.spec.whatwg.org/multipage/parsing.html#current-node
-    var currentNode: Node? {
+    var currentNode: DOM.Node? {
         // The current node is the bottommost node in this stack of open elements.
         stackOfOpenElements.bottommost
     }
 
     // https://html.spec.whatwg.org/multipage/parsing.html#appropriate-place-for-inserting-a-node
-    func appropriatePlaceForInsertingANode(overrideTarget: Node? = nil) -> AdjustedInsertionLocation {
+    func appropriatePlaceForInsertingANode(overrideTarget: DOM.Node? = nil) -> AdjustedInsertionLocation {
         var adjustedInsertionLocation: AdjustedInsertionLocation
 
         // If there was an override target specified, then let target be the override target.
@@ -151,23 +151,23 @@ class TreeBuilder: TokenReceiver {
         let adjustedInsertionLocation = appropriatePlaceForInsertingANode()
 
         // 3. If the adjusted insertion location is in a Document node, then return.
-        if adjustedInsertionLocation.parent is Document {
+        if adjustedInsertionLocation.parent is DOM.Document {
             return
         }
 
         // 4. If there is a Text node immediately before the adjusted insertion
         //    location, then append data to that Text node's data.
         // FIXME: Assumes adjustedInsertionLocation.insertBeforeSibling is always nil
-        if adjustedInsertionLocation.parent?.lastChild is Text {
-            let textNode = adjustedInsertionLocation.parent?.lastChild as! Text
-            textNode.data += DOMString(data!)
+        if adjustedInsertionLocation.parent?.lastChild is DOM.Text {
+            let textNode = adjustedInsertionLocation.parent?.lastChild as! DOM.Text
+            textNode.data += DOM.String(data!)
         }
         // 5. Otherwise, create a new Text node whose data is data and whose node
         //    document is the same as that of the node in which the adjusted insertion
         //    location finds itself, and insert the newly created node at the adjusted insertion location.
         else {
-            let textNode = Text()
-            textNode.data = DOMString(data!)
+            let textNode = DOM.Text()
+            textNode.data = DOM.String(data!)
             textNode.ownerDocument = adjustedInsertionLocation.parent?.ownerDocument
             adjustedInsertionLocation.insert(textNode)
         }
@@ -188,8 +188,8 @@ class TreeBuilder: TokenReceiver {
         // 3. Create a Comment node whose data attribute is set to data and whose node
         //    document is the same as that of the node in which the adjusted insertion
         //    location finds it
-        let commentNode = Comment()
-        commentNode.data = DOMString(data)
+        let commentNode = DOM.Comment()
+        commentNode.data = DOM.String(data)
         commentNode.ownerDocument = adjustedInsertionLocation.parent?.ownerDocument
 
         // 4. Insert the newly created node at the adjusted insertion location.
@@ -200,21 +200,21 @@ class TreeBuilder: TokenReceiver {
     // Note: If the adjusted insertion location cannot accept more elements, e.g.,
 //       because it's a Document that already has an element child, then element is
 //       dropped on the floor.
-    func insertForeignElement(token: Token, namespace _: String, onlyAddElementToStack: Bool) -> Element {
+    func insertForeignElement(token: Token, namespace _: String, onlyAddElementToStack: Bool) -> DOM.Element {
         // Let the adjusted insertion location be the appropriate place for inserting a node.
         let appropriatePlaceForInsertingANode = appropriatePlaceForInsertingANode()
 
         // Let element be the result of creating an element for the token in the
         // given namespace, with the intended parent being the element in which the
         // adjusted insertion location finds it
-        let intendedParent = appropriatePlaceForInsertingANode.parent! as! Element
+        let intendedParent = appropriatePlaceForInsertingANode.parent! as! DOM.Element
         let element = createElementForToken(
             token: token,
             namespace: HTML_NS,
             intendedParent: intendedParent
         )
 
-        // If onlyAddToElementStack is false, then run insert an element at the
+        // If onlyAddToDOM.ElementStack is false, then run insert an element at the
         // adjusted insertion location with element.
         if !onlyAddElementToStack {
             appropriatePlaceForInsertingANode.insert(element)
@@ -253,7 +253,7 @@ class TreeBuilder: TokenReceiver {
 
     // https://html.spec.whatwg.org/multipage/parsing.html#insert-an-html-element
     @discardableResult
-    func insertHTMLElement(_ token: Token) -> Element {
+    func insertHTMLElement(_ token: Token) -> DOM.Element {
         // When the steps below require the user agent to insert an HTML element for
         // a token, the user agent must insert a foreign element for the token, with
         // the HTML namespace and false.

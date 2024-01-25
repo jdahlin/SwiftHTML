@@ -12,8 +12,8 @@
 // };
 
 // dictionary CSSStyleSheetInit {
-//   DOMString baseURL = null;
-//   (MediaList or DOMString) media = "";
+//   DOM.String baseURL = null;
+//   (MediaList or DOM.String) media = "";
 //   boolean disabled = false;
 // };
 

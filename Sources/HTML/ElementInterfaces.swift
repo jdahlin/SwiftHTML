@@ -1,5 +1,5 @@
 
-func elementInterface(localName: String, namespace _: String?) -> Element.Type {
+func elementInterface(localName: String, namespace _: String?) -> DOM.Element.Type {
     switch localName {
     case "body":
         return HTMLBodyElement.self

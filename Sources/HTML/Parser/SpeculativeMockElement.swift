@@ -9,10 +9,10 @@ struct SpeculativeMockElement {
     var localName: String
 
     // A list attribute list, corresponding to an element's attribute list.
-    var attributes: [Attr]
+    var attributes: [DOM.Attr]
 
     // A list children, corresponding to an element's children.
-    var children: [Node]
+    var children: [DOM.Node]
 }
 
 extension SpeculativeMockElement {
@@ -21,7 +21,7 @@ extension SpeculativeMockElement {
     // Referenced in
     // - https://html.spec.whatwg.org/multipage/parsing.html#creating-and-inserting-nodes:create-a-speculative-mock-element
 
-    init(namespace: String? = nil, tagName: String, attributes: [Attr]) {
+    init(namespace: String? = nil, tagName: String, attributes: [DOM.Attr]) {
         // To create a speculative mock element given a namespace, tagName, and attributes:
 
         // Let element be a new speculative mock element.

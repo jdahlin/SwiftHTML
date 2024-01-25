@@ -3,18 +3,18 @@
 //   [HTMLConstructor] constructor();
 
 //   [CEReactions] attribute USVString src;
-//   [CEReactions] attribute DOMString type;
+//   [CEReactions] attribute DOM.String type;
 //   [CEReactions] attribute boolean noModule;
 //   [CEReactions] attribute boolean async;
 //   [CEReactions] attribute boolean defer;
-//   [CEReactions] attribute DOMString? crossOrigin;
-//   [CEReactions] attribute DOMString text;
-//   [CEReactions] attribute DOMString integrity;
-//   [CEReactions] attribute DOMString referrerPolicy;
+//   [CEReactions] attribute DOM.String? crossOrigin;
+//   [CEReactions] attribute DOM.String text;
+//   [CEReactions] attribute DOM.String integrity;
+//   [CEReactions] attribute DOM.String referrerPolicy;
 //   [SameObject, PutForwards=value] readonly attribute DOMTokenList blocking;
-//   [CEReactions] attribute DOMString fetchPriority;
+//   [CEReactions] attribute DOM.String fetchPriority;
 
-//   static boolean supports(DOMString type);
+//   static boolean supports(DOM.String type);
 
 //   // also has obsolete members
 // };

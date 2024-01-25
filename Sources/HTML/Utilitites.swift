@@ -19,7 +19,7 @@ package func DIE(
     exit(1)
 }
 
-public func parseHTML(_ data: inout Data) -> Document {
+public func parseHTML(_ data: inout Data) -> DOM.Document {
     // let context = JSContext()
     // if let globalObject = context?.evaluateScript("this") {
     //   print(type(of: globalObject))
@@ -43,16 +43,16 @@ public func parseHTML(_ data: inout Data) -> Document {
     return treeBuilder.document
 }
 
-public func printDOMTree(_ node: Node, _ indent: String = "") {
+public func printDOMTree(_ node: DOM.Node, _ indent: String = "") {
     for child in node.childNodes {
         switch child {
-        case is Text:
-            let text = child as! Text
+        case is DOM.Text:
+            let text = child as! DOM.Text
             print(indent + text.data.debugDescription)
         default:
             let nodeName = child.nodeName?.lowercased() ?? "nil"
             var extra = ""
-            if let element = child as? Element, element.attributes.length > 0 {
+            if let element = child as? DOM.Element, element.attributes.length > 0 {
                 for i in 0 ..< element.attributes.length {
                     if let attr = element.attributes.item(i) {
                         extra += " \(attr.name)=\"\(attr.value)\""

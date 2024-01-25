@@ -1,40 +1,40 @@
-// interface HTMLElement : Element {
+// interface HTMLElement : DOM.Element {
 //   [HTMLConstructor] constructor();
 
 //   // metadata attributes
-//   [CEReactions] attribute DOMString title;
-//   [CEReactions] attribute DOMString lang;
+//   [CEReactions] attribute DOM.String title;
+//   [CEReactions] attribute DOM.String lang;
 //   [CEReactions] attribute boolean translate;
-//   [CEReactions] attribute DOMString dir;
+//   [CEReactions] attribute DOM.String dir;
 
 //   // user interaction
-//   [CEReactions] attribute (boolean or unrestricted double or DOMString)? hidden;
+//   [CEReactions] attribute (boolean or unrestricted double or DOM.String)? hidden;
 //   [CEReactions] attribute boolean inert;
 //   undefined click();
-//   [CEReactions] attribute DOMString accessKey;
-//   readonly attribute DOMString accessKeyLabel;
+//   [CEReactions] attribute DOM.String accessKey;
+//   readonly attribute DOM.String accessKeyLabel;
 //   [CEReactions] attribute boolean draggable;
 //   [CEReactions] attribute boolean spellcheck;
-//   [CEReactions] attribute DOMString autocapitalize;
+//   [CEReactions] attribute DOM.String autocapitalize;
 
-//   [CEReactions] attribute [LegacyNullToEmptyString] DOMString innerText;
-//   [CEReactions] attribute [LegacyNullToEmptyString] DOMString outerText;
+//   [CEReactions] attribute [LegacyNullToEmptyString] DOM.String innerText;
+//   [CEReactions] attribute [LegacyNullToEmptyString] DOM.String outerText;
 
-//   ElementInternals attachInternals();
+//   DOM.ElementInternals attachInternals();
 
 //   // The popover API
 //   undefined showPopover();
 //   undefined hidePopover();
 //   boolean togglePopover(optional boolean force);
-//   [CEReactions] attribute DOMString? popover;
+//   [CEReactions] attribute DOM.String? popover;
 // };
 
 // HTMLElement includes GlobalEventHandlers;
-// HTMLElement includes ElementContentEditable;
-// HTMLElement includes HTMLOrSVGElement;
+// HTMLElement includes DOM.ElementContentEditable;
+// HTMLElement includes HTMLOrSVGDOM.Element;
 
 // [Exposed=Window]
-// interface HTMLUnknownElement : HTMLElement {
+// interface HTMLUnknownDOM.Element : HTMLElement {
 //   // Note: intentionally no [HTMLConstructor]
 
-class HTMLElement: Element {}
+class HTMLElement: DOM.Element {}

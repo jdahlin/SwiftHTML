@@ -1,14 +1,16 @@
 // [Exposed=Window]
 // interface CharacterData : Node {
-//   attribute [LegacyNullToEmptyString] DOMString data;
+//   attribute [LegacyNullToEmptyString] DOM.String data;
 //   readonly attribute unsigned long length;
-//   DOMString substringData(unsigned long offset, unsigned long count);
-//   undefined appendData(DOMString data);
-//   undefined insertData(unsigned long offset, DOMString data);
+//   DOM.String substringData(unsigned long offset, unsigned long count);
+//   undefined appendData(DOM.String data);
+//   undefined insertData(unsigned long offset, DOM.String data);
 //   undefined deleteData(unsigned long offset, unsigned long count);
-//   undefined replaceData(unsigned long offset, unsigned long count, DOMString data);
+//   undefined replaceData(unsigned long offset, unsigned long count, DOM.String data);
 // };
 
-public class CharacterData: Node {
-    var data: DOMString = ""
+public extension DOM {
+    class CharacterData: Node {
+        var data: DOM.String = ""
+    }
 }

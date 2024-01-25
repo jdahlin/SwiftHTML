@@ -1,13 +1,15 @@
-// [Exposed=Window]
-// interface ProcessingInstruction : CharacterData {
-//   readonly attribute DOMString target;
-// };
+public extension DOM {
+    // [Exposed=Window]
+    // interface ProcessingInstruction : CharacterData {
+    //   readonly attribute DOM.String target;
+    // };
 
-public class ProcessingInstruction: CharacterData {
-    let target: String
+    class ProcessingInstruction: CharacterData {
+        let target: String
 
-    init(target: String, data _: String) {
-        self.target = target
-        super.init()
+        init(target: String, data _: String) {
+            self.target = target
+            super.init()
+        }
     }
 }

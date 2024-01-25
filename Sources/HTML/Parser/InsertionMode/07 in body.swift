@@ -466,7 +466,7 @@ extension TreeBuilder {
             let node = currentNode
 
             // Loop: If node is an HTML element with the same tag name as the token, then:
-            while let element = node as? Element, element.localName == tagName {
+            while let element = node as? DOM.Element, element.localName == tagName {
                 // Generate implied end tags, except for HTML elements with the same tag name as the token.
                 // generateImpliedEndTags(exceptFor: token.tagName)
 
@@ -478,7 +478,7 @@ extension TreeBuilder {
 
                 // Pop elements from the stack of open elements until node has
                 // been popped from the stack.
-                var removedNode: Node?
+                var removedNode: DOM.Node?
                 while removedNode != node {
                     removedNode = stackOfOpenElements.pop()
                 }
@@ -506,23 +506,23 @@ extension TreeBuilder {
 // While true:
 // If outerLoopCounter is greater than or equal to 8, then return.
 // Increment outerLoopCounter by 1.
-// Let formattingElement be the last element in the list of active formatting elements that:
+// Let formattingDOM.Element be the last element in the list of active formatting elements that:
 // is between the end of the list and the last marker in the list, if any, or the start of the list otherwise, and
 // has the tag name subject.
 // If there is no such element, then return and instead act as described in the "any other end tag" entry above.
-// If formattingElement is not in the stack of open elements, then this is a parse error; remove the element from the list, and return.
-// If formattingElement is in the stack of open elements, but the element is not in scope, then this is a parse error; return.
-// If formattingElement is not the current node, this is a parse error. (But do not return.)
-// Let furthestBlock be the topmost node in the stack of open elements that is lower in the stack than formattingElement, and is an element in the special category. There might not be one.
-// If there is no furthestBlock, then the UA must first pop all the nodes from the bottom of the stack of open elements, from the current node up to and including formattingElement, then remove formattingElement from the list of active formatting elements, and finally return.
-// Let commonAncestor be the element immediately above formattingElement in the stack of open elements.
-// Let a bookmark note the position of formattingElement in the list of active formatting elements relative to the elements on either side of it in the list.
+// If formattingDOM.Element is not in the stack of open elements, then this is a parse error; remove the element from the list, and return.
+// If formattingDOM.Element is in the stack of open elements, but the element is not in scope, then this is a parse error; return.
+// If formattingDOM.Element is not the current node, this is a parse error. (But do not return.)
+// Let furthestBlock be the topmost node in the stack of open elements that is lower in the stack than formattingDOM.Element, and is an element in the special category. There might not be one.
+// If there is no furthestBlock, then the UA must first pop all the nodes from the bottom of the stack of open elements, from the current node up to and including formattingDOM.Element, then remove formattingDOM.Element from the list of active formatting elements, and finally return.
+// Let commonAncestor be the element immediately above formattingDOM.Element in the stack of open elements.
+// Let a bookmark note the position of formattingDOM.Element in the list of active formatting elements relative to the elements on either side of it in the list.
 // Let node and lastNode be furthestBlock.
 // Let innerLoopCounter be 0.
 // While true:
 // Increment innerLoopCounter by 1.
 // Let node be the element immediately above node in the stack of open elements, or if node is no longer in the stack of open elements (e.g. because it got removed by this algorithm), the element that was immediately above node in the stack of open elements before node was removed.
-// If node is formattingElement, then break.
+// If node is formattingDOM.Element, then break.
 // If innerLoopCounter is greater than 3 and node is in the list of active formatting elements, then remove node from the list of active formatting elements.
 // If node is not in the list of active formatting elements, then remove node from the stack of open elements and continue.
 // Create an element for the token for which the element node was created, in the HTML namespace, with commonAncestor as the intended parent; replace the entry for node in the list of active formatting elements with an entry for the new element, replace the entry for node in the stack of open elements with an entry for the new element, and let node be the new element.
@@ -530,9 +530,9 @@ extension TreeBuilder {
 // Append lastNode to node.
 // Set lastNode to node.
 // Insert whatever lastNode ended up being in the previous step at the appropriate place for inserting a node, but using commonAncestor as the override target.
-// Create an element for the token for which formattingElement was created, in the HTML namespace, with furthestBlock as the intended parent.
+// Create an element for the token for which formattingDOM.Element was created, in the HTML namespace, with furthestBlock as the intended parent.
 // Take all of the child nodes of furthestBlock and append them to the element created in the last step.
 // Append that new element to furthestBlock.
-// Remove formattingElement from the list of active formatting elements, and insert the new element into the list of active formatting elements at the position of the aforementioned bookmark.
-// Remove formattingElement from the stack of open elements, and insert the new element into the stack of open elements immediately below the position of furthestBlock in that stack.
+// Remove formattingDOM.Element from the list of active formatting elements, and insert the new element into the list of active formatting elements at the position of the aforementioned bookmark.
+// Remove formattingDOM.Element from the stack of open elements, and insert the new element into the stack of open elements immediately below the position of furthestBlock in that stack.
 // This algorithm's name, the "adoption agency algorithm", comes from the way it causes elements to change parents, and is in contrast with other possible algorithms for dealing with misnested content.

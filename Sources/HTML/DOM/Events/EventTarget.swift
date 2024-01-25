@@ -2,8 +2,8 @@
 // interface EventTarget {
 //   constructor();
 
-//   undefined addEventListener(DOMString type, EventListener? callback, optional (AddEventListenerOptions or boolean) options = {});
-//   undefined removeEventListener(DOMString type, EventListener? callback, optional (EventListenerOptions or boolean) options = {});
+//   undefined addEventListener(DOM.String type, EventListener? callback, optional (AddEventListenerOptions or boolean) options = {});
+//   undefined removeEventListener(DOM.String type, EventListener? callback, optional (EventListenerOptions or boolean) options = {});
 //   boolean dispatchEvent(Event event);
 // };
 
@@ -21,4 +21,6 @@
 //   AbortSignal signal;
 // };
 
-public class EventTarget {}
+public extension DOM {
+    class EventTarget {}
+}

@@ -1,13 +1,13 @@
 // [Exposed=*,
 //  Serializable]
 // interface DOMException { // but see below note about JavaScript binding
-//   constructor(optional DOMString message = "", optional DOMString name = "Error");
-//   readonly attribute DOMString name;
-//   readonly attribute DOMString message;
+//   constructor(optional DOM.String message = "", optional DOM.String name = "Error");
+//   readonly attribute DOM.String name;
+//   readonly attribute DOM.String message;
 //   readonly attribute unsigned short code;
 
 //   const unsigned short INDEX_SIZE_ERR = 1;
-//   const unsigned short DOMSTRING_SIZE_ERR = 2;
+//   const unsigned short DOM.String_SIZE_ERR = 2;
 //   const unsigned short HIERARCHY_REQUEST_ERR = 3;
 //   const unsigned short WRONG_DOCUMENT_ERR = 4;
 //   const unsigned short INVALID_CHARACTER_ERR = 5;

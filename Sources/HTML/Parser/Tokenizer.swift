@@ -72,6 +72,7 @@ extension Character {
 public enum TokenizerState {
     case data
     case rcData
+    case plaintext
     case rawText
     case scriptData
     case tagOpen
@@ -151,10 +152,15 @@ public enum TokenizerState {
     case numericCharacterReferenceEnd
 }
 
+public struct TokenizerAttr {
+    public var name: String
+    public var value: String
+}
+
 public enum Token {
     case character(Character)
-    case startTag(_ tagName: String, attributes: [Attr] = [], isSelfClosing: Bool = false)
-    case endTag(_ tagName: String, attributes: [Attr] = [], isSelfClosing: Bool = false)
+    case startTag(_ tagName: String, attributes: [TokenizerAttr] = [], isSelfClosing: Bool = false)
+    case endTag(_ tagName: String, attributes: [TokenizerAttr] = [], isSelfClosing: Bool = false)
     case comment(String)
     case doctype(name: String, publicId: String?, systemId: String?, forceQuirks: Bool)
     case attribute(name: String, value: String)
@@ -244,7 +250,7 @@ class Tokenizer {
     func createAttribute(name: String = "", value: String = "") {
         switch currentToken {
         case let .startTag(tag, attributes, isSelfClosing):
-            currentToken = .startTag(tag, attributes: attributes + [Attr(name: name, value: value)], isSelfClosing: isSelfClosing)
+            currentToken = .startTag(tag, attributes: attributes + [TokenizerAttr(name: name, value: value)], isSelfClosing: isSelfClosing)
         default:
             assertionFailure()
             exit(0)
@@ -258,7 +264,7 @@ class Tokenizer {
         }
 
         if let lastAttribute = attributes.last {
-            attributes[attributes.count - 1] = Attr(
+            attributes[attributes.count - 1] = TokenizerAttr(
                 name: lastAttribute.name + name, value: lastAttribute.value
             )
         }
@@ -270,7 +276,7 @@ class Tokenizer {
         switch currentToken {
         case .startTag(let tag, var attributes, let isSelfClosing):
             if let lastAttribute = attributes.last {
-                attributes[attributes.count - 1] = Attr(
+                attributes[attributes.count - 1] = TokenizerAttr(
                     name: lastAttribute.name, value: lastAttribute.value + value
                 )
             }
@@ -357,7 +363,7 @@ class Tokenizer {
 
         // 13.2.5.2 RCDATA state
         case .rcData:
-            handleRCDataState()
+            handleRcDataState()
 
         // 13.2.5.3 RAWTEXT state
         case .rawText:

@@ -1,15 +1,15 @@
-// interface mixin NonElementParentNode {
-//   Element? getElementById(DOMString elementId);
+// interface mixin NonDOM.ElementParentNode {
+//   DOM.Element? getDOM.ElementById(DOM.String elementId);
 // };
-// Document includes NonElementParentNode;
-// DocumentFragment includes NonElementParentNode;
+// Document includes NonDOM.ElementParentNode;
+// DocumentFragment includes NonDOM.ElementParentNode;
 
-extension Document {
-    func getElementById(elementId: DOMString) -> Element? {
+extension DOM.Document {
+    func getElementById(elementId: DOM.String) -> DOM.Element? {
         // Returns the first element within node’s descendants whose ID is elementId.
         guard let documentElement else {
             return nil
         }
-        return getDescendants(element: documentElement).first { $0.id == elementId }
+        return DOM.getDescendants(element: documentElement).first { $0.id == elementId }
     }
 }
