@@ -100,7 +100,7 @@ public func testEntrypoint() {
     // }
     var data = Data(html.utf8)
     let document = HTML.parseHTML(&data)
-    DOM.printTree(document)
+    DOM.printTree(node: document)
     // let elements = document.body!.querySelectorAll("*")
     // print(elements)
 }
