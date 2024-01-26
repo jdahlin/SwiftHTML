@@ -11,8 +11,10 @@ extension HTML.Tokenizer {
 
         // U+003E GREATER-THAN SIGN (>)
         case ">":
-            // This is an abrupt-closing-of-empty-comment parse error. Switch to the data state. Emit the current comment token.
+            // This is an abrupt-closing-of-empty-comment parse error.
+            // Switch to the data state.
             state = .data
+            //  Emit the current comment token.
             emitCurrentToken()
 
         // Anything else

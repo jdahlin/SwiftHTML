@@ -5,26 +5,33 @@ extension HTML.Tokenizer {
         // Consume the next input character:
         switch consumeNextInputCharacter() {
         // U+003E GREATER-THAN SIGN (>)
-        // Switch to the data state. Emit the current comment token.
         case ">":
+            // Switch to the data state.
             state = .data
-            emitCurrentToken()
+
+            // Emit the current comment token.
+            emitToken(.comment(currentCommentToken))
 
         // EOF
-        // Emit the comment. Emit an end-of-file token.
         case nil:
-            emitCurrentToken()
+            // Emit the comment.
+            emitToken(.comment(currentCommentToken))
+
+            //  Emit an end-of-file token.
             emitEndOfFileToken()
 
         // U+0000 NULL
-        // This is an unexpected-null-character parse error. Append a U+FFFD REPLACEMENT CHARACTER character to the comment token's data.
         case "\0":
-            appendCurrenTagTokenName("\u{FFFD}")
+            // This is an unexpected-null-character parse error.
+
+            // Append a U+FFFD REPLACEMENT CHARACTER character to the comment
+            // token's data.
+            currentCommentToken.data.append("\u{FFFD}")
 
         // Anything else
-        // Append the current input character to the comment token's data.
         default:
-            appendCurrenTagTokenName(currentInputCharacter()!)
+            // Append the current input character to the comment token's data.
+            currentCommentToken.data.append(currentInputCharacter()!)
         }
     }
 }

@@ -23,12 +23,12 @@ extension HTML.TreeBuilder {
             break
 
         // A start tag whose tag name is "html"
-        case .startTag("html", _, _):
+        case let .startTag(tag) where tag.name == "html":
             // Process the token using the rules for the "in body" insertion mode.
             handleInBody(token)
 
         // An end tag whose tag name is "html"
-        case .endTag("html", _, _):
+        case let .endTag(tag) where tag.name == "html":
             if isFragmentParsing {
                 // Parse error. Ignore the token.
             } else {

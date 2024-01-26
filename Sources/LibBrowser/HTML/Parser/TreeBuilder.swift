@@ -175,7 +175,7 @@ extension HTML {
         }
 
         // https://html.spec.whatwg.org/multipage/parsing.html#insert-a-comment
-        func insertAComment(_ data: String, position: AdjustedInsertionLocation? = nil) {
+        func insertAComment(_ comment: Comment, position: AdjustedInsertionLocation? = nil) {
             // 1. Let data be the data given in the comment token being processed.
 
             // 2. If position was specified, then let the adjusted insertion location be
@@ -190,7 +190,7 @@ extension HTML {
             //    document is the same as that of the node in which the adjusted insertion
             //    location finds it
             let commentNode = DOM.Comment()
-            commentNode.data = DOM.String(data)
+            commentNode.data = DOM.String(comment.data)
             commentNode.ownerDocument = adjustedInsertionLocation.parent?.ownerDocument
 
             // 4. Insert the newly created node at the adjusted insertion location.

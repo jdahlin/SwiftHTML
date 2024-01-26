@@ -6,8 +6,10 @@ extension HTML.Tokenizer {
         switch consumeNextInputCharacter() {
         // U+003C LESS-THAN SIGN (<)
         case "<":
-            // Append the current input character to the comment token's data. Switch to the comment less-than sign state.
-            appendCurrenTagTokenName(currentInputCharacter()!)
+            // Append the current input character to the comment token's data.
+            currentCommentToken.data.append(currentInputCharacter()!)
+
+            // Switch to the comment less-than sign state.
             state = .commentLessThanSign
 
         // U+002D HYPHEN-MINUS (-)
@@ -17,19 +19,22 @@ extension HTML.Tokenizer {
 
         // U+0000 NULL
         case "\0":
-            // This is an unexpected-null-character parse error. Append a U+FFFD REPLACEMENT CHARACTER character to the comment token's data.
-            appendCurrenTagTokenName("\u{FFFD}")
+            // This is an unexpected-null-character parse error.
+            // Append a U+FFFD REPLACEMENT CHARACTER character to the comment token's data.
+            currentCommentToken.data.append("\u{FFFD}")
 
         // EOF
         case nil:
-            // This is an eof-in-comment parse error. Emit the current comment token. Emit an end-of-file token.
-            emitCurrentToken()
+            // This is an eof-in-comment parse error.
+            // Emit the current comment token.
+            emitToken(.comment(currentCommentToken))
+            // Emit an end-of-file token.
             emitEndOfFileToken()
 
         // Anything else
-        // Append the current input character to the comment token's data.
         default:
-            appendCurrenTagTokenName(currentInputCharacter()!)
+            // Append the current input character to the comment token's data.
+            currentCommentToken.data.append(currentInputCharacter()!)
         }
     }
 }

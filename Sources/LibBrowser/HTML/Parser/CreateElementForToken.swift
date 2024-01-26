@@ -16,7 +16,7 @@ extension HTML.TreeBuilder {
         namespace: DOM.String,
         intendedParent: DOM.Node
     ) -> DOM.Element {
-        guard case let .startTag(tagName, attributes: attributes, _) = token else {
+        guard case let .startTag(tag) = token else {
             fatalError("\(#function): unexpected tag: \(token)")
         }
 
@@ -24,16 +24,16 @@ extension HTML.TreeBuilder {
         //    result of creating a speculative mock element given given namespace,
         //    the tag name of the given token, and the attributes of the given
         //    token.
-        let domAttributes: [DOM.Attr] = attributes.map {
+        let domAttributes: [DOM.Attr] = tag.attributes.map {
             DOM.Attr(name: $0.name, value: $0.value)
         }
         let result = if activeSpeculativeHTMLParser != nil {
-            HTML.SpeculativeMockElement(namespace: HTML_NS, tagName: tagName, attributes: domAttributes)
+            HTML.SpeculativeMockElement(namespace: HTML_NS, tagName: tag.name, attributes: domAttributes)
             // 2. Otherwise, optionally create a speculative mock element given given
             //    namespace, the tag name of the given token, and the attributes of the
             //    given token.
         } else {
-            HTML.SpeculativeMockElement(namespace: HTML_NS, tagName: tagName, attributes: domAttributes)
+            HTML.SpeculativeMockElement(namespace: HTML_NS, tagName: tag.name, attributes: domAttributes)
         }
         // Note: The result is not used. This step allows for a speculative fetch to
         //       be initiated from non-speculative parsing. The fetch is still
@@ -46,7 +46,7 @@ extension HTML.TreeBuilder {
         let _ = intendedParent.ownerDocument
 
         // 4. Let local name be the tag name of the token.
-        let localName = tagName
+        let localName = tag.name
 
         // 5. Let is be the value of the "is" attribute in the given token, if such
         //    an attribute exists, or null otherwise.
@@ -88,7 +88,7 @@ extension HTML.TreeBuilder {
         //       blown away.
 
         // 10. Append each attribute in the given token to element.
-        for attribute in attributes {
+        for attribute in tag.attributes {
             element.attributes.attributes[attribute.name] = attribute.value
         }
 

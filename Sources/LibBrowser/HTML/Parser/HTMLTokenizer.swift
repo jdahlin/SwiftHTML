@@ -157,6 +157,12 @@ extension HTML {
         case numericCharacterReferenceEnd
     }
 
+    struct TokenizerTag {
+        var name: String
+        var attributes: [TokenizerAttr] = []
+        var isSelfClosing: Bool = false
+    }
+
     struct TokenizerAttr {
         var name: String
         var value: String
@@ -169,11 +175,15 @@ extension HTML {
         var forceQuirks: Bool = false
     }
 
+    struct Comment {
+        var data: String
+    }
+
     enum Token {
         case character(Character)
-        case startTag(_ tagName: String, attributes: [TokenizerAttr] = [], isSelfClosing: Bool = false)
-        case endTag(_ tagName: String, attributes: [TokenizerAttr] = [], isSelfClosing: Bool = false)
-        case comment(String)
+        case startTag(TokenizerTag)
+        case endTag(TokenizerTag)
+        case comment(Comment)
         case doctype(DocType)
         case attribute(name: String, value: String)
         case eof
@@ -193,6 +203,7 @@ extension HTML {
         var currentEndTagName: String?
         var lastStartTagName: String?
         lazy var currentDocTypeToken: DocType = .init()
+        lazy var currentCommentToken: Comment = .init(data: "")
 
         init(data: Data) {
             self.data = data
@@ -222,10 +233,10 @@ extension HTML {
 
         func emitToken(_ token: HTML.Token) {
             switch token {
-            case let .startTag(tagName, _, _):
-                lastStartTagName = tagName
-            case let .endTag(tagName, _, _):
-                currentEndTagName = tagName
+            case let .startTag(tag):
+                lastStartTagName = tag.name
+            case let .endTag(tag):
+                currentEndTagName = tag.name
             default:
                 break
             }
@@ -270,8 +281,12 @@ extension HTML {
 
         func createAttribute(name: String = "", value: String = "") {
             switch currentToken {
-            case let .startTag(tag, attributes, isSelfClosing):
-                currentToken = .startTag(tag, attributes: attributes + [TokenizerAttr(name: name, value: value)], isSelfClosing: isSelfClosing)
+            case let .startTag(tag):
+                currentToken = .startTag(TokenizerTag(
+                    name: tag.name,
+                    attributes: tag.attributes + [TokenizerAttr(name: name, value: value)],
+                    isSelfClosing: tag.isSelfClosing
+                ))
             default:
                 assertionFailure()
                 exit(0)
@@ -279,29 +294,37 @@ extension HTML {
         }
 
         func currentAttributeAppendToName(_ name: String) {
-            guard case .startTag(let tag, var attributes, let isSelfClosing) = currentToken else {
+            guard case var .startTag(tag) = currentToken else {
                 assertionFailure()
                 return
             }
 
-            if let lastAttribute = attributes.last {
-                attributes[attributes.count - 1] = TokenizerAttr(
+            if let lastAttribute = tag.attributes.last {
+                tag.attributes[tag.attributes.count - 1] = TokenizerAttr(
                     name: lastAttribute.name + name, value: lastAttribute.value
                 )
             }
 
-            currentToken = .startTag(tag, attributes: attributes, isSelfClosing: isSelfClosing)
+            currentToken = .startTag(TokenizerTag(
+                name: tag.name,
+                attributes: tag.attributes,
+                isSelfClosing: tag.isSelfClosing
+            ))
         }
 
         func currentAttributeAppendToValue(_ value: String) {
             switch currentToken {
-            case .startTag(let tag, var attributes, let isSelfClosing):
-                if let lastAttribute = attributes.last {
-                    attributes[attributes.count - 1] = TokenizerAttr(
+            case var .startTag(tag):
+                if let lastAttribute = tag.attributes.last {
+                    tag.attributes[tag.attributes.count - 1] = TokenizerAttr(
                         name: lastAttribute.name, value: lastAttribute.value + value
                     )
                 }
-                currentToken = .startTag(tag, attributes: attributes, isSelfClosing: isSelfClosing)
+                currentToken = .startTag(TokenizerTag(
+                    name: tag.name,
+                    attributes: tag.attributes,
+                    isSelfClosing: tag.isSelfClosing
+                ))
             default:
                 assertionFailure()
                 return
@@ -310,12 +333,12 @@ extension HTML {
 
         func appendCurrenTagTokenName(_ character: Character) {
             switch currentToken {
-            case let .startTag(name, attributes, isSelfClosing):
-                currentToken = .startTag(name + String(character), attributes: attributes, isSelfClosing: isSelfClosing)
-            case let .endTag(name, attributes, isSelfClosing):
-                currentToken = .endTag(name + String(character), attributes: attributes, isSelfClosing: isSelfClosing)
-            case let .comment(name):
-                currentToken = .comment(name + String(character))
+            case var .startTag(tag):
+                tag.name.append(character)
+                currentToken = .startTag(tag)
+            case var .endTag(tag):
+                tag.name.append(character)
+                currentToken = .endTag(tag)
             default:
                 DIE("Implement me: \(currentToken!)")
             }

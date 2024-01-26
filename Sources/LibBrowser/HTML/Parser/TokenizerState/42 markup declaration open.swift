@@ -11,8 +11,9 @@ extension HTML.Tokenizer {
             {
                 // Consume them.
                 position += 1
-                // Create a comment token whose data is the empty string. Switch to the comment start state.
-                currentToken = .comment("")
+                // Create a comment token whose data is the empty string.
+                currentCommentToken = .init(data: "")
+                // Switch to the comment start state.
                 state = .commentStart
                 return
             }
@@ -50,15 +51,18 @@ extension HTML.Tokenizer {
                data[position + 5] == UInt8(ascii: "A"),
                data[position + 6] == UInt8(ascii: "[")
             {
-                // Consume those characters. If there is an adjusted current node and it
-                // is not an element in the HTML namespace, then switch to the CDATA
-                // section state. Otherwise, this is a cdata-in-html-content parse
-                // error. Create a comment token whose data is the "[CDATA[" string.
-                // Switch to the bogus comment state.
+                // Consume those characters.
                 position += 6
-                // FIXME: if let adjustedCurrentNode = adjustedCurrentNode, !adjustedCurrentNode.isHTMLElement() {
-                //           state = .cdataSection
-                currentToken = .comment("[CDATA[")
+
+                // FIXME: If there is an adjusted current node and it is not an element in the HTML namespace,
+                // then switch to the CDATA section state.
+
+                // Otherwise, this is a cdata-in-html-content parse error.
+
+                // Create a comment token whose data is the "[CDATA[" string.
+                currentCommentToken = .init(data: "[CDATA[")
+
+                // Switch to the bogus comment state.
                 state = .bogusComment
                 return
             }
@@ -68,10 +72,11 @@ extension HTML.Tokenizer {
         }
 
         // Anything else
-        // This is an incorrectly-opened-comment parse error. Create a comment token
-        // whose data is the empty string. Switch to the bogus comment state (don't
-        // consume anything in the current state).
-        currentToken = .comment("")
+        // This is an incorrectly-opened-comment parse error.
+        // Create a comment token whose data is the empty string.
+        currentCommentToken = .init(data: "")
+
+        // Switch to the bogus comment state (don't consume anything in the current state).
         state = .bogusComment
     }
 }

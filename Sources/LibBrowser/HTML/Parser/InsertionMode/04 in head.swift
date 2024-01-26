@@ -26,14 +26,14 @@ extension HTML.TreeBuilder {
             break
 
         // A start tag whose tag name is "html"
-        case .startTag("html", attributes: _, _):
+        case let .startTag(tag) where tag.name == "html":
             // Process the token using the rules for the "in body" insertion mode.
             insertionMode = .inBody
             handleInBody(token)
 
         // A start tag whose tag name is one of: "base", "basefont", "bgsound", "link"
-        case let .startTag(tagName, _, _)
-            where tagName == "base" || tagName == "basefont" || tagName == "bgsound" || tagName == "link":
+        case let .startTag(tag)
+            where tag.name == "base" || tag.name == "basefont" || tag.name == "bgsound" || tag.name == "link":
             // Insert an HTML element for the token.
             insertHTMLElement(token)
 
@@ -42,7 +42,7 @@ extension HTML.TreeBuilder {
             // FIXME: Acknowledge the token's self-closing flag, if it is set.
 
         // A start tag whose tag name is "meta"
-        case .startTag("meta", _, _):
+        case let .startTag(tag) where tag.name == "meta":
             // Insert an HTML element for the token.
             let element = insertHTMLElement(token)
             // Immediately pop the current node off the stack of open elements.
@@ -73,22 +73,22 @@ extension HTML.TreeBuilder {
             }
 
         // A start tag whose tag name is "title"
-        case .startTag("title", attributes: _, _):
+        case let .startTag(tag) where tag.name == "title":
             // Follow the generic RCDATA element parsing algorithm.
             genericElementParsingAlgorithm(token, algorithm: .rcData)
 
         // A start tag whose tag name is "noscript", if the scripting flag is enabled
-        case .startTag("noscript", attributes: _, _) where scriptingFlag:
+        case let .startTag(tag) where tag.name == "noscript" && scriptingFlag:
             // Follow the generic raw text element parsing algorithm.
             genericElementParsingAlgorithm(token, algorithm: .rawText)
 
         // A start tag whose tag name is one of: "noframes", "style"
-        case .startTag(let tagName, attributes: _, _) where tagName == "noframes" || tagName == "style":
+        case let .startTag(tag) where tag.name == "noframes" || tag.name == "style":
             // Follow the generic raw text element parsing algorithm.
             genericElementParsingAlgorithm(token, algorithm: .rawText)
 
         // A start tag whose tag name is "noscript", if the scripting flag is disabled
-        case .startTag("noscript", attributes: _, _) where !scriptingFlag:
+        case let .startTag(tag) where tag.name == "noscript" && !scriptingFlag:
             // Insert an HTML element for the token.
             _ = insertHTMLElement(token)
 
@@ -98,7 +98,7 @@ extension HTML.TreeBuilder {
             FIXME("noscript not implemented")
 
         // A start tag whose tag name is "script"
-        case .startTag("script", _, _):
+        case let .startTag(tag) where tag.name == "script":
             // Run these steps:
             // Let the adjusted insertion location be the appropriate place for inserting a node.
             let adjustedInsertionLocation = appropriatePlaceForInsertingANode()
@@ -130,7 +130,7 @@ extension HTML.TreeBuilder {
             insertionMode = .text
 
         // An end tag whose tag name is "head"
-        case .endTag("head", _, _):
+        case let .endTag(tag) where tag.name == "head":
             // Pop the current node (which will be the head element) off the
             // stack of open elements.
             stackOfOpenElements.pop()
@@ -139,7 +139,7 @@ extension HTML.TreeBuilder {
             insertionMode = .afterHead
 
         // An end tag whose tag name is one of: "body", "html", "br"
-        case let .endTag(tagName, _, _) where tagName == "body" || tagName == "html" || tagName == "br":
+        case let .endTag(tag) where tag.name == "body" || tag.name == "html" || tag.name == "br":
             // Act as described in the "anything else" entry below. (inlined)
             // Pop the current node (which will be the head element) off the stack of open elements.
             stackOfOpenElements.pop()
@@ -190,7 +190,7 @@ extension HTML.TreeBuilder {
     // Reset the insertion mode appropriately.
 
         // A start tag whose tag name is "head"
-        case .startTag("head", attributes: _, _):
+        case let .startTag(tag) where tag.name == "head":
             // Parse error. Ignore the token.
             break
 

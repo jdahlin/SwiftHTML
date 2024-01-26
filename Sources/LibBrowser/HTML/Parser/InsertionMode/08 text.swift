@@ -25,7 +25,7 @@ extension HTML.TreeBuilder {
             insertionMode = originalInsertionMode!
 
         // An end tag whose tag name is "script"
-        case let .endTag(tagName, _, _) where tagName.lowercased() == "script":
+        case let .endTag(tag) where tag.name == "script":
             FIXME("script tag")
 
     // If the active speculative HTML parser is null and the JavaScript execution context stack is empty, then perform a microtask checkpoint.

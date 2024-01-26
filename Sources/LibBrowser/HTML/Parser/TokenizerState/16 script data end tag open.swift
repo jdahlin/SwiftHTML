@@ -7,7 +7,7 @@ extension HTML.Tokenizer {
         // ASCII alpha
         case let c where c!.isASCIIAlpha:
             // Create a new end tag token, set its tag name to the empty string.
-            currentToken = .endTag("")
+            currentToken = .endTag(HTML.TokenizerTag(name: ""))
 
             // Reconsume in the script data end tag name state.
             reconsume(.scriptDataEndTagName)

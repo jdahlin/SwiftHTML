@@ -17,26 +17,32 @@ extension HTML.Tokenizer {
         // ASCII alpha
         case let char where char!.isLetter:
             // Create a new start tag token, set its tag name to the empty string.
-            currentToken = .startTag("")
+            currentToken = .startTag(HTML.TokenizerTag(name: ""))
             // Reconsume in the tag name state.
             reconsume(.tagName)
 
         // U+003F QUESTION MARK (?)
         case "?":
-            // This is an unexpected-question-mark-instead-of-tag-name parse error. Create a comment token whose data is the empty string. Reconsume in the bogus comment state.
-            currentToken = .comment("")
+            // This is an unexpected-question-mark-instead-of-tag-name parse error.
+            // Create a comment token whose data is the empty string.
+            currentCommentToken = .init(data: "")
+            // Reconsume in the bogus comment state.
             reconsume(.bogusComment)
 
         // EOF
         case nil:
-            // This is an eof-before-tag-name parse error. Emit a U+003C LESS-THAN SIGN character token and an end-of-file token.
+            // This is an eof-before-tag-name parse error.
+            // Emit a U+003C LESS-THAN SIGN character token and
             emitCharacterToken("<")
+            // an end-of-file token.
             emitEndOfFileToken()
 
         // Anything else
         default:
-            // This is an invalid-first-character-of-tag-name parse error. Emit a U+003C LESS-THAN SIGN character token. Reconsume in the data state.
+            // This is an invalid-first-character-of-tag-name parse error.
+            // Emit a U+003C LESS-THAN SIGN character token.
             emitCharacterToken("<")
+            // Reconsume in the data state.
             reconsume(.data)
         }
     }

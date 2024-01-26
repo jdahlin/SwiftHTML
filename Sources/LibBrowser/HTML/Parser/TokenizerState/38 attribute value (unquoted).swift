@@ -37,20 +37,25 @@ extension HTML.Tokenizer {
         // U+003C LESS-THAN SIGN (<)
         // U+003D EQUALS SIGN (=)
         // U+0060 GRAVE ACCENT (`)
-        // This is an unexpected-character-in-unquoted-attribute-value parse error. Treat it as per the "anything else" entry below.
         case "\"", "'", "<", "=", "`":
-            FIXME("Unexpected character in unquoted attribute value")
-            fallthrough
+            // This is an unexpected-character-in-unquoted-attribute-value parse error.
+            // Treat it as per the "anything else" entry below.
+            anythingElse()
 
         // EOF
         case nil:
-            // This is an eof-in-tag parse error. Emit an end-of-file token.
+            // This is an eof-in-tag parse error.
+            // Emit an end-of-file token.
             emitEndOfFileToken()
 
         // Anything else
         default:
-            // Append the current input character to the current attribute's value.
-            currentAttributeAppendToValue(String(currentInputCharacter()!))
+            anythingElse()
         }
+    }
+
+    func anythingElse() {
+        // Append the current input character to the current attribute's value.
+        currentAttributeAppendToValue(String(currentInputCharacter()!))
     }
 }

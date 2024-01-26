@@ -26,7 +26,7 @@ extension HTML.TreeBuilder {
             break
 
         // A start tag whose tag name is "html"
-        case .startTag("html", attributes: _, isSelfClosing: _):
+        case let .startTag(tag) where tag.name == "html":
             // Create an element for the token in the HTML namespace, with the
             // Document as the intended parent.
             let element = createElementForToken(
@@ -43,8 +43,8 @@ extension HTML.TreeBuilder {
             insertionMode = .beforeHead
 
         // An end tag whose tag name is one of: "head", "body", "html", "br"
-        case let .endTag(tagName, _, _):
-            if tagName == "head" || tagName == "body" || tagName == "html" || tagName == "br" {
+        case let .endTag(tag):
+            if tag.name == "head" || tag.name == "body" || tag.name == "html" || tag.name == "br" {
                 // Act as described in the "anything else" entry below.
                 fallthrough
                 // Any other end tag

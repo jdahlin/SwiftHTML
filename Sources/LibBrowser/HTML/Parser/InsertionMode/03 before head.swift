@@ -26,13 +26,13 @@ extension HTML.TreeBuilder {
             break
 
         // A start tag whose tag name is "html"
-        case .startTag("html", attributes: _, isSelfClosing: _):
+        case let .startTag(tag) where tag.name == "html":
             // Process the token using the rules for the "in body" insertion mode.
             insertionMode = .inBody
             handleInBody(token)
 
         // A start tag whose tag name is "head"
-        case .startTag("head", attributes: _, isSelfClosing: _):
+        case let .startTag(tag) where tag.name == "head":
             // Insert an HTML element for the token.
             let headElement = insertHTMLElement(token)
 
@@ -43,8 +43,8 @@ extension HTML.TreeBuilder {
             insertionMode = .inHead
 
         // An end tag whose tag name is one of: "head", "body", "html", "br"
-        case let .endTag(tagName, _, _):
-            if tagName == "head" || tagName == "body" || tagName == "html" || tagName == "br" {
+        case let .endTag(tag):
+            if tag.name == "head" || tag.name == "body" || tag.name == "html" || tag.name == "br" {
                 // Act as described in the "anything else" entry below.
                 fallthrough
             }

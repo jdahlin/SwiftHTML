@@ -37,7 +37,7 @@ extension HTML.TreeBuilder {
             break
 
         // A start tag whose tag name is "html"
-        case .startTag("html", _, _):
+        case let .startTag(tag) where tag.name == "html":
             // Parse error.
             // If there is a template element on the stack of open elements, then
             // ignore the token. Otherwise, for each attribute on the token, check to
@@ -48,20 +48,20 @@ extension HTML.TreeBuilder {
 
         // A start tag whose tag name is one of: "base", "basefont", "bgsound",
         // "link", "meta", "noframes", "script", "style", "template", "title"
-        case let .startTag(tagName, _, _)
-            where tagName == "base" || tagName == "basefont" || tagName == "bgsound" || tagName == "link"
-            || tagName == "meta" || tagName == "noframes" || tagName == "script" || tagName == "style"
-            || tagName == "template" || tagName == "title":
+        case let .startTag(tag)
+            where tag.name == "base" || tag.name == "basefont" || tag.name == "bgsound" || tag.name == "link"
+            || tag.name == "meta" || tag.name == "noframes" || tag.name == "script" || tag.name == "style"
+            || tag.name == "template" || tag.name == "title":
             // Process the token using the rules for the "in head" insertion mode.
             handleInHead(token)
 
         // An end tag whose tag name is "template"
-        case .endTag("template", _, _):
+        case let .startTag(tag) where tag.name == "template":
             // Process the token using the rules for the "in head" insertion mode.
             handleInHead(token)
 
         // A start tag whose tag name is "body"
-        case let .startTag("body", attributes, _):
+        case let .startTag(tag) where tag.name == "body":
             // Parse error.
             // If the second element on the stack of open elements is not a body
             // element, if the stack of open elements has only one node on it, or if
@@ -80,7 +80,7 @@ extension HTML.TreeBuilder {
                 // already present on the body element (the second element) on the stack
                 // of open elements, and if it is not, add the attribute and its
                 // corresponding value to that element.
-                for attribute in attributes {
+                for attribute in tag.attributes {
                     if openElements.count > 1 {
                         let body = openElements[1]
                         if body.hasAttribute(attribute.name) {
@@ -107,7 +107,7 @@ extension HTML.TreeBuilder {
     // Stop parsing.
 
         // An end tag whose tag name is "body"
-        case .endTag("body", _, _):
+        case let .endTag(tag) where tag.name == "body":
             // If the stack of open elements does not have a body element in scope, this
             guard stackOfOpenElements.hasElementInScope(withTagName: "body") else {
                 // is a parse error; ignore the token.
@@ -132,7 +132,7 @@ extension HTML.TreeBuilder {
             insertionMode = .afterBody
 
         // An end tag whose tag name is "html"
-        case .endTag("html", _, _):
+        case let .endTag(tag) where tag.name == "html":
             // If the stack of open elements does not have a body element in
             // scope, this is a parse error; ignore the token.
             if !stackOfOpenElements.hasElementInScope(withTagName: "body") {
@@ -283,12 +283,12 @@ extension HTML.TreeBuilder {
     // Pop elements from the stack of open elements until a form element has been popped from the stack.
 
         // An end tag whose tag name is "p"
-        case .endTag("p", _, _):
+        case let .endTag(tag) where tag.name == "p":
             // If the stack of open elements does not have a p element in button
             // scope, then this is a parse error; insert an HTML element for a "p"
             // start tag token with no attributes.
             if stackOfOpenElements.hasElementInScope(withTagName: "p") {
-                insertHTMLElement(HTML.Token.startTag("p", attributes: []))
+                insertHTMLElement(HTML.Token.startTag(HTML.TokenizerTag(name: "p")))
             }
 
             // Close a p element.
@@ -443,7 +443,7 @@ extension HTML.TreeBuilder {
     // Parse error. Ignore the token.
 
         // Any other start tag
-        case let .startTag(_, _, isSelfClosing):
+        case let .startTag(tag):
             // Reconstruct the active formatting elements, if any.
             reconstructActiveFormattingElements()
 
@@ -453,7 +453,7 @@ extension HTML.TreeBuilder {
             // If the token has its self-closing flag set, pop the current node
             // off the stack of open elements and acknowledge the token's
             // self-closing flag.
-            if isSelfClosing {
+            if tag.isSelfClosing {
                 stackOfOpenElements.pop()
                 acknowledgeTokenSelfClosingFlag()
             }
@@ -461,12 +461,12 @@ extension HTML.TreeBuilder {
     // scripting flag is disabled, it can also be a noscript element.
 
         // Any other end tag
-        case let .endTag(tagName, _, _):
+        case let .endTag(tag):
             // Initialize node to be the current node (the bottommost node of the stack).
             let node = currentNode
 
             // Loop: If node is an HTML element with the same tag name as the token, then:
-            while let element = node as? DOM.Element, element.localName == tagName {
+            while let element = node as? DOM.Element, element.localName == tag.name {
                 // Generate implied end tags, except for HTML elements with the same tag name as the token.
                 // generateImpliedEndTags(exceptFor: token.tagName)
 

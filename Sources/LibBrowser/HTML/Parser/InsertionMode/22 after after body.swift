@@ -8,15 +8,21 @@ extension HTML.TreeBuilder {
             insertAComment(comment)
 
         // A DOCTYPE token
-        // A character token that is one of U+0009 CHARACTER TABULATION, U+000A
-        // LINE FEED (LF), U+000C FORM FEED (FF), U+000D CARRIAGE RETURN (CR), or
+        // A character token that is one of
+        // U+0009 CHARACTER TABULATION,
+        // U+000A LINE FEED (LF),
+        // U+000C FORM FEED (FF),
+        // U+000D CARRIAGE RETURN (CR), or
         // U+0020 SPACE
-        // A start tag whose tag name is "html"
         case
             .doctype,
             .character("\u{0009}"), .character("\u{000A}"), .character("\u{000C}"),
-            .character("\u{000D}"), .character("\u{0020}"),
-            .startTag("html", _, _):
+            .character("\u{000D}"), .character("\u{0020}"):
+            // Process the token using the rules for the "in body" insertion mode.
+            handleInBody(token)
+
+        // A start tag whose tag name is "html"
+        case let .startTag(tag) where tag.name == "html":
             // Process the token using the rules for the "in body" insertion mode.
             handleInBody(token)
 

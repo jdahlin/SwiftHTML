@@ -63,13 +63,16 @@ extension HTML.Tokenizer {
         func anythingElse() {
             // Emit a U+003C LESS-THAN SIGN character token,
             emitCharacterToken("<")
+
             // a U+002F SOLIDUS character token,
             emitCharacterToken("/")
+
             // and a character token for each of the characters in the temporary
             // buffer (in the order they were added to the buffer).
             for c in temporaryBuffer {
                 emitCharacterToken(c)
             }
+
             // Reconsume in the RAWTEXT state.
             reconsume(.rcData)
         }

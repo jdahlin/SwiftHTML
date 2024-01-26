@@ -19,30 +19,36 @@ extension HTML.Tokenizer {
 
         // U+003E GREATER-THAN SIGN (>)
         case ">":
-            // Switch to the data state. Emit the current tag token.
+            // Switch to the data state.
             state = .data
+            // Emit the current tag token.
             emitCurrentToken()
 
         // ASCII upper alpha
-        // Append the lowercase version of the current input character (add 0x0020 to the character's code point) to the current tag token's tag name.
         case let char where char!.isUppercase:
+            // Append the lowercase version of the current input character (add
+            // 0x0020 to the character's code point) to the current tag token's tag
+            // name.
             let cic = currentInputCharacter()!
             appendCurrenTagTokenName(
                 Character(UnicodeScalar(cic.unicodeScalars.first!.value + 0x0020)!))
 
         // U+0000 NULL
-        // This is an unexpected-null-character parse error. Append a U+FFFD REPLACEMENT CHARACTER character to the current tag token's tag name.
         case "\0":
+            // This is an unexpected-null-character parse error. Append a U+FFFD
+            // REPLACEMENT CHARACTER character to the current tag token's tag
+            // name.
             appendCurrenTagTokenName("\u{FFFD}")
 
         // EOF
-        // This is an eof-in-tag parse error. Emit an end-of-file token.
         case nil:
+            // This is an eof-in-tag parse error.
+            // Emit an end-of-file token.
             emitEndOfFileToken()
 
         // Anything else
-        // Append the current input character to the current tag token's tag name.
         default:
+            // Append the current input character to the current tag token's tag name.
             appendCurrenTagTokenName(currentInputCharacter()!)
         }
     }

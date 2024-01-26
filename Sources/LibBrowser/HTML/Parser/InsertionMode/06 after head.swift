@@ -25,12 +25,12 @@ extension HTML.TreeBuilder {
             break
 
         // A start tag whose tag name is "html"
-        case .startTag("html", attributes: _, _):
+        case let .startTag(tag) where tag.name == "html":
             // Process the token using the rules for the "in body" insertion mode.
             handleInBody(token)
 
         // A start tag whose tag name is "body"
-        case .startTag("body", attributes: _, _):
+        case let .startTag(tag) where tag.name == "body":
             // Insert an HTML element for the token.
             insertHTMLElement(token)
             // Set the frameset-ok flag to "not ok".
@@ -39,18 +39,18 @@ extension HTML.TreeBuilder {
             insertionMode = .inBody
 
         // A start tag whose tag name is "frameset"
-        case .startTag("frameset", attributes: _, _):
+        case let .startTag(tag) where tag.name == "frameset":
             // Insert an HTML element for the token.
             insertHTMLElement(token)
             // Switch the insertion mode to "in frameset".
             insertionMode = .inFrameset
 
         // A start tag whose tag name is one of: "base", "basefont", "bgsound", "link", "meta", "noframes", "script", "style", "template", "title"
-        case .startTag(let tagName, attributes: _, _)
-            where tagName == "base" || tagName == "basefont" || tagName == "bgsound"
-            || tagName == "link" || tagName == "meta" || tagName == "noframes"
-            || tagName == "script" || tagName == "style" || tagName == "template"
-            || tagName == "title":
+        case let .startTag(tag)
+            where tag.name == "base" || tag.name == "basefont" || tag.name == "bgsound"
+            || tag.name == "link" || tag.name == "meta" || tag.name == "noframes"
+            || tag.name == "script" || tag.name == "style" || tag.name == "template"
+            || tag.name == "title":
             // Parse error.
             // parseError("Unexpected start tag '\(tagName)' in 'in head' insertion mode.")
 
@@ -69,16 +69,16 @@ extension HTML.TreeBuilder {
             assert(headElementPointer != nil)
 
         // An end tag whose tag name is "template"
-        case .endTag("template", _, _):
+        case let .startTag(tag) where tag.name == "template":
             // Process the token using the rules for the "in head" insertion mode.
             handleInHead(token)
 
         // An end tag whose tag name is one of: "body", "html", "br"
-        case let .endTag(tagName, _, _) where tagName == "body" || tagName == "html" || tagName == "br":
+        case let .endTag(tag) where tag.name == "body" || tag.name == "html" || tag.name == "br":
             // Act as described in the "anything else" entry below.
 
             // Insert an HTML element for a "body" start tag token with no attributes.
-            insertHTMLElement(HTML.Token.startTag("body", attributes: []))
+            insertHTMLElement(HTML.Token.startTag(HTML.TokenizerTag(name: "body")))
 
             // Switch the insertion mode to "in body".
             insertionMode = .inBody
@@ -87,7 +87,7 @@ extension HTML.TreeBuilder {
             reprocessToken(token)
 
         // A start tag whose tag name is "head"
-        case .startTag("head", _, _):
+        case let .startTag(tag) where tag.name == "head":
             // Parse error. Ignore the token.
             break
 
@@ -99,7 +99,7 @@ extension HTML.TreeBuilder {
         // Anything else
         default:
             // Insert an HTML element for a "body" start tag token with no attributes.
-            insertHTMLElement(HTML.Token.startTag("body", attributes: []))
+            insertHTMLElement(HTML.Token.startTag(HTML.TokenizerTag(name: "body")))
 
             // Switch the insertion mode to "in body".
             insertionMode = .inBody
