@@ -33,11 +33,12 @@ extension CSS {
         }
 
         func parse() -> (declarations: [Item], selectorList: [ComplexSelector]) {
-            var selectorList = CSS.consumeSelectorList(qualifiedRule.prelude)
-            var tokenStream = CSS.TokenStream(simpleBlock: qualifiedRule.simpleBlock)
+            let selectorList = CSS.consumeSelectorList(prelude)
+            var tokenStream = CSS.TokenStream(simpleBlock: simpleBlock)
+            var declarations: [Item] = []
             switch Result(catching: { try CSS.parseListOfDeclarations(&tokenStream) }) {
             case let .success(items):
-                declarations = CSSOM.CSSStyleDeclaration(items: items)
+                declarations.append(contentsOf: items)
             case let .failure(error):
                 DIE("Handle error: \(error)")
             }
