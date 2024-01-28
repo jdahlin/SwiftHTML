@@ -1,17 +1,26 @@
 extension CSS {
     typealias Padding = LengthOrPercentage
 
-    static func parsePadding(value: [CSS.ComponentValue]) -> Property<RectangularShorthand<Padding>> {
-        func parse(value: CSS.ComponentValue) -> Padding {
-            switch value {
-            case .token(.ident("auto")):
-                .auto
-            case let .token(.dimension(number: number, unit: unit)):
-                .length(Dimension(number: number, unit: CSS.Unit.Length(unit: unit)))
-            default:
-                DIE("padding value: \(value) not implemented")
-            }
+    private static func parse(value: CSS.ComponentValue) -> Padding {
+        switch value {
+        case .token(.ident("auto")):
+            .auto
+        case let .token(.dimension(number: number, unit: unit)):
+            .length(Dimension(number: number, unit: CSS.Unit.Length(unit: unit)))
+        default:
+            DIE("padding value: \(value) not implemented")
         }
+    }
+
+    static func parsePadding(value: [CSS.ComponentValue]) -> Property<Padding> {
+        guard value.count == 1 else {
+            FIXME("padding value: \(value) not implemented")
+            return .initial
+        }
+        return .set(parse(value: value[0]))
+    }
+
+    static func parsePaddingShorthand(value: [CSS.ComponentValue]) -> Property<RectangularShorthand<Padding>> {
         switch value.count {
         case 1:
             return .set(.one(parse(value: value[0])))
@@ -34,7 +43,7 @@ extension CSS {
                 left: parse(value: value[3])
             ))
         default:
-            FIXME("padding value: \(value) count=\(value.count) not implemented")
+            FIXME("padding value: \(value) not implemented")
         }
         return .initial
     }

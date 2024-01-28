@@ -15,7 +15,7 @@ extension CSS {
             case .inherited:
                 "inherited"
             case .initial:
-                "initial"
+                ""
             case .revert:
                 "revert"
             case .revertLayer:
@@ -33,7 +33,15 @@ extension CSS {
         var display: Property<CSS.Display> = .initial
         var color: Property<CSS.Color> = .initial
         var margin: Property<RectangularShorthand<Margin>> = .initial
+        var marginTop: Property<Margin> = .initial
+        var marginBottom: Property<Margin> = .initial
+        var marginLeft: Property<Margin> = .initial
+        var marginRight: Property<Margin> = .initial
         var padding: Property<RectangularShorthand<Padding>> = .initial
+        var paddingTop: Property<Padding> = .initial
+        var paddingBottom: Property<Padding> = .initial
+        var paddingLeft: Property<Padding> = .initial
+        var paddingRight: Property<Padding> = .initial
 
         mutating func parseCSSValue(name: String, value valueWithWhitespace: [CSS.ComponentValue]) {
             let value: [CSS.ComponentValue] = valueWithWhitespace.filter {
@@ -54,9 +62,25 @@ extension CSS {
             case "display":
                 display = parseDisplay(value: value)
             case "margin":
-                margin = parseMargin(value: value)
+                margin = parseMarginShorthand(value: value)
+            case "margin-top":
+                marginTop = parseMargin(value: value)
+            case "margin-bottom":
+                marginBottom = parseMargin(value: value)
+            case "margin-left":
+                marginLeft = parseMargin(value: value)
+            case "margin-right":
+                marginRight = parseMargin(value: value)
             case "padding":
-                padding = parsePadding(value: value)
+                padding = parsePaddingShorthand(value: value)
+            case "padding-top":
+                paddingTop = parsePadding(value: value)
+            case "padding-bottom":
+                paddingBottom = parsePadding(value: value)
+            case "padding-left":
+                paddingLeft = parsePadding(value: value)
+            case "padding-right":
+                paddingRight = parsePadding(value: value)
             default:
                 FIXME("\(name): \(value) not implemented")
             }

@@ -1,17 +1,26 @@
 extension CSS {
     typealias Margin = LengthOrPercentage
 
-    static func parseMargin(value: [CSS.ComponentValue]) -> Property<RectangularShorthand<Margin>> {
-        func parse(value: CSS.ComponentValue) -> Margin {
-            switch value {
-            case .token(.ident("auto")):
-                .auto
-            case let .token(.dimension(number: number, unit: unit)):
-                .length(Dimension(number: number, unit: CSS.Unit.Length(unit: unit)))
-            default:
-                DIE("margin value: \(value) not implemented")
-            }
+    private static func parse(value: CSS.ComponentValue) -> Margin {
+        switch value {
+        case .token(.ident("auto")):
+            .auto
+        case let .token(.dimension(number: number, unit: unit)):
+            .length(Dimension(number: number, unit: CSS.Unit.Length(unit: unit)))
+        default:
+            DIE("margin value: \(value) not implemented")
         }
+    }
+
+    static func parseMargin(value: [CSS.ComponentValue]) -> Property<Margin> {
+        guard value.count == 1 else {
+            FIXME("margin value: \(value) not implemented")
+            return .initial
+        }
+        return .set(parse(value: value[0]))
+    }
+
+    static func parseMarginShorthand(value: [CSS.ComponentValue]) -> Property<RectangularShorthand<Margin>> {
         switch value.count {
         case 1:
             return .set(.one(parse(value: value[0])))
