@@ -85,5 +85,55 @@ extension CSS {
                 FIXME("\(name): \(value) not implemented")
             }
         }
+
+        func toStringDict() -> [String: String] {
+            var dict: [String: String] = [:]
+            if case let .set(value) = backgroundColor {
+                dict["background-color"] = "\(value)"
+            }
+            if case let .set(value) = borderStyle {
+                dict["border-style"] = "\(value)"
+            }
+            if case let .set(value) = borderWidth {
+                dict["border-width"] = "\(value)"
+            }
+            if case let .set(value) = color {
+                dict["color"] = "\(value)"
+            }
+            if case let .set(value) = display {
+                dict["display"] = "\(value)"
+            }
+            if case let .set(value) = margin {
+                dict["margin"] = "\(value)"
+            }
+            if case let .set(value) = marginTop {
+                dict["margin-top"] = "\(value)"
+            }
+            if case let .set(value) = marginBottom {
+                dict["margin-bottom"] = "\(value)"
+            }
+            if case let .set(value) = marginLeft {
+                dict["margin-left"] = "\(value)"
+            }
+            if case let .set(value) = marginRight {
+                dict["margin-right"] = "\(value)"
+            }
+            if case let .set(value) = padding {
+                dict["padding"] = "\(value)"
+            }
+            if case let .set(value) = paddingTop {
+                dict["padding-top"] = "\(value)"
+            }
+            if case let .set(value) = paddingBottom {
+                dict["padding-bottom"] = "\(value)"
+            }
+            if case let .set(value) = paddingLeft {
+                dict["padding-left"] = "\(value)"
+            }
+            if case let .set(value) = paddingRight {
+                dict["padding-right"] = "\(value)"
+            }
+            return dict
+        }
     }
 }

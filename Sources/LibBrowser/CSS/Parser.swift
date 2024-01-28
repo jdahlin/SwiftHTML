@@ -31,6 +31,18 @@ extension CSS {
                 return nil
             }
         }
+
+        func parse() -> (declarations: [Item], selectorList: [ComplexSelector]) {
+            var selectorList = CSS.consumeSelectorList(qualifiedRule.prelude)
+            var tokenStream = CSS.TokenStream(simpleBlock: qualifiedRule.simpleBlock)
+            switch Result(catching: { try CSS.parseListOfDeclarations(&tokenStream) }) {
+            case let .success(items):
+                declarations = CSSOM.CSSStyleDeclaration(items: items)
+            case let .failure(error):
+                DIE("Handle error: \(error)")
+            }
+            return (declarations: declarations, selectorList: selectorList)
+        }
     }
 
     // https://www.w3.org/TR/css-syntax-3/#declaration

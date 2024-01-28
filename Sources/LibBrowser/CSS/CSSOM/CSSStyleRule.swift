@@ -10,14 +10,9 @@ extension CSSOM {
         var declarations: CSSOM.CSSStyleDeclaration
 
         init(qualifiedRule: CSS.QualifiedRule) {
-            selectorList = CSS.consumeSelectorList(qualifiedRule.prelude)
-            var tokenStream = CSS.TokenStream(simpleBlock: qualifiedRule.simpleBlock)
-            switch Result(catching: { try CSS.parseListOfDeclarations(&tokenStream) }) {
-            case let .success(items):
-                declarations = CSSOM.CSSStyleDeclaration(items: items)
-            case let .failure(error):
-                DIE("Handle error: \(error)")
-            }
+            let result = qualifiedRule.parse()
+            selectorList = result.selectorList
+            declarations = CSSOM.CSSStyleDeclaration(items: result.declarations)
             super.init()
         }
     }

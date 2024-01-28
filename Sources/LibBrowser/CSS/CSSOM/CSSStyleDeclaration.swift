@@ -1,9 +1,5 @@
 // [Exposed=Window]
 // interface CSSStyleDeclaration {
-//   [CEReactions] attribute CSSOMString cssText;
-//   readonly attribute unsigned long length;
-//   getter CSSOMString item(unsigned long index);
-//   CSSOMString getPropertyValue(CSSOMString property);
 //   CSSOMString getPropertyPriority(CSSOMString property);
 //   [CEReactions] undefined setProperty(CSSOMString property, [LegacyNullToEmptyString] CSSOMString value, optional [LegacyNullToEmptyString] CSSOMString priority = "");
 //   [CEReactions] CSSOMString removeProperty(CSSOMString property);
@@ -30,7 +26,30 @@ extension CSSOM {
                     FIXME("\(item): not implemented")
                 }
             }
-            print(propertyValues)
+            properties = propertyValues.toStringDict()
+        }
+
+        // readonly attribute unsigned long length;
+        var length: UInt {
+            UInt(properties.count)
+        }
+
+        // CSSOMString getPropertyValue(CSSOMString property);
+        func getPropertyValue(property: String) -> String? {
+            properties[property]
+        }
+
+        // getter CSSOMString item(unsigned long index);
+        func item(index: UInt) -> String? {
+            guard index < length else {
+                return nil
+            }
+            return properties[Array(properties.keys)[Int(index)]]
+        }
+
+        // [CEReactions] attribute CSSOMString cssText;
+        var cssText: String {
+            properties.map { "\($0.key): \($0.value);" }.joined(separator: " ")
         }
     }
 }
