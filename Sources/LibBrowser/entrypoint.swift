@@ -58,6 +58,7 @@ let cssExample122 = """
   <HEAD>
     <TITLE>Examples of margins, padding, and borders</TITLE>
     <STYLE type="text/css">
+      body { display: block; }
       UL {
         background-color: yellow;
         margin: 12px;

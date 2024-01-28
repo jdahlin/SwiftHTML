@@ -16,62 +16,21 @@ extension CSSOM {
         var properties: [String: String] = [:]
 
         init(items: [CSS.Item]) {
+            var propertyValues = CSS.PropertyValues()
             for item in items {
                 switch item {
                 case let .declaration(declaration):
-                    let name = switch declaration.name {
-                    case let .token(.ident(name)): name
+                    switch declaration.name {
+                    case let .token(.ident(name)):
+                        propertyValues.parseCSSValue(name: name, value: declaration.value)
                     default:
-                        DIE("declaration name: \(declaration.name) not implemented")
-                    }
-                    if let value = parseCSSValue(name: name, value: declaration.value) {
-                        properties[name] = value
+                        FIXME("declaration name: \(declaration.name) not implemented")
                     }
                 default:
-                    DIE("\(item): not implemented")
+                    FIXME("\(item): not implemented")
                 }
             }
+            print(propertyValues)
         }
     }
-}
-
-func parseCSSValue(name: String, value: [CSS.ComponentValue]) -> String? {
-    switch name {
-    case "background-color", "color":
-        let color = parseColor(value: value)
-        return "\(color)"
-    case "margin", "padding":
-        if let dimension = parseDimension(value: value) {
-            return "\(dimension)"
-        }
-        return nil
-    default:
-        FIXME("\(name): \(value) not implemented")
-        return nil
-    }
-}
-
-func parseColor(value: [CSS.ComponentValue]) -> CSS.Color {
-    switch value[0] {
-    case let .token(.ident(name)):
-        CSS.Color.named(CSS.Color.Named(string: name))
-    default:
-        DIE("color value: \(value) not implemented")
-    }
-}
-
-func parseDimension(value: [CSS.ComponentValue]) -> CSS.Number? {
-    switch value.count {
-    case 1:
-        switch value[0] {
-        case let .token(.dimension(number: number)):
-            return number.number
-        default:
-            break
-        }
-    default:
-        break
-    }
-    FIXME("dimension value: \(value) not implemented")
-    return nil
 }

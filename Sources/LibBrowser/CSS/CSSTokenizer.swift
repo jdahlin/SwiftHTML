@@ -81,9 +81,18 @@ extension CSS {
         case integer
     }
 
-    enum Number: Equatable {
+    enum Number: Equatable, CustomStringConvertible {
         case Integer(Int64)
         case Number(Double)
+
+        var description: String {
+            switch self {
+            case let .Integer(i):
+                "\(i)"
+            case let .Number(n):
+                "\(n)"
+            }
+        }
     }
 
     enum HashFlag: Equatable {

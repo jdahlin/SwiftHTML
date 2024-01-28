@@ -1,1 +1,0 @@
-extension CSS.Properties {}
