@@ -71,7 +71,8 @@ extension HTML {
             //    content, then return. [CSP]
 
             // Create a CSS style sheet with the following properties:
-            let cssStyleSheet = CSS.CSSStyleSheet()
+            let cssStyleSheet = CSSOM.CSSStyleSheet()
+
             // type
             // text/css
             cssStyleSheet.type = "text/css"
@@ -118,10 +119,11 @@ extension HTML {
             // Left uninitialized.
             // This doesn't seem right. Presumably we should be using the element's
             // child text content? Tracked as issue #2997.
+
             let result = Result { try CSS.parseAStylesheet(data: element.textContent ?? "") }
             switch result {
             case let .success(parsed):
-                cssStyleSheet.rules = parsed.rules
+                cssStyleSheet.rules = parsed.rules.map { CSSOM.cssRuleFromRaw(rawRule: $0) }
             case let .failure(error):
                 print(error)
             }

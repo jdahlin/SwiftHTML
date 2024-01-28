@@ -7,6 +7,6 @@
 //   undefined deleteMedium(CSSOMString medium);
 // };
 
-extension CSS {
+extension CSSOM {
     class MediaList {}
 }

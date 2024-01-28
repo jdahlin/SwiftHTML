@@ -1,56 +1,77 @@
 extension CSS {
-    enum Properties {}
     enum Unit {}
     enum Inherited {
         case inherited
         case no
     }
 
+    // https://drafts.csswg.org/css-backgrounds/#typedef-line-style
+    enum LineStyle {
+        case none
+        case hidden
+        case dotted
+        case dashed
+        case solid
+        case double
+        case groove
+        case ridge
+        case inset
+        case outset
+    }
+
     typealias Length = Double
     typealias Percentage = Double
 
-    enum ComponentValueType {
-        case keyword(String)
-        case length
-        case percentage
-    }
-
-    enum LengthPercentage {
-        case length(Double)
-        case percentage(Percentage)
-        case auto
-    }
-
-    struct Property {
-        var name: String
-        var value: [ComponentValueType]
-        var initial: Double
-    }
+    // struct Property<T>: PropertyProtocol {
+    //     var name: String
+    //     var initial: T
+    //     var parse: ((CSS.Properties.ParseContext) -> CSS.Property<Self>?)? = nil
+    // }
 }
 
-extension CSS.Properties {
-    static let properties: [CSS.Property] = [
-        CSS.Property(
-            name: "margin-top",
-            value: [.length, .percentage, .keyword("auto")],
-            initial: 0.0
-        ),
-        CSS.Property(
-            name: "margin-right",
-            value: [.length, .percentage, .keyword("auto")],
-            initial: 0.0
-        ),
-        CSS.Property(
-            name: "margin-bottom",
-            value: [.length, .percentage, .keyword("auto")],
-            initial: 0.0
-        ),
-        CSS.Property(
-            name: "margin-left",
-            value: [.length, .percentage, .keyword("auto")],
-            initial: 0.0
-        ),
-    ]
+// protocol PropertyProtocol {
+//     var parse: ((CSS.Properties.ParseContext) -> CSS.Property<Self>?)? { get }
+// }
+
+extension CSS {
+    enum Properties {}
+
+    // enum Properties: UInt16 {
+    //     case backgroundColor = 0
+    //     case display = 1
+    //     case marginTop = 2
+    //     case marginRight = 3
+    //     case marginBottom = 4
+    //     case marginLeft = 5
+    //     case margin = 6
+
+    //     static let properties: [Any] = [
+    //         CSS.Properties.BackgroundColor.property,
+    //         CSS.Properties.Display.property,
+    //         CSS.Properties.Margin.propertyTop,
+    //         CSS.Properties.Margin.propertyRight,
+    //         CSS.Properties.Margin.propertyBottom,
+    //         CSS.Properties.Margin.propertyLeft,
+    //         CSS.Properties.MarginShorthand.property,
+    //     ]
+
+    //     static func getByName(name: String) -> any PropertyProtocol {
+    //         switch name {
+    //         case "background-color": get(.backgroundColor)
+    //         case "display": get(.display)
+    //         case "margin-top": get(.marginTop)
+    //         case "margin-right": get(.marginRight)
+    //         case "margin-bottom": get(.marginBottom)
+    //         case "margin-left": get(.marginLeft)
+    //         case "margin": get(.margin)
+    //         default: fatalError("Unknown property: \(name)")
+    //         }
+    //     }
+
+    //     static func get<T>(_ index: CSS.Properties) -> T {
+    //         properties[Int(index.rawValue)] as! T
+    //     }
+    // }
 }
 
 extension CSS.Unit {

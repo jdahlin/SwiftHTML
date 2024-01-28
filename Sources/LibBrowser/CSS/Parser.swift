@@ -183,6 +183,14 @@ extension CSS {
         return try parseAStylesheet(&tokenStream, location: location)
     }
 
+    // 5.3.8 https://www.w3.org/TR/css-syntax-3/#consume-list-of-declarations
+    static func parseListOfDeclarations(_ tokenStream: inout TokenStream) throws -> [Item] {
+        // To parse a list of declarations from input:
+        // 1. Normalize input, and set input to the result.
+        // 2. Consume a list of declarations from input, and return the result.
+        try consumeListOfDeclarations(&tokenStream)
+    }
+
     // 5.4.1 https://www.w3.org/TR/css-syntax-3/#consume-list-of-rules
     static func consumeListOfRules(_ tokenStream: inout TokenStream,
                                    toplevelFlag: ToplevelFlag = ToplevelFlag.unset) throws -> [Rule]
@@ -298,10 +306,6 @@ extension CSS {
         // Repeatedly consume the next input token:
         repeat {
             switch try parser.consumeNextInputToken() {
-//            // Note: not in spec
-//            case .token(.whitespace):
-//                continue
-
             // <EOF-token>
             case .token(.eof):
                 // This is a parse error. Return nothing.
@@ -464,10 +468,12 @@ extension CSS {
                 // As long as the next input token is anything other than a <semicolon-token> or <EOF-token>,
                 outer: repeat {
                     switch try tokenStream.consumeNextInputToken() {
-                    case .token(.whitespace), .token(.eof):
+                    case .token(.semicolon), .token(.eof):
                         break outer
 
                     default:
+                        tokenStream.reconsumeCurrentInputToken()
+
                         // Consume a component value.
                         let componentValue = try consumeComponentValue(&tokenStream)
 
@@ -490,11 +496,10 @@ extension CSS {
                 tokenStream.reconsumeCurrentInputToken()
 
                 // As long as the next input token is anything other than a <semicolon-token> or <EOF-token>,
-                repeat {
+                outer: repeat {
                     switch try tokenStream.consumeNextInputToken() {
-                    case .token(.whitespace), .token(.eof):
-                        break
-
+                    case .token(.semicolon), .token(.eof):
+                        break outer
                     default:
                         // consume a component value and throw away the returned value.
                         _ = try consumeComponentValue(&tokenStream)
@@ -518,8 +523,12 @@ extension CSS {
         try tokenStream.consumeWhile(Token.whitespace)
 
         // 2. If the next input token is anything other than a <colon-token>
-        guard case .token(.colon) = try tokenStream.consumeNextInputToken() else {
-            // this is a parse error.
+        switch try tokenStream.consumeNextInputToken() {
+        case .token(.colon): break
+        case .componentValue(.token(.colon)): break
+        default:
+            // This is a parse error.
+
             // Return nothing.
             return nil
         }
@@ -529,10 +538,16 @@ extension CSS {
 
         // 4. As long as the next input token is anything other than an <EOF-token>,
         // consume a component value and append it to the declaration’s value.
-        repeat {
-            if case .token(.eof) = try tokenStream.consumeNextInputToken() {
+        outer: repeat {
+            let t = try tokenStream.consumeNextInputToken()
+            switch t {
+            case .token(.eof): break outer
+            case .componentValue(.token(.eof)): break outer
+            default:
                 break
             }
+
+            tokenStream.reconsumeCurrentInputToken()
 
             // consume a component value and
             let componentValue = try consumeComponentValue(&tokenStream)

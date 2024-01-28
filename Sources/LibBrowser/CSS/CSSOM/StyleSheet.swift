@@ -11,7 +11,7 @@
 typealias CSSOMString = String
 typealias USVString = String
 
-extension CSS {
+extension CSSOM {
     enum SetUnset {
         case set
         case unset
@@ -30,18 +30,12 @@ extension CSS {
         // Specified when created. The CSS style sheet that is the parent of the CSS
         // style sheet or null if there is no associated parent.
         // https://drafts.csswg.org/cssom/#concept-css-style-sheet-parent-css-style-sheet
-        var parentStyleSheet: CSSStyleSheet?
+        var parentStyleSheet: CSSOM.CSSStyleSheet?
 
         // Specified when created. The DOM node associated with the CSS style sheet
         // or null if there is no associated DOM node.
         // https://drafts.csswg.org/cssom/#concept-css-style-sheet-parent-css-style-sheet
         var ownerNode: DOM.Element?
-
-        // Specified when created. The CSS rule in the parent CSS style sheet that
-        // caused the inclusion of the CSS style sheet or null if there is no
-        // associated rule.
-        // https://drafts.csswg.org/cssom/#concept-css-style-sheet-parent-css-style-sheet
-        var ownerRule: CSS.Rule?
 
         // Specified when created. The MediaList object associated with the CSS
         // style sheet. If this property is specified to a string, the media must be
@@ -68,10 +62,6 @@ extension CSS {
         // Either set or unset. Unset by default.
         // https://drafts.csswg.org/cssom/#concept-css-style-sheet-disabled-flag
         var disabledFlag: SetUnset = .unset
-
-        // The CSS rules associated with the CSS style sheet.
-        // https://drafts.csswg.org/cssom/#concept-css-style-sheet-css-rules
-        var rules: [Rule] = []
 
         // Specified when created. Either set or unset. If it is set, the API allows
         // reading and modifying of the CSS rules.

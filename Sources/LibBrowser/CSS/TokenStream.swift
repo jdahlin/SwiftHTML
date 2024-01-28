@@ -37,6 +37,21 @@ extension CSS {
             }
         }
 
+        init(simpleBlock: SimpleBlock) {
+            var componentValueIterator = simpleBlock.value.makeIterator()
+            tokens = AnyIterator<InputToken?> {
+                switch componentValueIterator.next() {
+                case let .token(token):
+                    return InputToken.token(token)
+                case nil:
+                    return nil
+                case let unknown:
+                    FIXME("\(unknown.debugDescription): not implemented")
+                    return nil as InputToken?
+                }
+            }
+        }
+
         mutating func next() -> Token? {
             do {
                 return try consumeNextToken()
@@ -72,7 +87,10 @@ extension CSS {
                     currentToken = InputToken.token(.eof)
                 }
             }
-            return currentToken!
+            if let token = currentToken {
+                return token
+            }
+            return InputToken.token(.eof)
         }
 
         // https://www.w3.org/TR/css-syntax-3/#reconsume-the-current-input-token
@@ -107,6 +125,7 @@ extension CSS {
                 if try consumeNextToken() == expected {
                     continue
                 }
+                reconsumeCurrentInputToken()
                 return
             } while true
         }

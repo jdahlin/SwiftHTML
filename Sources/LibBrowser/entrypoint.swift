@@ -59,15 +59,15 @@ let cssExample122 = """
     <TITLE>Examples of margins, padding, and borders</TITLE>
     <STYLE type="text/css">
       UL {
-        background: yellow;
-        margin: 12px 12px 12px 12px;
-        padding: 3px 3px 3px 3px;
+        background-color: yellow;
+        margin: 12px;
+        padding: 3px;
                                      /* No borders set */
       }
       LI {
         color: white;                /* text color is white */
-        background: blue;            /* Content, padding will be blue */
-        margin: 12px 12px 12px 12px;
+        background-color: blue;            /* Content, padding will be blue */
+        margin: 12px;
         padding: 12px 0px 12px 12px; /* Note 0px padding right */
         list-style: none             /* no glyphs before a list item */
                                      /* No borders set */

@@ -1,0 +1,10 @@
+// [Exposed=Window]
+// interface CSSGroupingRule : CSSRule {
+//   [SameObject] readonly attribute CSSRuleList cssRules;
+//   unsigned long insertRule(CSSOMString rule, optional unsigned long index = 0);
+//   undefined deleteRule(unsigned long index);
+// };
+
+extension CSSOM {
+    class CSSGroupingRule: CSSRule {}
+}
