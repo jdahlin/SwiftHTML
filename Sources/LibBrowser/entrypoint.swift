@@ -16,5 +16,6 @@ public func testEntrypoint() {
     }
 
     let document = HTML.parseHTML(&data)
-    DOM.printTree(node: document)
+    // DOM.printTree(node: document)
+    _ = document
 }

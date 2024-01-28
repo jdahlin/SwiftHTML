@@ -28,6 +28,7 @@ extension CSS {
 
     struct PropertyValues {
         var backgroundColor: Property<CSS.Color> = .initial
+        var borderColor: Property<CSS.Color> = .initial
         var borderStyle: Property<RectangularShorthand<CSS.BorderStyle>> = .initial
         var borderWidth: Property<RectangularShorthand<CSS.BorderWidth>> = .initial
         var display: Property<CSS.Display> = .initial
@@ -53,6 +54,8 @@ extension CSS {
             switch name {
             case "background-color":
                 backgroundColor = parseColor(value: value)
+            case "border-color":
+                borderColor = parseColor(value: value)
             case "border-style":
                 borderStyle = parseBorderStyle(value: value)
             case "border-width":
@@ -90,6 +93,9 @@ extension CSS {
             var dict: [String: String] = [:]
             if case let .set(value) = backgroundColor {
                 dict["background-color"] = "\(value)"
+            }
+            if case let .set(value) = borderColor {
+                dict["border-color"] = "\(value)"
             }
             if case let .set(value) = borderStyle {
                 dict["border-style"] = "\(value)"

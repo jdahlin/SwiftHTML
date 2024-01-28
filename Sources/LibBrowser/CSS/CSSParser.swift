@@ -1,5 +1,5 @@
 //
-//  Parser.swift
+//  CSSParser.swift
 //  css
 //
 //  Created by Johan Dahlin on 2024-01-05.
