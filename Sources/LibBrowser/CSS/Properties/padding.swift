@@ -21,7 +21,7 @@ extension CSS {
             FIXME("padding value: \(declaration) not implemented")
             value = .initial
         }
-        return Property(value: value, important: declaration.important)
+        return Property(name: context.name, value: value, important: declaration.important)
     }
 
     static func parsePaddingShorthand(context: ParseContext) -> Property<RectangularShorthand<Padding>> {
@@ -52,6 +52,6 @@ extension CSS {
             FIXME("padding value: \(declaration) not implemented")
             value = .initial
         }
-        return Property(value: value, important: declaration.important)
+        return Property(name: context.name, value: value, important: declaration.important)
     }
 }

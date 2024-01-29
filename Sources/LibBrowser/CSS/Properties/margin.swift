@@ -22,7 +22,7 @@ extension CSS {
             FIXME("margin value: \(declaration) not implemented")
             value = .initial
         }
-        return Property(value: value, important: declaration.important)
+        return Property(name: context.name, value: value, important: declaration.important)
     }
 
     static func parseMarginShorthand(context: ParseContext) -> Property<RectangularShorthand<Margin>> {
@@ -53,6 +53,6 @@ extension CSS {
             FIXME("margin value: \(declaration) not implemented")
             value = .initial
         }
-        return Property(value: value, important: declaration.important)
+        return Property(name: context.name, value: value, important: declaration.important)
     }
 }

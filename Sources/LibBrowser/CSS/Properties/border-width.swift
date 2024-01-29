@@ -51,6 +51,6 @@ extension CSS {
             FIXME("border-width value: \(declaration) not implemented")
             value = .initial
         }
-        return CSS.Property(value: value, important: declaration.important)
+        return CSS.Property(name: context.name, value: value, important: declaration.important)
     }
 }

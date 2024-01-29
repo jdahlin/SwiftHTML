@@ -85,5 +85,13 @@ extension CSSOM {
         // The base URL to use when resolving relative URLs in the stylesheet. Null
         // by default. Only non-null for stylesheets that have constructed flag set.
         var baseURL: String?
+
+        var cascadeOrigin: CSS.CascadeOrigin = .author
+
+        init(type: String, ownerNode: DOM.Element? = nil, cascadeOrigin: CSS.CascadeOrigin = .author) {
+            self.type = type
+            self.ownerNode = ownerNode
+            self.cascadeOrigin = cascadeOrigin
+        }
     }
 }

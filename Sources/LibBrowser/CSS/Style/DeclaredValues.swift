@@ -23,7 +23,7 @@ func findDeclaredValue() {
 typealias SelectorSpecificity = UInt16
 
 struct DeclaredValue {
-    var cascadeOrigin: CascadeOrigin
+    var cascadeOrigin: CSS.CascadeOrigin
     var selectorSpecificity: SelectorSpecificity
     var importance: Bool
 }
@@ -46,18 +46,6 @@ func cascade(declaredValues _: [DeclaredValue]) {
     // // 3. Order of Appearance
     // KeyPathComparator(\.orderOfAppearance),
     // ])
-}
-
-// https://www.w3.org/TR/css-cascade-3/#cascade-origin
-
-// The origin of a declaration is based on where it comes from and its
-// importance is whether or not it is declared with !important (see below). The
-// precedence of the various origins is, in descending order:
-
-enum CascadeOrigin {
-    case userAgent
-    case user
-    case author
 }
 
 // Declarations from origins earlier in this list win over declarations from later origins.

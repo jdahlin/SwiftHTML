@@ -30,6 +30,16 @@ extension CSSOM {
         var rules: [CSSOM.CSSRule] = []
 
         // [SameObject] readonly attribute CSSRuleList cssRules;
-        // var cssRules: CSSRuleList { CSSRuleList(rules) }
+        var cssRules: CSSRuleList { CSSRuleList(rules: rules) }
+
+        func loadRules(content: String) {
+            let result = Result { try CSS.parseAStylesheet(data: content) }
+            switch result {
+            case let .success(parsed):
+                rules = parsed.rules.map { CSSOM.cssRuleFromRaw(rawRule: $0) }
+            case let .failure(error):
+                print(error)
+            }
+        }
     }
 }

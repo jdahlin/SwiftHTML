@@ -41,6 +41,10 @@ extension HTML {
 
         tokenizer.tokenize()
 
-        return treeBuilder.document
+        let document = treeBuilder.document
+        // FIXME:
+        document.styleComputer.addFromDocument(document: document)
+
+        return document
     }
 }

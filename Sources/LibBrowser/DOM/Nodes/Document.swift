@@ -113,6 +113,16 @@ extension DOM {
 
         var browsingContext: BrowsingContext?
 
+        // https://drafts.csswg.org/cssom/#dom-documentorshadowroot-stylesheets
+        // [SameObject] readonly attribute StyleSheetList styleSheets;
+        var styleSheets: CSSOM.StyleSheetList {
+            CSSOM.StyleSheetList(styleSheets: rootStyleSheets)
+        }
+
+        var styleComputer: CSS.StyleComputer = .init()
+
+        var rootStyleSheets: [CSSOM.CSSStyleSheet] = []
+
         init() {
             super.init()
             // A document’s node document is itself.

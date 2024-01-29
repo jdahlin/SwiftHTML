@@ -17,5 +17,7 @@ public func testEntrypoint() {
 
     let document = HTML.parseHTML(&data)
     // DOM.printTree(node: document)
-    _ = document
+    if let body = document.body {
+        document.styleComputer.computeStyles(element: body)
+    }
 }

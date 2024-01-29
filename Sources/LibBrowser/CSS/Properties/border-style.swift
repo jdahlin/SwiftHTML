@@ -101,6 +101,6 @@ extension CSS {
             FIXME("border-style value: \(declaration) not implemented")
         }
 
-        return CSS.Property(value: value, important: declaration.important)
+        return CSS.Property(name: context.name, value: value, important: declaration.important)
     }
 }

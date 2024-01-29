@@ -430,8 +430,15 @@ extension CSS {
         if try tokenizer.matches("/*") {
             // consume them and all following code points up to and including the first U+002A ASTERISK (*)
             // followed by a U+002F SOLIDUS (/), or up to an EOF code point.
-            while tokenizer.peekMany(2) != .some("*/") {
-                try tokenizer.consume()
+            while true {
+                let nextTwo = tokenizer.peekMany(2)
+                if nextTwo != .some("*/") {
+                    try tokenizer.consume()
+                } else {
+                    try tokenizer.consume()
+                    try tokenizer.consume()
+                    break
+                }
                 // Return to the start of this step.
             }
 

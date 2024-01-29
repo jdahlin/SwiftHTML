@@ -89,7 +89,7 @@ extension CSS {
     }
 
     // Enum representing attribute matchers
-    enum AttrMatcher {
+    enum AttrMatcher: CustomStringConvertible {
         // E[foo="bar"]
         case exact
 
@@ -121,6 +121,16 @@ extension CSS {
                 return nil
             }
         }
+
+        var description: String {
+            switch self {
+            case .exact: "="
+            case .contains: "*="
+            case .startsWith: "^="
+            case .endsWith: "$="
+            case .any: "|="
+            }
+        }
     }
 
     enum AttrModifier {
@@ -138,9 +148,20 @@ extension CSS {
     }
 
     // Qualified Name that allows wildcards
-    struct WQName {
+    struct WQName: CustomStringConvertible {
         var name: String
         var nsPrefix: NSPrefix?
+
+        var description: String {
+            if let prefix = nsPrefix {
+                if prefix.wildcard {
+                    return "*|\(name)"
+                } else if let prefix = prefix.prefix {
+                    return "\(prefix)|\(name)"
+                }
+            }
+            return name
+        }
     }
 
     struct NSPrefix {
@@ -148,11 +169,26 @@ extension CSS {
         var wildcard = false
     }
 
-    struct AttributeSelector {
+    struct AttributeSelector: CustomStringConvertible {
         var name: WQName
         var attrMatcher: AttrMatcher?
         var value: String?
         var modifier: AttrModifier = .sensitive
+
+        var description: String {
+            var str = "[\(name)"
+            if let attrMatcher {
+                str += "\(attrMatcher)"
+                if let value {
+                    str += value
+                }
+            }
+            if modifier == .insensitive {
+                str += " i"
+            }
+            str += "]"
+            return str
+        }
     }
 
     struct ComponentValues {

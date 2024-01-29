@@ -10,6 +10,8 @@
 
 extension HTML {
     class StyleElement: Element {
+        var styleSheet: CSSOM.CSSStyleSheet?
+
         // The media attribute says which media the styles apply to. The value must
         // be a valid media query list. The user agent must apply the styles when
         // the media attribute's value matches the environment and the other
@@ -55,6 +57,9 @@ extension HTML {
 
             // 2. If element has an associated CSS style sheet, remove the CSS style
             //    sheet in question.
+            if styleSheet != nil {
+                FIXME("remove the CSS style sheet")
+            }
 
             // 3. If element is not connected, then return.
 
@@ -71,7 +76,9 @@ extension HTML {
             //    content, then return. [CSP]
 
             // Create a CSS style sheet with the following properties:
-            let cssStyleSheet = CSSOM.CSSStyleSheet()
+            let cssStyleSheet = CSSOM.CSSStyleSheet(
+                type: "text/css"
+            )
 
             // type
             // text/css
@@ -94,7 +101,7 @@ extension HTML {
             // or the empty string otherwise.
             //
             // Note: Again, this is a reference to the attribute.
-            cssStyleSheet.title = ""
+            cssStyleSheet.title = element.attributes.getNamedItem("title")?.value ?? ""
 
             // alternate flag
             // Unset.
@@ -119,13 +126,8 @@ extension HTML {
             // Left uninitialized.
             // This doesn't seem right. Presumably we should be using the element's
             // child text content? Tracked as issue #2997.
-
-            let result = Result { try CSS.parseAStylesheet(data: element.textContent ?? "") }
-            switch result {
-            case let .success(parsed):
-                cssStyleSheet.rules = parsed.rules.map { CSSOM.cssRuleFromRaw(rawRule: $0) }
-            case let .failure(error):
-                print(error)
+            if let textContent = element.textContent {
+                cssStyleSheet.loadRules(content: textContent)
             }
 
             // 7. If element contributes a script-blocking style sheet, append
@@ -134,6 +136,11 @@ extension HTML {
             // 8. If element's media attribute's value matches the environment and
             //    element is potentially render-blocking, then block rendering on
             //    element.
+
+            styleSheet = cssStyleSheet
+            if let document = element.ownerDocument {
+                document.rootStyleSheets.append(cssStyleSheet)
+            }
         }
     }
 }

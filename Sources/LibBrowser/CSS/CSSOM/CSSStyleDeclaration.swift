@@ -9,10 +9,12 @@
 
 extension CSSOM {
     class CSSStyleDeclaration {
-        var properties: [String: String] = [:]
+        var properties: [String: String] {
+            propertyValues.toStringDict()
+        }
 
+        var propertyValues: CSS.PropertyValues = .init()
         init(items: [CSS.Item]) {
-            var propertyValues = CSS.PropertyValues()
             for item in items {
                 switch item {
                 case let .declaration(declaration):
@@ -26,8 +28,6 @@ extension CSSOM {
                     FIXME("\(item): not implemented")
                 }
             }
-            properties = propertyValues.toStringDict()
-            print(properties)
         }
 
         // readonly attribute unsigned long length;

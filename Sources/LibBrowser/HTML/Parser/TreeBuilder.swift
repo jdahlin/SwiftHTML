@@ -69,6 +69,7 @@ extension HTML {
         }
 
         func didReceiveToken(_ token: HTML.Token) {
+            // print("\(#function): \(insertionMode) \(token)")
             handleToken(token)
         }
 
@@ -401,6 +402,7 @@ extension HTML {
 
         // https://html.spec.whatwg.org/multipage/parsing.html#abort-a-parser
         func abortParser() {
+            FIXME("parser aborted")
             // 1. Throw away any pending content in the input stream, and discard
             //    any future content that would have been added to it.
 

@@ -68,19 +68,20 @@ extension CSS {
 
     static func parseColor(context: ParseContext) -> CSS.Property<CSS.Color> {
         let declaration = context.parseDeclaration()
-        guard declaration.count == 1 else {
-            FIXME("color value: \(declaration) not implemented")
-            return CSS.Property(value: .initial, important: declaration.important, caseSensitive: true)
+        let value: PropertyValue<Color> = if declaration.count == 1,
+                                             case let .token(.ident(name)) = declaration[0]
+        {
+            .set(CSS.Color.named(CSS.Color.Named(string: name)))
+        } else {
+            .initial
         }
-        switch declaration[0] {
-        case let .token(.ident(name)):
-            return CSS.Property(
-                value: .set(CSS.Color.named(CSS.Color.Named(string: name))),
-                caseSensitive: false
-            )
-        default:
-            DIE("color value: \(declaration) not implemented")
-        }
+
+        return CSS.Property(
+            name: context.name,
+            value: value,
+            important: declaration.important,
+            caseSensitive: true
+        )
     }
 }
 

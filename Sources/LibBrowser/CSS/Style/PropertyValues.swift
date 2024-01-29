@@ -1,47 +1,49 @@
 
 extension CSS {
     struct ParsedDeclaration {
-        var tokens: [ComponentValue]
+        var componentValues: [ComponentValue]
         var count: Int {
-            tokens.count
+            componentValues.count
         }
 
         var important = false
 
         subscript(index: Int) -> ComponentValue {
-            tokens[index]
+            componentValues[index]
         }
     }
 
     struct ParseContext {
         var componentValues: [ComponentValue]
+        var name: String
 
         func parseDeclaration() -> ParsedDeclaration {
             // parse important flag, from the end: !important
-            var componentValues = componentValues
-            var important = false
-            if componentValues.count >= 2 {
-                if case .token(.delim("!")) = componentValues[componentValues.count - 2],
-                   case .token(.ident("important")) = componentValues[componentValues.count - 1]
-                {
-                    important = true
-                    componentValues.removeLast(2)
-                }
-            }
-            return ParsedDeclaration(tokens: componentValues, important: important)
+            let result = CSS.parseImportant(componentValues: componentValues)
+            return ParsedDeclaration(
+                componentValues: result.valuesWithoutImportant,
+                important: result.important
+            )
         }
     }
 
     struct Property<T>: CustomStringConvertible {
+        var name: String?
         var value: PropertyValue<T>
         var important: Bool = false
         var caseSensitive: Bool = true
 
         init() {
+            // https://drafts.csswg.org/css-cascade/#initial-values
+            // Each property has an initial value, defined in the property’s
+            // definition table. If the property is not an inherited property,
+            // and the cascade does not result in a value, then the specified
+            // value of the property is its initial value.
             value = .initial
         }
 
-        init(value: PropertyValue<T>, important: Bool = false, caseSensitive: Bool = true) {
+        init(name: String, value: PropertyValue<T>, important: Bool = false, caseSensitive: Bool = true) {
+            self.name = name
             self.value = value
             self.important = important
             self.caseSensitive = caseSensitive
@@ -49,19 +51,20 @@ extension CSS {
 
         var description: String {
             if important {
-                "\(value) !important"
+                "Property(\(name!): \(value) !important)"
             } else {
-                "\(value)"
+                "Property(\(name!): \(value))"
             }
         }
     }
 
     enum PropertyValue<T>: CustomStringConvertible {
         case set(T)
+        // https://www.w3.org/TR/css-values-4/#common-keywords
+        // https://drafts.csswg.org/css-cascade/#defaulting-keywords
         case inherited
         case initial
         case revert
-        case revertLayer
         case unset
 
         var description: String {
@@ -71,18 +74,21 @@ extension CSS {
             case .inherited:
                 "inherited"
             case .initial:
-                ""
+                "initial"
             case .revert:
                 "revert"
-            case .revertLayer:
-                "revertLayer"
             case .unset:
                 "unset"
             }
         }
     }
 
-    struct PropertyValues {
+    struct PropertyValues: CustomStringConvertible {
+        var description: String {
+            let values = toStringDict().map { "\($0): \($1)" }.joined(separator: "; ")
+            return "PropertyValues(\(values))"
+        }
+
         var backgroundColor: Property<CSS.Color> = .init()
         var borderColor: Property<CSS.Color> = .init()
         var borderStyle: Property<RectangularShorthand<CSS.BorderStyle>> = .init()
@@ -108,7 +114,7 @@ extension CSS {
                 return true
             }
 
-            let context = ParseContext(componentValues: value)
+            let context = ParseContext(componentValues: value, name: name)
             switch name {
             case "background-color":
                 backgroundColor = parseColor(context: context)
@@ -145,6 +151,16 @@ extension CSS {
             default:
                 FIXME("\(name): \(value) not implemented")
             }
+        }
+
+        func fetchSetProperties() -> [(name: String, property: AnySetProperty, value: Any)] {
+            Mirror(reflecting: self)
+                .children
+                .compactMap { child in
+                    guard let property = child.value as? AnySetProperty else { return nil }
+                    return (child.label ?? "unknown", property, property.typeErasedValue.asAny)
+                }
+                .filter(\.property.isSet)
         }
 
         func toStringDict() -> [String: String] {
@@ -199,5 +215,41 @@ extension CSS {
             }
             return dict
         }
+    }
+}
+
+protocol AnyPropertyValue {
+    var asAny: Any { get }
+}
+
+protocol AnySetProperty {
+    var isSet: Bool { get }
+    var propertyName: String? { get }
+    var typeErasedValue: AnyPropertyValue { get }
+}
+
+extension CSS.PropertyValue: AnyPropertyValue {
+    var asAny: Any {
+        switch self {
+        case let .set(value):
+            value
+        case .inherited, .initial, .revert, .unset:
+            self
+        }
+    }
+}
+
+extension CSS.Property: AnySetProperty {
+    var isSet: Bool {
+        if case .set = value {
+            true
+        } else {
+            false
+        }
+    }
+
+    var propertyName: String? { name }
+    var typeErasedValue: AnyPropertyValue {
+        value
     }
 }

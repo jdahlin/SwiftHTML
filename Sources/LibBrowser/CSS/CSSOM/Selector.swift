@@ -2,6 +2,10 @@ extension CSS {
     struct Selector {
         var selectors: [CSS.ComplexSelector] = []
 
+        init(selectors: [CSS.ComplexSelector]) {
+            self.selectors = selectors
+        }
+
         init(source: String) {
             // FIXME: parse selector from string
             let result = Result { try CSS.parseAStylesheet(data: source + " {}") }
@@ -31,8 +35,23 @@ extension CSS {
                     return true
                 case let .class_(className) where element.classList.contains(className):
                     return true
-                case .attribute:
-                    FIXME("attribute selectors not implemented")
+                case let .attribute(attr):
+                    if let elementAttribute = element.getAttribute(attr.name.name), let value = attr.value {
+                        switch attr.attrMatcher {
+                        case nil:
+                            return true
+                        case .exact where elementAttribute == value:
+                            return true
+                        case .contains where elementAttribute.contains(value):
+                            return true
+                        case .startsWith where elementAttribute.hasPrefix(value):
+                            return true
+                        case .endsWith where elementAttribute.hasSuffix(value):
+                            return true
+                        default:
+                            continue
+                        }
+                    }
                 case .psuedo:
                     FIXME("pseudo selectors not implemented")
                 default:
