@@ -67,10 +67,10 @@ extension DOM {
         // readonly attribute DOM.String tagName;
         var tagName: DOM.String {
             let name = localName.uppercased()
-            return if prefix == nil {
-                name
+            return if let prefix {
+                "\(prefix):\(name)"
             } else {
-                "\(prefix!):\(name)"
+                name
             }
         }
 

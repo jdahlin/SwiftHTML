@@ -340,7 +340,7 @@ extension HTML {
                 tag.name.append(character)
                 currentToken = .endTag(tag)
             default:
-                DIE("Implement me: \(currentToken!)")
+                DIE("Implement me: \(currentToken.debugDescription)")
             }
         }
 

@@ -5,11 +5,11 @@ extension DOM {
         private func collection() -> [T] {
             // Returns the list of nodes.
             var array: [T] = []
-            if root?.firstChild != nil {
-                var node = root!.firstChild
+            if let firstChild = root?.firstChild {
+                var node: Node? = firstChild
                 array.append(node as! T)
-                while node?.nextSibling != nil {
-                    node = node?.nextSibling
+                while let nextSibling = node?.nextSibling {
+                    node = nextSibling
                     array.append(node as! T)
                 }
             }

@@ -270,13 +270,12 @@ extension DOM {
                 return nil
             }
             for item in documentElement.childNodes {
-                guard item is DOM.Element else {
+                guard let element = item as? DOM.Element,
+                      element.localName == "body", element.namespaceURI == HTML_NS
+                else {
                     continue
                 }
-                let element = item as! DOM.Element
-                if element.localName == "body", element.namespaceURI == HTML_NS {
-                    return element
-                }
+                return element
             }
             return nil
         }

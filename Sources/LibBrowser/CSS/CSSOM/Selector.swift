@@ -19,8 +19,7 @@ extension CSS {
         }
 
         func matchCompoundSelector(compound: CSS.CompoundSelector, element: DOM.Element) -> Bool {
-            if compound.typeSelector != nil {
-                let typeSelector = compound.typeSelector!
+            if let typeSelector = compound.typeSelector {
                 assert(typeSelector.nsPrefix == nil)
                 if typeSelector.name == "*" || element.localName == typeSelector.name {
                     return true
@@ -135,11 +134,15 @@ extension CSS {
         // 3. Return the result of match a selector against a tree with s and node’s
         //    root using scoping root node. [SELECTORS4].
         case let .success(selector):
-            return matchSelectorAgainstTree(
-                selector: selector,
-                rootElements: [node as! DOM.Element],
-                scopingRoots: [node as! DOM.Element]
-            )
+            if let element = node as? DOM.Element {
+                return matchSelectorAgainstTree(
+                    selector: selector,
+                    rootElements: [element],
+                    scopingRoots: [element]
+                )
+            } else {
+                fatalError("node: \(node) is not an element")
+            }
         }
     }
 }

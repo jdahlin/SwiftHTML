@@ -165,10 +165,10 @@ extension CSS {
 
         func peek(_ nth: Int = 0) -> Codepoint? {
             let pos = stream.index(pos, offsetBy: nth, limitedBy: stream.endIndex)
-            if pos == nil || pos == stream.endIndex {
-                return .none
+            if let pos, pos != stream.endIndex {
+                return .some(stream[pos])
             } else {
-                return .some(stream[pos!])
+                return .none
             }
         }
 
@@ -182,10 +182,11 @@ extension CSS {
 
         func peekMany(_ offsetBy: Int = 2) -> String? {
             let end = stream.index(pos, offsetBy: offsetBy - 1, limitedBy: stream.endIndex)
-            if end == nil || end == stream.endIndex {
+            if let end, end != stream.endIndex {
+                return Optional.some(String(stream[pos ... end]))
+            } else {
                 return Optional.none
             }
-            return Optional.some(String(stream[pos ... end!]))
         }
 
         mutating func matches(_ expected: String) throws -> Bool {
@@ -648,9 +649,12 @@ extension CSS {
             {
                 // return U+FFFD REPLACEMENT CHARACTER (�)
                 return Codepoint.replacementCharacter
-            } else {
+            } else if let codepoint = Codepoint(hexValue) {
                 // Otherwise, return the code point with that value.
-                return Codepoint(hexValue)!
+                return codepoint
+            } else {
+                // Handle the case when Codepoint initialization fails
+                fatalError("Invalid code point")
             }
         // EOF
         case .none:

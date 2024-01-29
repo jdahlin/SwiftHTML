@@ -46,7 +46,7 @@ extension DOM.Element {
         let parent = parentNode
 
         // 2. If parent is null, then return.
-        if parent == nil {
+        guard let parent else {
             return
         }
 
@@ -59,7 +59,7 @@ extension DOM.Element {
         let node = DOM.convertNodesIntoNode(nodes: nodes, document: ownerDocument!)
 
         // 5. Pre-insert node into parent before viableNextSibling.
-        DOM.preInsertBeforeChild(node: node, parent: parent!, child: viableNextSibling)
+        DOM.preInsertBeforeChild(node: node, parent: parent, child: viableNextSibling)
     }
 
     func replaceWith(_: NodeOrString...) {

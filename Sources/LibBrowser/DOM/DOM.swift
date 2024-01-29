@@ -6,8 +6,7 @@ enum DOM {
 
     static func printTree(node: DOM.Node, indent: String = "") {
         switch node {
-        case is DOM.Text:
-            let text = node as! DOM.Text
+        case let text as DOM.Text:
             print(indent + "\"" + text.data + "\"")
         case is DOM.DocumentType:
             print(indent + "#doctype")

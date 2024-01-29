@@ -338,9 +338,9 @@ extension CSS {
 
         values.strip_whitespace()
 
-        if name != nil {
+        if let name {
             return AttributeSelector(
-                name: WQName(name: name!),
+                name: WQName(name: name),
                 attrMatcher: attrMatcher,
                 value: value,
                 modifier: modifier
