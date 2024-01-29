@@ -1,6 +1,62 @@
 
 extension CSS {
-    enum Property<T>: CustomStringConvertible {
+    struct ParsedDeclaration {
+        var tokens: [ComponentValue]
+        var count: Int {
+            tokens.count
+        }
+
+        var important = false
+
+        subscript(index: Int) -> ComponentValue {
+            tokens[index]
+        }
+    }
+
+    struct ParseContext {
+        var componentValues: [ComponentValue]
+
+        func parseDeclaration() -> ParsedDeclaration {
+            // parse important flag, from the end: !important
+            var componentValues = componentValues
+            var important = false
+            if componentValues.count >= 2 {
+                if case .token(.delim("!")) = componentValues[componentValues.count - 2],
+                   case .token(.ident("important")) = componentValues[componentValues.count - 1]
+                {
+                    important = true
+                    componentValues.removeLast(2)
+                }
+            }
+            return ParsedDeclaration(tokens: componentValues, important: important)
+        }
+    }
+
+    struct Property<T>: CustomStringConvertible {
+        var value: PropertyValue<T>
+        var important: Bool = false
+        var caseSensitive: Bool = true
+
+        init() {
+            value = .initial
+        }
+
+        init(value: PropertyValue<T>, important: Bool = false, caseSensitive: Bool = true) {
+            self.value = value
+            self.important = important
+            self.caseSensitive = caseSensitive
+        }
+
+        var description: String {
+            if important {
+                "\(value) !important"
+            } else {
+                "\(value)"
+            }
+        }
+    }
+
+    enum PropertyValue<T>: CustomStringConvertible {
         case set(T)
         case inherited
         case initial
@@ -27,22 +83,22 @@ extension CSS {
     }
 
     struct PropertyValues {
-        var backgroundColor: Property<CSS.Color> = .initial
-        var borderColor: Property<CSS.Color> = .initial
-        var borderStyle: Property<RectangularShorthand<CSS.BorderStyle>> = .initial
-        var borderWidth: Property<RectangularShorthand<CSS.BorderWidth>> = .initial
-        var display: Property<CSS.Display> = .initial
-        var color: Property<CSS.Color> = .initial
-        var margin: Property<RectangularShorthand<Margin>> = .initial
-        var marginTop: Property<Margin> = .initial
-        var marginBottom: Property<Margin> = .initial
-        var marginLeft: Property<Margin> = .initial
-        var marginRight: Property<Margin> = .initial
-        var padding: Property<RectangularShorthand<Padding>> = .initial
-        var paddingTop: Property<Padding> = .initial
-        var paddingBottom: Property<Padding> = .initial
-        var paddingLeft: Property<Padding> = .initial
-        var paddingRight: Property<Padding> = .initial
+        var backgroundColor: Property<CSS.Color> = .init()
+        var borderColor: Property<CSS.Color> = .init()
+        var borderStyle: Property<RectangularShorthand<CSS.BorderStyle>> = .init()
+        var borderWidth: Property<RectangularShorthand<CSS.BorderWidth>> = .init()
+        var display: Property<CSS.Display> = .init()
+        var color: Property<CSS.Color> = .init()
+        var margin: Property<RectangularShorthand<Margin>> = .init()
+        var marginTop: Property<Margin> = .init()
+        var marginBottom: Property<Margin> = .init()
+        var marginLeft: Property<Margin> = .init()
+        var marginRight: Property<Margin> = .init()
+        var padding: Property<RectangularShorthand<Padding>> = .init()
+        var paddingTop: Property<Padding> = .init()
+        var paddingBottom: Property<Padding> = .init()
+        var paddingLeft: Property<Padding> = .init()
+        var paddingRight: Property<Padding> = .init()
 
         mutating func parseCSSValue(name: String, value valueWithWhitespace: [CSS.ComponentValue]) {
             let value: [CSS.ComponentValue] = valueWithWhitespace.filter {
@@ -51,39 +107,41 @@ extension CSS {
                 }
                 return true
             }
+
+            let context = ParseContext(componentValues: value)
             switch name {
             case "background-color":
-                backgroundColor = parseColor(value: value)
+                backgroundColor = parseColor(context: context)
             case "border-color":
-                borderColor = parseColor(value: value)
+                borderColor = parseColor(context: context)
             case "border-style":
-                borderStyle = parseBorderStyle(value: value)
+                borderStyle = parseBorderStyle(context: context)
             case "border-width":
-                borderWidth = parseBorderWidth(value: value)
+                borderWidth = parseBorderWidth(context: context)
             case "color":
-                color = parseColor(value: value)
+                color = parseColor(context: context)
             case "display":
-                display = parseDisplay(value: value)
+                display = parseDisplay(context: context)
             case "margin":
-                margin = parseMarginShorthand(value: value)
+                margin = parseMarginShorthand(context: context)
             case "margin-top":
-                marginTop = parseMargin(value: value)
+                marginTop = parseMargin(context: context)
             case "margin-bottom":
-                marginBottom = parseMargin(value: value)
+                marginBottom = parseMargin(context: context)
             case "margin-left":
-                marginLeft = parseMargin(value: value)
+                marginLeft = parseMargin(context: context)
             case "margin-right":
-                marginRight = parseMargin(value: value)
+                marginRight = parseMargin(context: context)
             case "padding":
-                padding = parsePaddingShorthand(value: value)
+                padding = parsePaddingShorthand(context: context)
             case "padding-top":
-                paddingTop = parsePadding(value: value)
+                paddingTop = parsePadding(context: context)
             case "padding-bottom":
-                paddingBottom = parsePadding(value: value)
+                paddingBottom = parsePadding(context: context)
             case "padding-left":
-                paddingLeft = parsePadding(value: value)
+                paddingLeft = parsePadding(context: context)
             case "padding-right":
-                paddingRight = parsePadding(value: value)
+                paddingRight = parsePadding(context: context)
             default:
                 FIXME("\(name): \(value) not implemented")
             }
@@ -91,52 +149,52 @@ extension CSS {
 
         func toStringDict() -> [String: String] {
             var dict: [String: String] = [:]
-            if case let .set(value) = backgroundColor {
+            if case let .set(value) = backgroundColor.value {
                 dict["background-color"] = "\(value)"
             }
-            if case let .set(value) = borderColor {
+            if case let .set(value) = borderColor.value {
                 dict["border-color"] = "\(value)"
             }
-            if case let .set(value) = borderStyle {
+            if case let .set(value) = borderStyle.value {
                 dict["border-style"] = "\(value)"
             }
-            if case let .set(value) = borderWidth {
+            if case let .set(value) = borderWidth.value {
                 dict["border-width"] = "\(value)"
             }
-            if case let .set(value) = color {
+            if case let .set(value) = color.value {
                 dict["color"] = "\(value)"
             }
-            if case let .set(value) = display {
+            if case let .set(value) = display.value {
                 dict["display"] = "\(value)"
             }
-            if case let .set(value) = margin {
+            if case let .set(value) = margin.value {
                 dict["margin"] = "\(value)"
             }
-            if case let .set(value) = marginTop {
+            if case let .set(value) = marginTop.value {
                 dict["margin-top"] = "\(value)"
             }
-            if case let .set(value) = marginBottom {
+            if case let .set(value) = marginBottom.value {
                 dict["margin-bottom"] = "\(value)"
             }
-            if case let .set(value) = marginLeft {
+            if case let .set(value) = marginLeft.value {
                 dict["margin-left"] = "\(value)"
             }
-            if case let .set(value) = marginRight {
+            if case let .set(value) = marginRight.value {
                 dict["margin-right"] = "\(value)"
             }
-            if case let .set(value) = padding {
+            if case let .set(value) = padding.value {
                 dict["padding"] = "\(value)"
             }
-            if case let .set(value) = paddingTop {
+            if case let .set(value) = paddingTop.value {
                 dict["padding-top"] = "\(value)"
             }
-            if case let .set(value) = paddingBottom {
+            if case let .set(value) = paddingBottom.value {
                 dict["padding-bottom"] = "\(value)"
             }
-            if case let .set(value) = paddingLeft {
+            if case let .set(value) = paddingLeft.value {
                 dict["padding-left"] = "\(value)"
             }
-            if case let .set(value) = paddingRight {
+            if case let .set(value) = paddingRight.value {
                 dict["padding-right"] = "\(value)"
             }
             return dict

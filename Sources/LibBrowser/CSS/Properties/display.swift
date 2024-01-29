@@ -145,17 +145,15 @@ extension CSS {
         }
     }
 
-    static func parseDisplay(value: [CSS.ComponentValue]) -> Property<Display> {
-        if value.count == 1 {
-            switch value[0] {
-            case let .token(.ident(name)):
-                return .set(Display(value: name))
-            default:
-                FIXME("display value: \(value) not implemented")
-            }
+    static func parseDisplay(context: ParseContext) -> Property<Display> {
+        let declaration = context.parseDeclaration()
+        let value: PropertyValue<Display>
+        if declaration.count == 1, case let .token(.ident(name)) = declaration[0] {
+            value = .set(Display(value: name))
         } else {
-            FIXME("display value: \(value) not implemented")
+            FIXME("display value: \(declaration) not implemented")
+            value = .initial
         }
-        return .initial
+        return Property(value: value, important: declaration.important)
     }
 }

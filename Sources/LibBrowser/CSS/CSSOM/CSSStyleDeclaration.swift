@@ -26,8 +26,8 @@ extension CSSOM {
                     FIXME("\(item): not implemented")
                 }
             }
-            print(propertyValues)
             properties = propertyValues.toStringDict()
+            print(properties)
         }
 
         // readonly attribute unsigned long length;

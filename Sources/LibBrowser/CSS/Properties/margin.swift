@@ -1,5 +1,6 @@
 extension CSS {
     typealias Margin = LengthOrPercentage
+    typealias PV = PropertyValue<RectangularShorthand<Margin>>
 
     private static func parse(value: CSS.ComponentValue) -> Margin {
         switch value {
@@ -12,39 +13,46 @@ extension CSS {
         }
     }
 
-    static func parseMargin(value: [CSS.ComponentValue]) -> Property<Margin> {
-        guard value.count == 1 else {
-            FIXME("margin value: \(value) not implemented")
-            return .initial
+    static func parseMargin(context: ParseContext) -> Property<Margin> {
+        let declaration = context.parseDeclaration()
+        let value: PropertyValue<Margin>
+        if declaration.count == 1 {
+            value = .set(parse(value: declaration[0]))
+        } else {
+            FIXME("margin value: \(declaration) not implemented")
+            value = .initial
         }
-        return .set(parse(value: value[0]))
+        return Property(value: value, important: declaration.important)
     }
 
-    static func parseMarginShorthand(value: [CSS.ComponentValue]) -> Property<RectangularShorthand<Margin>> {
-        switch value.count {
+    static func parseMarginShorthand(context: ParseContext) -> Property<RectangularShorthand<Margin>> {
+        let declaration = context.parseDeclaration()
+        let value: PropertyValue<RectangularShorthand<Margin>>
+        switch declaration.count {
         case 1:
-            return .set(.one(parse(value: value[0])))
+            value = .set(.one(parse(value: declaration[0])))
         case 2:
-            return .set(.two(
-                topBottom: parse(value: value[0]),
-                leftRight: parse(value: value[1])
+            value = .set(.two(
+                topBottom: parse(value: declaration[0]),
+                leftRight: parse(value: declaration[1])
             ))
         case 3:
-            return .set(.three(
-                top: parse(value: value[0]),
-                leftRight: parse(value: value[1]),
-                bottom: parse(value: value[2])
+            value = .set(.three(
+                top: parse(value: declaration[0]),
+                leftRight: parse(value: declaration[1]),
+                bottom: parse(value: declaration[2])
             ))
         case 4:
-            return .set(.four(
-                top: parse(value: value[0]),
-                right: parse(value: value[1]),
-                bottom: parse(value: value[2]),
-                left: parse(value: value[3])
+            value = .set(.four(
+                top: parse(value: declaration[0]),
+                right: parse(value: declaration[1]),
+                bottom: parse(value: declaration[2]),
+                left: parse(value: declaration[3])
             ))
         default:
-            FIXME("margin value: \(value) not implemented")
+            FIXME("margin value: \(declaration) not implemented")
+            value = .initial
         }
-        return .initial
+        return Property(value: value, important: declaration.important)
     }
 }

@@ -64,8 +64,9 @@ extension CSS {
         }
     }
 
-    static func parseBorderStyle(value: [CSS.ComponentValue]) -> Property<RectangularShorthand<BorderStyle>> {
-        func parse(value: CSS.ComponentValue) -> BorderStyle {
+    static func parseBorderStyle(context: ParseContext) -> Property<RectangularShorthand<BorderStyle>> {
+        let declaration = context.parseDeclaration()
+        func parse(value: ComponentValue) -> BorderStyle {
             switch value {
             case let .token(.ident(ident)):
                 BorderStyle(value: ident)
@@ -73,30 +74,33 @@ extension CSS {
                 DIE("border-style value: \(value) not implemented")
             }
         }
-        switch value.count {
+        var value: PropertyValue<RectangularShorthand<BorderStyle>>
+        switch declaration.count {
         case 1:
-            return .set(.one(parse(value: value[0])))
+            value = .set(.one(parse(value: declaration[0])))
         case 2:
-            return .set(.two(
-                topBottom: parse(value: value[0]),
-                leftRight: parse(value: value[1])
+            value = .set(.two(
+                topBottom: parse(value: declaration[0]),
+                leftRight: parse(value: declaration[1])
             ))
         case 3:
-            return .set(.three(
-                top: parse(value: value[0]),
-                leftRight: parse(value: value[1]),
-                bottom: parse(value: value[2])
+            value = .set(.three(
+                top: parse(value: declaration[0]),
+                leftRight: parse(value: declaration[1]),
+                bottom: parse(value: declaration[2])
             ))
         case 4:
-            return .set(.four(
-                top: parse(value: value[0]),
-                right: parse(value: value[1]),
-                bottom: parse(value: value[2]),
-                left: parse(value: value[3])
+            value = .set(.four(
+                top: parse(value: declaration[0]),
+                right: parse(value: declaration[1]),
+                bottom: parse(value: declaration[2]),
+                left: parse(value: declaration[3])
             ))
         default:
-            FIXME("border-style value: \(value) not implemented")
+            value = .initial
+            FIXME("border-style value: \(declaration) not implemented")
         }
-        return .initial
+
+        return CSS.Property(value: value, important: declaration.important)
     }
 }
