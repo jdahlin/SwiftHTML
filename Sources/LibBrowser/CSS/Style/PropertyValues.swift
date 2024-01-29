@@ -62,7 +62,7 @@ extension CSS {
         case set(T)
         // https://www.w3.org/TR/css-values-4/#common-keywords
         // https://drafts.csswg.org/css-cascade/#defaulting-keywords
-        case inherited
+        case inherit
         case initial
         case revert
         case unset
@@ -71,8 +71,8 @@ extension CSS {
             switch self {
             case let .set(value):
                 "\(value)"
-            case .inherited:
-                "inherited"
+            case .inherit:
+                "inherit"
             case .initial:
                 "initial"
             case .revert:
@@ -89,22 +89,35 @@ extension CSS {
             return "PropertyValues(\(values))"
         }
 
-        var backgroundColor: Property<CSS.Color> = .init()
-        var borderColor: Property<CSS.Color> = .init()
-        var borderStyle: Property<RectangularShorthand<CSS.BorderStyle>> = .init()
-        var borderWidth: Property<RectangularShorthand<CSS.BorderWidth>> = .init()
-        var display: Property<CSS.Display> = .init()
-        var color: Property<CSS.Color> = .init()
+        var appearance: Property<Appearance> = .init()
+        var backgroundColor: Property<Color> = .init()
+        var borderColor: Property<Color> = .init()
+        var borderStyle: Property<RectangularShorthand<BorderStyle>> = .init()
+        var borderWidth: Property<RectangularShorthand<BorderWidth>> = .init()
+        var color: Property<Color> = .init()
+        var display: Property<Display> = .init()
+        var float: Property<FloatValue> = .init()
+        var fontSize: Property<FontSize> = .init()
         var margin: Property<RectangularShorthand<Margin>> = .init()
         var marginTop: Property<Margin> = .init()
+        var marginBlockEnd: Property<Margin> = .init()
+        var marginBlockStart: Property<Margin> = .init()
         var marginBottom: Property<Margin> = .init()
+        var marginInlineEnd: Property<Margin> = .init()
+        var marginInlineStart: Property<Margin> = .init()
         var marginLeft: Property<Margin> = .init()
         var marginRight: Property<Margin> = .init()
         var padding: Property<RectangularShorthand<Padding>> = .init()
         var paddingTop: Property<Padding> = .init()
+        var paddingBlockEnd: Property<Padding> = .init()
+        var paddingBlockStart: Property<Padding> = .init()
         var paddingBottom: Property<Padding> = .init()
+        var paddingInlineEnd: Property<Padding> = .init()
+        var paddingInlineStart: Property<Padding> = .init()
         var paddingLeft: Property<Padding> = .init()
         var paddingRight: Property<Padding> = .init()
+        var textAlign: Property<TextAlign> = .init()
+        var verticalAlign: Property<VerticalAlign> = .init()
 
         mutating func parseCSSValue(name: String, value valueWithWhitespace: [CSS.ComponentValue]) {
             let value: [CSS.ComponentValue] = valueWithWhitespace.filter {
@@ -116,6 +129,8 @@ extension CSS {
 
             let context = ParseContext(componentValues: value, name: name)
             switch name {
+            case "appearance":
+                appearance = parseEnum(context: context)
             case "background-color":
                 backgroundColor = parseColor(context: context)
             case "border-color":
@@ -127,27 +142,53 @@ extension CSS {
             case "color":
                 color = parseColor(context: context)
             case "display":
-                display = parseDisplay(context: context)
+                display = parseEnum(context: context)
+            case "float":
+                float = parseEnum(context: context)
+            case "font-size":
+                fontSize = parseFontSize(context: context)
             case "margin":
                 margin = parseMarginShorthand(context: context)
             case "margin-top":
                 marginTop = parseMargin(context: context)
+            case "margin-block-end":
+                marginBlockEnd = parseMargin(context: context)
+            case "margin-block-start":
+                marginBlockStart = parseMargin(context: context)
             case "margin-bottom":
                 marginBottom = parseMargin(context: context)
+            case "margin-inline-end":
+                marginInlineEnd = parseMargin(context: context)
+            case "margin-inline-start":
+                marginInlineStart = parseMargin(context: context)
             case "margin-left":
                 marginLeft = parseMargin(context: context)
             case "margin-right":
                 marginRight = parseMargin(context: context)
             case "padding":
                 padding = parsePaddingShorthand(context: context)
+            case "padding-block-end":
+                paddingBlockEnd = parseLengthOrPercentage(context: context)
+            case "padding-block-start":
+                paddingBlockStart = parseLengthOrPercentage(context: context)
             case "padding-top":
                 paddingTop = parsePadding(context: context)
             case "padding-bottom":
                 paddingBottom = parsePadding(context: context)
+            case "padding-inline-end":
+                paddingInlineEnd = parseLengthOrPercentage(context: context)
+            case "padding-inline-start":
+                paddingInlineStart = parseLengthOrPercentage(context: context)
+            case "padding-top":
+                paddingTop = parsePadding(context: context)
             case "padding-left":
                 paddingLeft = parsePadding(context: context)
             case "padding-right":
                 paddingRight = parsePadding(context: context)
+            case "text-align":
+                textAlign = parseEnum(context: context)
+            case "vertical-align":
+                verticalAlign = parseVerticalAlign(context: context)
             default:
                 FIXME("\(name): \(value) not implemented")
             }
@@ -165,53 +206,8 @@ extension CSS {
 
         func toStringDict() -> [String: String] {
             var dict: [String: String] = [:]
-            if case let .set(value) = backgroundColor.value {
-                dict["background-color"] = "\(value)"
-            }
-            if case let .set(value) = borderColor.value {
-                dict["border-color"] = "\(value)"
-            }
-            if case let .set(value) = borderStyle.value {
-                dict["border-style"] = "\(value)"
-            }
-            if case let .set(value) = borderWidth.value {
-                dict["border-width"] = "\(value)"
-            }
-            if case let .set(value) = color.value {
-                dict["color"] = "\(value)"
-            }
-            if case let .set(value) = display.value {
-                dict["display"] = "\(value)"
-            }
-            if case let .set(value) = margin.value {
-                dict["margin"] = "\(value)"
-            }
-            if case let .set(value) = marginTop.value {
-                dict["margin-top"] = "\(value)"
-            }
-            if case let .set(value) = marginBottom.value {
-                dict["margin-bottom"] = "\(value)"
-            }
-            if case let .set(value) = marginLeft.value {
-                dict["margin-left"] = "\(value)"
-            }
-            if case let .set(value) = marginRight.value {
-                dict["margin-right"] = "\(value)"
-            }
-            if case let .set(value) = padding.value {
-                dict["padding"] = "\(value)"
-            }
-            if case let .set(value) = paddingTop.value {
-                dict["padding-top"] = "\(value)"
-            }
-            if case let .set(value) = paddingBottom.value {
-                dict["padding-bottom"] = "\(value)"
-            }
-            if case let .set(value) = paddingLeft.value {
-                dict["padding-left"] = "\(value)"
-            }
-            if case let .set(value) = paddingRight.value {
-                dict["padding-right"] = "\(value)"
+            for (name, property: _, value) in fetchSetProperties() {
+                dict[name] = "\(value)"
             }
             return dict
         }
@@ -233,7 +229,7 @@ extension CSS.PropertyValue: AnyPropertyValue {
         switch self {
         case let .set(value):
             value
-        case .inherited, .initial, .revert, .unset:
+        case .inherit, .initial, .revert, .unset:
             self
         }
     }

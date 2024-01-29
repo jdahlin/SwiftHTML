@@ -85,6 +85,14 @@ extension CSS {
         case Integer(Int64)
         case Number(Double)
 
+        init(_ value: Int64) {
+            self = .Integer(value)
+        }
+
+        init(_ value: Double) {
+            self = .Number(value)
+        }
+
         var description: String {
             switch self {
             case let .Integer(i):

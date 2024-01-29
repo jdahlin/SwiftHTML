@@ -3,8 +3,6 @@ extension CSS {
 
     private static func parse(value: CSS.ComponentValue) -> Padding {
         switch value {
-        case .token(.ident("auto")):
-            .auto
         case let .token(.dimension(number: number, unit: unit)):
             .length(Dimension(number: number, unit: CSS.Unit.Length(unit: unit)))
         default:

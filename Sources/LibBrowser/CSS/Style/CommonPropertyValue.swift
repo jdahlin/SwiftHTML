@@ -29,7 +29,45 @@ extension CSS {
         }
     }
 
-    enum LengthOrPercentage: CustomStringConvertible {
+    enum LengthOrPercentage: CustomStringConvertible, EnumStringInit {
+        case length(Dimension)
+        case percentage(Number)
+
+        init(value: String) {
+            if value.hasSuffix("%") {
+                self = .percentage(.Number(Double(value.dropLast())!))
+            } else if value.hasSuffix("px") {
+                let number = Number(Double(value.dropLast(2))!)
+                self = .length(Dimension(number: number,
+                                         unit: Unit.Length(unit: "px")))
+            } else {
+                DIE("length-or-percentage: \(value) not implemented")
+            }
+        }
+
+        var description: String {
+            switch self {
+            case let .length(dimension):
+                "\(dimension)"
+            case let .percentage(number):
+                "\(number)%"
+            }
+        }
+    }
+
+    static func parseLengthOrPercentage(context: ParseContext) -> Property<LengthOrPercentage> {
+        let declaration = context.parseDeclaration()
+        let value: PropertyValue<LengthOrPercentage>
+        if declaration.count == 1 {
+            value = .set(.init(value: declaration[0].description))
+        } else {
+            FIXME("\(context.name) value: \(declaration) not implemented")
+            value = .initial
+        }
+        return CSS.Property(name: context.name, value: value, important: declaration.important)
+    }
+
+    enum LengthOrPercentageOrAuto: CustomStringConvertible {
         case length(Dimension)
         case percentage(Number)
         case auto
@@ -85,6 +123,35 @@ extension CSS {
     }
 }
 
+protocol EnumStringInit {
+    init(value: String)
+}
+
+extension CSS {
+    static func parseEnum<T: EnumStringInit>(context: ParseContext) -> Property<T> {
+        let declaration = context.parseDeclaration()
+        let value: PropertyValue<T>
+        if declaration.count == 1, case let .token(.ident(name)) = declaration[0] {
+            switch name {
+            case "initial":
+                value = .initial
+            case "inherit":
+                value = .inherit
+            case "unset":
+                value = .unset
+            case "revert":
+                value = .revert
+            default:
+                value = .set(.init(value: name))
+            }
+        } else {
+            FIXME("\(context.name): \(declaration) not implemented")
+            value = .initial
+        }
+        return Property(name: context.name, value: value, important: declaration.important)
+    }
+}
+
 // Dimension
 extension CSS {
     struct Dimension: CustomStringConvertible {
@@ -96,12 +163,18 @@ extension CSS {
         }
     }
 
-    static func parseDimension(value: [CSS.ComponentValue]) -> CSS.Number? {
+    static func parseDimension(value: [CSS.ComponentValue]) -> PropertyValue<CSS.Number> {
         switch value.count {
         case 1:
             switch value[0] {
             case let .token(.dimension(number: number)):
-                return number.number
+                return .set(number.number)
+            case .token(.ident("inherit")):
+                return .inherit
+            case .token(.ident("unset")):
+                return .unset
+            case .token(.ident("revert")):
+                return .revert
             default:
                 break
             }
@@ -109,6 +182,6 @@ extension CSS {
             break
         }
         FIXME("dimension value: \(value) not implemented")
-        return nil
+        return .initial
     }
 }

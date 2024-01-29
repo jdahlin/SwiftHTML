@@ -1,11 +1,13 @@
 extension CSS {
-    typealias Margin = LengthOrPercentage
+    typealias Margin = LengthOrPercentageOrAuto
     typealias PV = PropertyValue<RectangularShorthand<Margin>>
 
     private static func parse(value: CSS.ComponentValue) -> Margin {
         switch value {
         case .token(.ident("auto")):
             .auto
+        case let .token(.number(number: number)):
+            .length(Dimension(number: number, unit: .absolute(.px)))
         case let .token(.dimension(number: number, unit: unit)):
             .length(Dimension(number: number, unit: CSS.Unit.Length(unit: unit)))
         default:

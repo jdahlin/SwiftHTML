@@ -1,6 +1,6 @@
 extension CSS {
     // https://drafts.csswg.org/css-display/#the-display-properties
-    enum Display: CustomStringConvertible {
+    enum Display: CustomStringConvertible, EnumStringInit {
         case block
         case inline
         case runIn
@@ -143,17 +143,5 @@ extension CSS {
             case .inlineGrid: "inline-grid"
             }
         }
-    }
-
-    static func parseDisplay(context: ParseContext) -> Property<Display> {
-        let declaration = context.parseDeclaration()
-        let value: PropertyValue<Display>
-        if declaration.count == 1, case let .token(.ident(name)) = declaration[0] {
-            value = .set(Display(value: name))
-        } else {
-            FIXME("display value: \(declaration) not implemented")
-            value = .initial
-        }
-        return Property(name: context.name, value: value, important: declaration.important)
     }
 }
