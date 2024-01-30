@@ -8,9 +8,9 @@
 import Foundation
 
 extension CSS {
-    struct TokenStream: Sequence, IteratorProtocol {
+    struct TokenStream {
         var tokens: any IteratorProtocol<InputToken?>
-        var currentToken: InputToken? = nil
+        var currentToken: InputToken?
         var retainCurrentInputToken = false
 
         init(inputTokens: [InputToken]) {
@@ -43,20 +43,16 @@ extension CSS {
                 switch componentValueIterator.next() {
                 case let .token(token):
                     return InputToken.token(token)
+                case let .function(function):
+                    return InputToken.componentValue(.function(function))
+                case let .simpleBlock(simpleBlock):
+                    return InputToken.componentValue(.simpleBlock(simpleBlock))
                 case nil:
                     return nil
                 case let unknown:
                     FIXME("\(unknown.debugDescription): not implemented")
                     return nil as InputToken?
                 }
-            }
-        }
-
-        mutating func next() -> Token? {
-            do {
-                return try consumeNextToken()
-            } catch {
-                return nil
             }
         }
 
@@ -109,20 +105,9 @@ extension CSS {
             }
         }
 
-        mutating func consumeNextToken() throws -> Token {
-            switch try consumeNextInputToken() {
-            case let .componentValue(.token(token)):
-                return token
-            case let .token(token):
-                return token
-            default:
-                throw ParserError.unexpectedToken
-            }
-        }
-
-        mutating func consumeWhile(_ expected: Token) throws {
+        mutating func consumeWhile(_ expected: InputToken) throws {
             repeat {
-                if try consumeNextToken() == expected {
+                if try consumeNextInputToken() == expected {
                     continue
                 }
                 reconsumeCurrentInputToken()

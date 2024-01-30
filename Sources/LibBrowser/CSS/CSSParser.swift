@@ -53,14 +53,25 @@ extension CSS {
         var importantFlag: ImportantFlag = .unset
     }
 
-    enum InputToken {
+    enum InputToken: Equatable {
         case componentValue(ComponentValue)
         case token(Token)
+
+        static func == (lhs: InputToken, rhs: InputToken) -> Bool {
+            switch (lhs, rhs) {
+            case let (.componentValue(l), .componentValue(r)):
+                l == r
+            case let (.token(l), .token(r)):
+                l == r
+            default:
+                false
+            }
+        }
     }
 
     // https://www.w3.org/TR/css-syntax-3/#component-value
     // A component value is one of the preserved tokens, a function, or a simple block.
-    indirect enum ComponentValue: CustomStringConvertible {
+    indirect enum ComponentValue: CustomStringConvertible, Equatable {
         // Any token produced by the tokenizer except for <function-token>s, <{-token>s, <(-token>s, and <[-token>s.
         case token(Token)
         case function(Function)
@@ -71,6 +82,19 @@ extension CSS {
             case let .token(token): "CV(\(token))"
             case let .function(f): "CV(\(f))"
             case let .simpleBlock(simpleBlock): "CV(\(simpleBlock))"
+            }
+        }
+
+        static func == (lhs: ComponentValue, rhs: ComponentValue) -> Bool {
+            switch (lhs, rhs) {
+            case let (.token(l), .token(r)):
+                l == r
+            case let (.function(l), .function(r)):
+                l == r
+            case let (.simpleBlock(l), .simpleBlock(r)):
+                l == r
+            default:
+                false
             }
         }
 
@@ -120,18 +144,27 @@ extension CSS {
     }
 
     // https://www.w3.org/TR/css-syntax-3/#function
-    struct Function {
+    struct Function: Equatable {
         var name: String
         var value: [ComponentValue]
+
+        static func == (lhs: Function, rhs: Function) -> Bool {
+            lhs.name == rhs.name && lhs.value == rhs.value
+        }
     }
 
     // https://www.w3.org/TR/css-syntax-3/#simple-block
-    struct SimpleBlock: CustomStringConvertible {
+    struct SimpleBlock: CustomStringConvertible, Equatable {
         var token: Token
         var value: [ComponentValue]
+        var simpleBlocks: [SimpleBlock] = []
 
         var description: String {
             "SB(\(token), \(value)"
+        }
+
+        static func == (lhs: SimpleBlock, rhs: SimpleBlock) -> Bool {
+            lhs.token == rhs.token && lhs.value == rhs.value
         }
     }
 
@@ -147,7 +180,7 @@ extension CSS {
 
     enum ParserError: Error {
         case eof
-        case unexpectedToken
+        case unexpectedToken(String)
     }
 
     struct ParsedStyleSheet: CustomStringConvertible {
@@ -389,7 +422,7 @@ extension CSS {
                 // As long as the next input token is anything other than a <semicolon-token> or <EOF-token>,
                 outer: repeat {
                     switch try tokenStream.consumeNextInputToken() {
-                    case .token(.whitespace), .token(.eof):
+                    case .token(.semicolon), .token(.eof):
                         break outer
 
                     default:
@@ -431,7 +464,7 @@ extension CSS {
                 // As long as the next input token is anything other than a <semicolon-token> or <EOF-token>,
                 repeat {
                     switch try tokenStream.consumeNextInputToken() {
-                    case .token(.whitespace), .token(.eof):
+                    case .token(.semicolon), .token(.eof):
                         break
 
                     default:
@@ -533,7 +566,7 @@ extension CSS {
         let name = try tokenStream.consumeNextInputToken()
 
         // 1. While the next input token is a <whitespace-token>, consume the next input token.
-        try tokenStream.consumeWhile(Token.whitespace)
+        try tokenStream.consumeWhile(.token(.whitespace))
 
         // 2. If the next input token is anything other than a <colon-token>
         switch try tokenStream.consumeNextInputToken() {
@@ -547,7 +580,7 @@ extension CSS {
         }
 
         // 3. While the next input token is a <whitespace-token>, consume the next input token.
-        try tokenStream.consumeWhile(Token.whitespace)
+        try tokenStream.consumeWhile(.token(.whitespace))
 
         // 4. As long as the next input token is anything other than an <EOF-token>,
         // consume a component value and append it to the declaration’s value.
@@ -609,8 +642,8 @@ extension CSS {
         case .token(.lparan): .rparan
         case .token(.lbracket): .rbracket
         case .token(.lcurlybracket): .rcurlybracket
-        default:
-            throw ParserError.unexpectedToken
+        case let data:
+            throw ParserError.unexpectedToken("\(data)")
         }
 
         // Create a simple block with its associated token set to the current input token and

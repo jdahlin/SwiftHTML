@@ -438,24 +438,24 @@ extension CSS {
         var prefix: String?
         var wildcard = false
 
-        switch try tokenStream.consumeNextToken() {
-        case let .ident(value):
+        switch try tokenStream.consumeNextInputToken() {
+        case let .token(.ident(value)):
             prefix = value
-        case let .delim(value) where value == "*":
+        case let .token(.delim(value)) where value == "*":
             wildcard = true
-        case let .delim(value) where value == "|":
+        case let .token(.delim(value)) where value == "|":
             return NSPrefix()
-        default:
-            throw ParserError.unexpectedToken
+        case let token:
+            throw ParserError.unexpectedToken("\(token)")
         }
 
         let token = try tokenStream.consumeNextInputToken()
         guard case let .componentValue(.token(.delim(value))) = token else {
-            throw ParserError.unexpectedToken
+            throw ParserError.unexpectedToken("\(token)")
         }
 
         guard value == "|" else {
-            throw ParserError.unexpectedToken
+            throw ParserError.unexpectedToken(String(value))
         }
 
         return NSPrefix(prefix: prefix, wildcard: wildcard)

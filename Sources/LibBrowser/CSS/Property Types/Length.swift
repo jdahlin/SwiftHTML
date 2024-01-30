@@ -221,20 +221,20 @@ extension CSS {
 
         var description: String {
             switch self {
-            case .px:
-                "px"
-            case .cm:
-                "cm"
-            case .mm:
-                "mm"
-            case .Q:
-                "Q"
-            case .inch:
-                "in"
-            case .pc:
-                "pc"
-            case .pt:
-                "pt"
+            case let .px(number):
+                "\(number)px"
+            case let .cm(number):
+                "\(number)cm"
+            case let .mm(number):
+                "\(number)mm"
+            case let .Q(number):
+                "\(number)Q"
+            case let .inch(number):
+                "\(number)in"
+            case let .pc(number):
+                "\(number)pc"
+            case let .pt(number):
+                "\(number)pt"
             }
         }
     }
@@ -339,10 +339,10 @@ extension CSS {
 
         var description: String {
             switch self {
-            case let .relative(unit):
-                unit.description
-            case let .absolute(unit):
-                unit.description
+            case let .relative(relative):
+                relative.description
+            case let .absolute(absolute):
+                absolute.description
             }
         }
     }

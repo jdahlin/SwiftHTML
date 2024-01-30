@@ -87,7 +87,7 @@ body {
      width: fit-content;
      height: fit-content;
      margin: auto;
-     border: solid;
+     border-style: solid;
      padding: 1em;
      background-color: Canvas;
      color: CanvasText;
@@ -119,7 +119,7 @@ body {
      width: fit-content;
      height: fit-content;
      margin: auto;
-     border: solid;
+     border-style: solid;
      padding: 0.25em;
      overflow: auto;
      color: CanvasText;
@@ -586,7 +586,9 @@ body {
      display: block;
      margin-inline-start: 2px;
      margin-inline-end: 2px;
-     border: groove 2px ThreeDFace;
+     border-style: groove;
+     border-width: 2px;
+     border-color: ThreeDFace;
      padding-block-start: 0.35em;
      padding-inline-end: 0.75em;
      padding-block-end: 0.625em;
@@ -616,7 +618,8 @@ body {
   */
  
  iframe {
-     border: 2px inset;
+     border-width: 2px;
+     border-style: inset;
  }
  
  video {
@@ -627,7 +630,7 @@ body {
   * https://html.spec.whatwg.org/multipage/rendering.html#attributes-for-embedded-content-and-images
   */
  
- iframe[frameborder='0'], iframe[frameborder=no i] { border: none; }
+ iframe[frameborder='0'], iframe[frameborder=no i] { border-style: none; }
  
  embed[align=left i], iframe[align=left i], img[align=left i],
  input[type=image i][align=left i], object[align=left i] {
@@ -672,7 +675,7 @@ body {
  
  details > summary:first-of-type {
      display: list-item;
-     counter-increment: list-item 0;
+     /* counter-increment: list-item 0; */
      list-style: disclosure-closed inside;
  }
  
@@ -707,10 +710,11 @@ body {
  
  /* https://www.w3.org/TR/mediaqueries-5/#descdef-media-inverted-colors
   */
- @media (inverted-colors) {
+ /* @media (inverted-colors) {
      img:not(picture>img),
      picture,
      video {
          filter: invert(100%);
      }
  }
+  */
