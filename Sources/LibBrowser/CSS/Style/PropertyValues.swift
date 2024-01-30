@@ -13,6 +13,11 @@ extension CSS {
         }
     }
 
+    struct ParseResult<T> {
+        var property: Property<T>?
+        var declaration: ParsedDeclaration
+    }
+
     struct ParseContext {
         var componentValues: [ComponentValue]
         var name: String
@@ -24,6 +29,32 @@ extension CSS {
                 componentValues: result.valuesWithoutImportant,
                 important: result.important
             )
+        }
+
+        func parseGlobal<T>() -> ParseResult<T> {
+            let declaration = parseDeclaration()
+            var value: PropertyValue<T>?
+            if declaration.count == 1 {
+                switch declaration[0] {
+                case .token(.ident("initial")):
+                    value = .initial
+                case .token(.ident("inherit")):
+                    value = .inherit
+                case .token(.ident("unset")):
+                    value = .unset
+                case .token(.ident("revert")):
+                    value = .revert
+                default:
+                    break
+                }
+            }
+
+            let property = if let value {
+                Property(name: name, value: value, important: declaration.important)
+            } else {
+                nil as CSS.Property<T>?
+            }
+            return ParseResult(property: property, declaration: declaration)
         }
     }
 
@@ -120,14 +151,13 @@ extension CSS {
         var verticalAlign: Property<VerticalAlign> = .init()
 
         mutating func parseCSSValue(name: String, value valueWithWhitespace: [CSS.ComponentValue]) {
-            let value: [CSS.ComponentValue] = valueWithWhitespace.filter {
+            let values: [CSS.ComponentValue] = valueWithWhitespace.filter {
                 if case .token(.whitespace) = $0 {
                     return false
                 }
                 return true
             }
-
-            let context = ParseContext(componentValues: value, name: name)
+            let context = ParseContext(componentValues: values, name: name)
             switch name {
             case "appearance":
                 appearance = parseEnum(context: context)
@@ -179,8 +209,6 @@ extension CSS {
                 paddingInlineEnd = parseLengthOrPercentage(context: context)
             case "padding-inline-start":
                 paddingInlineStart = parseLengthOrPercentage(context: context)
-            case "padding-top":
-                paddingTop = parsePadding(context: context)
             case "padding-left":
                 paddingLeft = parsePadding(context: context)
             case "padding-right":
@@ -190,7 +218,7 @@ extension CSS {
             case "vertical-align":
                 verticalAlign = parseVerticalAlign(context: context)
             default:
-                FIXME("\(name): \(value) not implemented")
+                FIXME("\(name): \(values) not implemented")
             }
         }
 

@@ -76,10 +76,8 @@ extension CSS {
                 value = .set(VerticalAlign(value: ident))
             case let .token(.percentage(number)):
                 value = .set(.percent(number))
-            case let .token(.dimension(number: number, unit: unit)):
-                value = .set(.length(number))
             default:
-                DIE("vertical-align value: \(declaration) not implemented")
+                break
             }
         }
         if case .initial = value {

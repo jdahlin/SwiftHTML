@@ -56,13 +56,20 @@ extension CSS {
     }
 
     static func parseLengthOrPercentage(context: ParseContext) -> Property<LengthOrPercentage> {
-        let declaration = context.parseDeclaration()
-        let value: PropertyValue<LengthOrPercentage>
+        let result: ParseResult<LengthOrPercentage> = context.parseGlobal()
+        if let property = result.property {
+            return property
+        }
+        let declaration = result.declaration
+        var value: PropertyValue<LengthOrPercentage> = .initial
         if declaration.count == 1 {
-            value = .set(.init(value: declaration[0].description))
-        } else {
-            FIXME("\(context.name) value: \(declaration) not implemented")
-            value = .initial
+            switch declaration[0] {
+            case let .token(.dimension(number: number, unit: unit)):
+                value = .set(.length(Dimension(number: number, unit: Unit.Length(unit: unit))))
+            default:
+                FIXME("\(context.name) value: \(declaration) not implemented")
+                value = .initial
+            }
         }
         return CSS.Property(name: context.name, value: value, important: declaration.important)
     }
@@ -105,7 +112,12 @@ extension CSS {
     }
 
     static func parseColor(context: ParseContext) -> CSS.Property<CSS.Color> {
-        let declaration = context.parseDeclaration()
+        let result: ParseResult<CSS.Color> = context.parseGlobal()
+        if let property = result.property {
+            return property
+        }
+        let declaration = result.declaration
+
         let value: PropertyValue<Color> = if declaration.count == 1,
                                              case let .token(.ident(name)) = declaration[0]
         {
@@ -129,21 +141,14 @@ protocol EnumStringInit {
 
 extension CSS {
     static func parseEnum<T: EnumStringInit>(context: ParseContext) -> Property<T> {
-        let declaration = context.parseDeclaration()
+        let result: ParseResult<T> = context.parseGlobal()
+        if let property = result.property {
+            return property
+        }
+        let declaration = result.declaration
         let value: PropertyValue<T>
         if declaration.count == 1, case let .token(.ident(name)) = declaration[0] {
-            switch name {
-            case "initial":
-                value = .initial
-            case "inherit":
-                value = .inherit
-            case "unset":
-                value = .unset
-            case "revert":
-                value = .revert
-            default:
-                value = .set(.init(value: name))
-            }
+            value = .set(.init(value: name))
         } else {
             FIXME("\(context.name): \(declaration) not implemented")
             value = .initial

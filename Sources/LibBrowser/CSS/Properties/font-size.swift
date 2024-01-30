@@ -125,7 +125,11 @@ extension CSS {
     }
 
     static func parseFontSize(context: ParseContext) -> Property<FontSize> {
-        let declaration = context.parseDeclaration()
+        let result: ParseResult<FontSize> = context.parseGlobal()
+        if let property = result.property {
+            return property
+        }
+        let declaration = result.declaration
         var value: PropertyValue<FontSize> = .initial
         if declaration.count == 1, case let .token(.ident(ident)) = declaration[0] {
             switch ident {
@@ -159,7 +163,7 @@ extension CSS {
                     value = .set(.length(Dimension(number: number,
                                                    unit: Unit.Length(unit: "px"))))
                 } else {
-                    DIE("font-size: \(ident) not implemented")
+                    DIE("\(context.name): \(ident) not implemented")
                 }
             }
         }

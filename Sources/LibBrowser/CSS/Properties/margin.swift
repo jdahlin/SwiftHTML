@@ -16,7 +16,11 @@ extension CSS {
     }
 
     static func parseMargin(context: ParseContext) -> Property<Margin> {
-        let declaration = context.parseDeclaration()
+        let result: ParseResult<Margin> = context.parseGlobal()
+        if let property = result.property {
+            return property
+        }
+        let declaration = result.declaration
         let value: PropertyValue<Margin>
         if declaration.count == 1 {
             value = .set(parse(value: declaration[0]))
@@ -28,7 +32,11 @@ extension CSS {
     }
 
     static func parseMarginShorthand(context: ParseContext) -> Property<RectangularShorthand<Margin>> {
-        let declaration = context.parseDeclaration()
+        let result: ParseResult<RectangularShorthand<Margin>> = context.parseGlobal()
+        if let property = result.property {
+            return property
+        }
+        let declaration = result.declaration
         let value: PropertyValue<RectangularShorthand<Margin>>
         switch declaration.count {
         case 1:

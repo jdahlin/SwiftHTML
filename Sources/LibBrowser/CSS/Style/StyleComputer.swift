@@ -24,7 +24,7 @@ extension CSS {
         }
 
         func computeStyles(element: DOM.Element) {
-            guard let ownerDocument = element.ownerDocument else {
+            guard let _ = element.ownerDocument else {
                 print("ELEMENT missing owner", element)
                 return
             }
