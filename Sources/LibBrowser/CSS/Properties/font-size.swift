@@ -84,7 +84,7 @@ extension CSS {
     enum FontSize: CustomStringConvertible, EnumStringInit {
         case absolute(FontSizeAbsolute)
         case relative(FontSizeRelative)
-        case length(Dimension)
+        case length(Length)
         case percent(Number)
         case math
 
@@ -93,8 +93,7 @@ extension CSS {
                 self = .percent(.Number(Double(value.dropLast())!))
             } else if value.hasSuffix("px") {
                 let number = Number(Double(value.dropLast(2))!)
-                self = .length(Dimension(number: number,
-                                         unit: Unit.Length(unit: "px")))
+                self = .length(Length(number: number, unit: "px"))
             } else if value == "math" {
                 self = .math
             } else {
@@ -160,8 +159,7 @@ extension CSS {
                     value = .set(.percent(.Number(Double(ident.dropLast())!)))
                 } else if ident.hasSuffix("px") {
                     let number = Number(Double(ident.dropLast(2))!)
-                    value = .set(.length(Dimension(number: number,
-                                                   unit: Unit.Length(unit: "px"))))
+                    value = .set(.length(Length(number: number, unit: "px")))
                 } else {
                     DIE("\(context.name): \(ident) not implemented")
                 }

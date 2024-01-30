@@ -10,7 +10,7 @@ extension CSS {
         case bottom
         case textBottom
         case percent(Number)
-        case length(Number)
+        case length(Length)
 
         init(value: String) {
             switch value {
@@ -34,7 +34,8 @@ extension CSS {
                 if value.hasSuffix("%") {
                     self = .percent(.Number(Double(value.dropLast())!))
                 } else if value.hasSuffix("px") {
-                    self = .length(.Number(Double(value.dropLast(2))!))
+                    let number = Number(Double(value.dropLast(2))!)
+                    self = .length(Length(number: number, unit: "px"))
                 } else {
                     DIE("vertical-align: \(value) not implemented")
                 }
@@ -68,7 +69,11 @@ extension CSS {
     }
 
     static func parseVerticalAlign(context: ParseContext) -> Property<VerticalAlign> {
-        let declaration = context.parseDeclaration()
+        let result: ParseResult<VerticalAlign> = context.parseGlobal()
+        if let property = result.property {
+            return property
+        }
+        let declaration = result.declaration
         var value: PropertyValue<VerticalAlign> = .initial
         if declaration.count == 1 {
             switch declaration[0] {
@@ -76,12 +81,13 @@ extension CSS {
                 value = .set(VerticalAlign(value: ident))
             case let .token(.percentage(number)):
                 value = .set(.percent(number))
+            case let .token(.dimension(number: number, unit: unit)):
+                value = .set(.length(Length(number: number, unit: unit)))
             default:
-                break
+                DIE("\(context.name) value: \(declaration) not implemented")
             }
-        }
-        if case .initial = value {
-            DIE("vertical-align value: \(declaration) not implemented")
+        } else {
+            DIE("\(context.name) value: \(declaration) not implemented")
         }
         return CSS.Property(name: context.name, value: value, important: declaration.important)
     }

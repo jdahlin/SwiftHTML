@@ -1,14 +1,14 @@
 extension CSS {
     enum BorderWidth: CustomStringConvertible {
         case lineWidth(LineWidth)
-        case length(Dimension)
+        case length(Length)
 
         var description: String {
             switch self {
             case let .lineWidth(lineWidth):
                 "\(lineWidth)"
-            case let .length(dimension):
-                "\(dimension)"
+            case let .length(length):
+                "\(length)"
             }
         }
     }
@@ -18,7 +18,7 @@ extension CSS {
         case let .token(.ident(ident)):
             .lineWidth(LineWidth(value: ident))
         case let .token(.dimension(number: number, unit: unit)):
-            .length(Dimension(number: number, unit: CSS.Unit.Length(unit: unit)))
+            .length(Length(number: number, unit: unit))
         default:
             DIE("border-width value: \(value) not implemented")
         }

@@ -2,28 +2,11 @@ extension CSS {
     typealias Padding = LengthOrPercentage
 
     static func parsePadding(value: CSS.ComponentValue) -> Padding {
-        switch value {
-        case let .token(.dimension(number: number, unit: unit)):
-            .length(Dimension(number: number, unit: CSS.Unit.Length(unit: unit)))
-        default:
-            DIE("padding value: \(value) not implemented")
-        }
+        parseLengthOrPercentage(propertyName: "padding", value: value)
     }
 
     static func parsePadding(context: ParseContext) -> Property<Padding> {
-        let result: ParseResult<Padding> = context.parseGlobal()
-        if let property = result.property {
-            return property
-        }
-        let declaration = result.declaration
-        let value: PropertyValue<Padding>
-        if declaration.count == 1 {
-            value = .set(parsePadding(value: declaration[0]))
-        } else {
-            FIXME("padding value: \(declaration) not implemented")
-            value = .initial
-        }
-        return Property(name: context.name, value: value, important: declaration.important)
+        parseLengthOrPercentage(context: context)
     }
 
     static func parsePaddingShorthand(context: ParseContext) -> Property<RectangularShorthand<Padding>> {

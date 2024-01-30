@@ -5,14 +5,15 @@ extension CSS {
         case none
         case auto
 
-        init(value: String) {
+        init?(value: String) {
             switch value {
             case "none":
                 self = .none
             case "auto":
                 self = .auto
             default:
-                DIE("Appearance: \(value) not implemented")
+                FIXME("Appearance: \(value) not implemented")
+                return nil
             }
         }
 

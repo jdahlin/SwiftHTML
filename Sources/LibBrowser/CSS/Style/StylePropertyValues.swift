@@ -1,119 +1,41 @@
 
+protocol AnyPropertyValue {
+    var asAny: Any { get }
+}
+
+protocol AnySetProperty {
+    var isSet: Bool { get }
+    var propertyName: String? { get }
+    var typeErasedValue: AnyPropertyValue { get }
+}
+
+extension CSS.PropertyValue: AnyPropertyValue {
+    var asAny: Any {
+        switch self {
+        case let .set(value):
+            value
+        case .inherit, .initial, .revert, .unset:
+            self
+        }
+    }
+}
+
+extension CSS.Property: AnySetProperty {
+    var isSet: Bool {
+        if case .set = value {
+            true
+        } else {
+            false
+        }
+    }
+
+    var propertyName: String? { name }
+    var typeErasedValue: AnyPropertyValue {
+        value
+    }
+}
+
 extension CSS {
-    struct ParsedDeclaration {
-        var componentValues: [ComponentValue]
-        var count: Int {
-            componentValues.count
-        }
-
-        var important = false
-
-        subscript(index: Int) -> ComponentValue {
-            componentValues[index]
-        }
-    }
-
-    struct ParseResult<T> {
-        var property: Property<T>?
-        var declaration: ParsedDeclaration
-    }
-
-    struct ParseContext {
-        var componentValues: [ComponentValue]
-        var name: String
-
-        func parseDeclaration() -> ParsedDeclaration {
-            // parse important flag, from the end: !important
-            let result = CSS.parseImportant(componentValues: componentValues)
-            return ParsedDeclaration(
-                componentValues: result.valuesWithoutImportant,
-                important: result.important
-            )
-        }
-
-        func parseGlobal<T>() -> ParseResult<T> {
-            let declaration = parseDeclaration()
-            var value: PropertyValue<T>?
-            if declaration.count == 1 {
-                switch declaration[0] {
-                case .token(.ident("initial")):
-                    value = .initial
-                case .token(.ident("inherit")):
-                    value = .inherit
-                case .token(.ident("unset")):
-                    value = .unset
-                case .token(.ident("revert")):
-                    value = .revert
-                default:
-                    break
-                }
-            }
-
-            let property = if let value {
-                Property(name: name, value: value, important: declaration.important)
-            } else {
-                nil as CSS.Property<T>?
-            }
-            return ParseResult(property: property, declaration: declaration)
-        }
-    }
-
-    struct Property<T>: CustomStringConvertible {
-        var name: String?
-        var value: PropertyValue<T>
-        var important: Bool = false
-        var caseSensitive: Bool = true
-
-        init() {
-            // https://drafts.csswg.org/css-cascade/#initial-values
-            // Each property has an initial value, defined in the property’s
-            // definition table. If the property is not an inherited property,
-            // and the cascade does not result in a value, then the specified
-            // value of the property is its initial value.
-            value = .initial
-        }
-
-        init(name: String, value: PropertyValue<T>, important: Bool = false, caseSensitive: Bool = true) {
-            self.name = name
-            self.value = value
-            self.important = important
-            self.caseSensitive = caseSensitive
-        }
-
-        var description: String {
-            if important {
-                "Property(\(name!): \(value) !important)"
-            } else {
-                "Property(\(name!): \(value))"
-            }
-        }
-    }
-
-    enum PropertyValue<T>: CustomStringConvertible {
-        case set(T)
-        // https://www.w3.org/TR/css-values-4/#common-keywords
-        // https://drafts.csswg.org/css-cascade/#defaulting-keywords
-        case inherit
-        case initial
-        case revert
-        case unset
-
-        var description: String {
-            switch self {
-            case let .set(value):
-                "\(value)"
-            case .inherit:
-                "inherit"
-            case .initial:
-                "initial"
-            case .revert:
-                "revert"
-            case .unset:
-                "unset"
-            }
-        }
-    }
-
     struct PropertyValues: CustomStringConvertible {
         var description: String {
             let values = toStringDict().map { "\($0): \($1)" }.joined(separator: "; ")
@@ -129,6 +51,7 @@ extension CSS {
         var display: Property<Display> = .init()
         var float: Property<FloatValue> = .init()
         var fontSize: Property<FontSize> = .init()
+        var height: Property<Height> = .init()
         var margin: Property<RectangularShorthand<Margin>> = .init()
         var marginTop: Property<Margin> = .init()
         var marginBlockEnd: Property<Margin> = .init()
@@ -148,7 +71,10 @@ extension CSS {
         var paddingLeft: Property<Padding> = .init()
         var paddingRight: Property<Padding> = .init()
         var textAlign: Property<TextAlign> = .init()
+        var listStyle: Property<ListStyle> = .init()
+        var listStyleType: Property<ListStyleType> = .init()
         var verticalAlign: Property<VerticalAlign> = .init()
+        var width: Property<Width> = .init()
 
         mutating func parseCSSValue(name: String, value valueWithWhitespace: [CSS.ComponentValue]) {
             let values: [CSS.ComponentValue] = valueWithWhitespace.filter {
@@ -177,6 +103,12 @@ extension CSS {
                 float = parseEnum(context: context)
             case "font-size":
                 fontSize = parseFontSize(context: context)
+            case "height":
+                height = parseHeight(context: context)
+            case "list-style":
+                listStyle = parseListStyle(context: context)
+            case "list-style-type":
+                listStyleType = parseListStyleType(context: context)
             case "margin":
                 margin = parseMarginShorthand(context: context)
             case "margin-top":
@@ -215,6 +147,8 @@ extension CSS {
                 paddingRight = parsePadding(context: context)
             case "text-align":
                 textAlign = parseEnum(context: context)
+            case "width":
+                width = parseWidth(context: context)
             case "vertical-align":
                 verticalAlign = parseVerticalAlign(context: context)
             default:
@@ -239,41 +173,5 @@ extension CSS {
             }
             return dict
         }
-    }
-}
-
-protocol AnyPropertyValue {
-    var asAny: Any { get }
-}
-
-protocol AnySetProperty {
-    var isSet: Bool { get }
-    var propertyName: String? { get }
-    var typeErasedValue: AnyPropertyValue { get }
-}
-
-extension CSS.PropertyValue: AnyPropertyValue {
-    var asAny: Any {
-        switch self {
-        case let .set(value):
-            value
-        case .inherit, .initial, .revert, .unset:
-            self
-        }
-    }
-}
-
-extension CSS.Property: AnySetProperty {
-    var isSet: Bool {
-        if case .set = value {
-            true
-        } else {
-            false
-        }
-    }
-
-    var propertyName: String? { name }
-    var typeErasedValue: AnyPropertyValue {
-        value
     }
 }
