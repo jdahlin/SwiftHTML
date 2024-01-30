@@ -195,12 +195,12 @@ body {
  }
  
  :link, :visited {
-     text-decoration: underline;
+     text-decoration-line: underline;
      cursor: pointer;
  }
  
  :focus-visible {
-     outline: auto;
+     outline-style: auto;
  }
  
  mark {
@@ -209,15 +209,16 @@ body {
  }
  
  abbr[title], acronym[title] {
-     text-decoration: dotted underline;
- }
+    text-decoration-style: dotted;
+    text-decoration-line: underline;
+}
  
  ins, u {
-     text-decoration: underline;
+     text-decoration-line: underline;
  }
  
  del, s, strike {
-     text-decoration: line-through;
+     text-decoration-style: line-through;
  }
  
  q::before {
@@ -460,7 +461,7 @@ body {
      box-sizing: border-box;
      border-spacing: 2px;
      border-collapse: separate;
-     text-indent: initial;
+     /* text-indent: initial; */
  }
  
  td, th {
@@ -529,12 +530,12 @@ body {
   */
  
  input, select, button, textarea {
-     letter-spacing: initial;
+     /* letter-spacing: initial;
      word-spacing: initial;
      line-height: initial;
      text-transform: initial;
      text-indent: initial;
-     text-shadow: initial;
+     text-shadow: initial; */
      appearance: auto;
  }
  
