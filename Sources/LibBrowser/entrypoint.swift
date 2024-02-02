@@ -1,6 +1,6 @@
 import Foundation
 
-public func testEntrypoint() {
+public func browserLoadUrl(url _: String) {
     // let filename = FileManager.default.currentDirectoryPath + "/Resources/CSS/default.css"
     // print(filename)
     // _ = Result {
@@ -17,7 +17,10 @@ public func testEntrypoint() {
 
     let document = HTML.parseHTML(&data)
     // DOM.printTree(node: document)
-    if let body = document.body {
-        document.styleComputer.computeStyles(element: body)
+    if let element = document.documentElement {
+        let style = document.styleComputer.computeStyle(element: element)
+        print(style.toStringDict())
+        let style2 = document.styleComputer.computeStyle(element: document.body!)
+        print(style2.toStringDict())
     }
 }

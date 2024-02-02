@@ -32,11 +32,15 @@ extension CSSOM {
         // [SameObject] readonly attribute CSSRuleList cssRules;
         var cssRules: CSSRuleList { CSSRuleList(rules: rules) }
 
+        var styleRules: [CSSOM.CSSStyleRule] {
+            cssRules.compactMap { $0 as? CSSOM.CSSStyleRule }
+        }
+
         func loadRules(content: String) {
             let result = Result { try CSS.parseAStylesheet(data: content) }
             switch result {
             case let .success(parsed):
-                rules = parsed.rules.map { CSSOM.cssRuleFromRaw(rawRule: $0) }
+                rules = parsed.rules.map { CSSOM.cssRuleFromRaw(rawRule: $0, parentStyleSheet: self) }
             case let .failure(error):
                 print(error)
             }

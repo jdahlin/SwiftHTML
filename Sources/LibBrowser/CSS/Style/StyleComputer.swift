@@ -1,8 +1,18 @@
 import Foundation
 
+import CoreText
+
 extension CSS {
     struct StyleComputer {
         var styleSheets: [CSSOM.CSSStyleSheet] = []
+        var document: DOM.Document!
+
+        var rootElementFontMetrics: FontMetrics!
+        lazy var defaultFontMetrics = FontMetrics(
+            fontSize: CSS.Pixels(16.0),
+            lineHeight: CSS.Pixels(16.0),
+            pixelMetrics: CTFont.defaultFont.pixelMetrics()
+        )
 
         mutating func addFromDocument(document: DOM.Document) {
             let defaultStyleSheet = CSSOM.CSSStyleSheet(
@@ -18,45 +28,241 @@ extension CSS {
                 fatalError("Failed to read \(defaultStyleSheetFilename): \(error)")
             }
             defaultStyleSheet.loadRules(content: content)
+            self.document = document
 
             // FIXME: Support multiple documents, hashable documents
             styleSheets.append(contentsOf: [defaultStyleSheet] + document.styleSheets.styleSheets)
         }
 
-        func computeStyles(element: DOM.Element) {
-            guard let _ = element.ownerDocument else {
-                print("ELEMENT missing owner", element)
-                return
-            }
-            // guard let documentStyleSheets = styleSheets[ownerDocument] else {
-            //     print("No stylessheets for doc :(", ownerDocument)
-            //     return
-            // }
-            var propertyMap: [String: [AnySetProperty]] = [:]
-            for sheet in styleSheets {
-                getPropertiesForElement(propertyMap: &propertyMap, sheet: sheet, element: element)
-            }
+        func setProperty(
+            style: inout StyleProperties,
+            property: CSS.StyleProperty,
+            document _: DOM.Document,
+            declaration _: CSSOM.CSSStyleDeclaration
+        ) {
+            if property.isRevert() {}
+            style.setProperty(property: property)
+        }
 
-            for (name, properties) in propertyMap {
-                print(name, properties)
+        func cascadeDeclarations(
+            style: inout StyleProperties,
+            rules: [CSSOM.CSSStyleRule],
+            cascadeOrigin _: CSS.CascadeOrigin,
+            important: Bool
+        ) {
+            for rule in rules {
+                let declaration = rule.declarations
+                for property in declaration.propertyValues {
+                    guard property.important == important else {
+                        continue
+                    }
+
+                    if property.name == "all" {
+                        print("\(#function): FIXME: set all")
+                    }
+
+                    setProperty(
+                        style: &style,
+                        property: property,
+                        document: document,
+                        declaration: declaration
+                    )
+                }
             }
         }
 
-        func getPropertiesForElement(propertyMap: inout [String: [AnySetProperty]],
-                                     sheet: CSSOM.CSSStyleSheet,
-                                     element: DOM.Element)
-        {
-            for rule in sheet.cssRules {
-                guard let styleRule = rule as? CSSOM.CSSStyleRule else {
-                    continue
-                }
-                let selector = CSS.Selector(selectors: styleRule.selectorList)
-                if selector.match(element: element), styleRule.declarations.properties.count > 0 {
-                    for property in styleRule.declarations.propertyValues.fetchSetProperties() {
-                        propertyMap[property.name, default: []].append(property.property)
-                    }
+        func computeCascadedValues(style: inout StyleProperties, element: DOM.Element) {
+            // First, we collect all the CSS rules whose selectors match `element`:
+            let userAgentRules = collectMatchingRules(element: element, cascadeOrigin: .userAgent)
+            let userRules = collectMatchingRules(element: element, cascadeOrigin: .user)
+            let authorRules = collectMatchingRules(element: element, cascadeOrigin: .author)
+            // FIXME: sort according to order and specificity
+
+            // Then we resolve all the CSS custom properties ("variables") for this element:
+
+            // Then we apply the declarations from the matched rules in cascade order:
+            cascadeDeclarations(
+                style: &style,
+                rules: userAgentRules,
+                cascadeOrigin: .userAgent,
+                important: false
+            )
+            cascadeDeclarations(
+                style: &style,
+                rules: userRules,
+                cascadeOrigin: .user,
+                important: false
+            )
+            cascadeDeclarations(
+                style: &style,
+                rules: authorRules,
+                cascadeOrigin: .author,
+                important: false
+            )
+
+            // FIXME: Animations declarations [css-animations-1]
+
+            cascadeDeclarations(
+                style: &style,
+                rules: userAgentRules,
+                cascadeOrigin: .userAgent,
+                important: false
+            )
+            cascadeDeclarations(
+                style: &style,
+                rules: userRules,
+                cascadeOrigin: .user,
+                important: false
+            )
+            cascadeDeclarations(
+                style: &style,
+                rules: authorRules,
+                cascadeOrigin: .author,
+                important: false
+            )
+
+            // FIXME: Transition declarations [css-transitions-1]
+        }
+
+        mutating func computeStyle(element: DOM.Element) -> StyleProperties {
+            var style = StyleProperties()
+
+            // 1. Perform the cascade. This produces the "specified style"
+            // TRY(compute_cascaded_values(style, element, pseudo_element, did_match_any_pseudo_element_rules, mode));
+            computeCascadedValues(style: &style, element: element)
+
+            // 2. Compute the math-depth property, since that might affect the font-size
+            // compute_math_depth(style, &element, pseudo_element);
+
+            // 3. Compute the font, since that may be needed for font-relative CSS units
+            computeFont(style: &style, element: element)
+
+            // 4. Absolutize values, turning font/viewport relative lengths into absolute lengths
+            absolutizeValues(style: &style, element: element)
+
+            // 5. Default the values, applying inheritance and 'initial' as needed
+            // compute_defaulted_values(style, &element, pseudo_element);
+
+            // 6. Run automatic box type transformations
+            // transform_box_type_if_needed(style, element, pseudo_element);
+
+            return style
+        }
+
+        mutating func computeFont(style: inout StyleProperties, element: DOM.Element) {
+            // FIXME: Compute default using initial/inherit etc
+            // let fontSize = style.fontSize.fontSize()
+
+            // FIXME: Parse CSS property
+            let fontFamily = "serif"
+            // FIXME: Parse CSS property
+            // let fontStyle = "normal"
+            // // FIXME: Parse CSS property
+            // let fontWeight = "normal"
+
+            // FIXME: Use computed values
+            let font = CTFontCreateWithName(fontFamily as CFString, 14.0, nil)
+
+            let pixelSize = CTFontGetSize(font)
+
+            style.setProperty(property: CSS.StyleProperty(
+                name: "font-size",
+                value: .fontSize(.length(CSS.Length(number: CSS.Number(pixelSize), unit: "px")))
+            ))
+            style.setProperty(property: CSS.StyleProperty(
+                name: "line-height",
+                value: .lineHeight(.normal)
+            )
+            )
+
+            style.setComputedFont(font: font)
+            if element is HTML.HtmlElement {
+                rootElementFontMetrics = calculateRootElementFontMetrics(style)
+            }
+        }
+
+        mutating func calculateRootElementFontMetrics(_ style: StyleProperties) -> FontMetrics {
+            let rootValue = style.fontSize.fontSize()
+            let fontPixelMetrics = style.computedFont!.pixelMetrics()
+            var fontMetrics = FontMetrics(
+                fontSize: defaultFontMetrics.fontSize,
+                lineHeight: CSS.Pixels.nearestValueFor(fontPixelMetrics.lineSpacing()),
+                pixelMetrics: fontPixelMetrics
+            )
+            fontMetrics.fontSize = rootValue.length().toPx(
+                viewPortRect: viewPortRect()!,
+                fontMetrics: fontMetrics,
+                rootFontMetrics: fontMetrics
+            )
+            fontMetrics.lineHeight = style.calculateLineHeight(
+                viewPortRect: viewPortRect(),
+                fontMetrics: fontMetrics,
+                rootFontMetrics: fontMetrics
+            )
+            return fontMetrics
+        }
+
+        func elementToInheritStyleFrom(element: DOM.Element?) -> DOM.Element? {
+            // let parentElement: DOM.Element?
+            // if pseudoElement != nil {
+            // parentElement = element
+
+            element?.parentOrShadowHostElement()
+        }
+
+        func viewPortRect() -> CSS.PixelRect? {
+            if let navigable = document.navigable {
+                return navigable.viewportRect()
+            }
+            return nil
+        }
+
+        func parentOrRootLineHeight(element: DOM.Element) -> CSS.Pixels {
+            let parentElement = elementToInheritStyleFrom(element: element)
+            guard let parentElement else {
+                return rootElementFontMetrics.lineHeight
+            }
+
+            let computedValues = parentElement.computedCSSValues
+            guard let computedValues else {
+                return rootElementFontMetrics.lineHeight
+            }
+
+            let parentFontPixelMetrics = computedValues.computedFont!.pixelMetrics()
+            let parentFontSize = computedValues.fontSize.fontSize()
+            let parentFontSizeValue = if case .absolute = parentFontSize {
+                parentFontSize.absoluteLengthToPx()
+            } else {
+                rootElementFontMetrics.fontSize
+            }
+            let parentParentLineHeight = parentOrRootLineHeight(element: parentElement)
+            let parentFontMetrics = FontMetrics(
+                fontSize: parentFontSizeValue,
+                lineHeight: parentParentLineHeight,
+                pixelMetrics: parentFontPixelMetrics
+            )
+            return computedValues.calculateLineHeight(
+                viewPortRect: viewPortRect(),
+                fontMetrics: parentFontMetrics,
+                rootFontMetrics: rootElementFontMetrics
+            )
+        }
+
+        func absolutizeValues(style _: inout StyleProperties, element: DOM.Element) {
+            var parentOrRootLineHeight = parentOrRootLineHeight(element: element)
+        }
+
+        func collectMatchingRules(element: DOM.Element, cascadeOrigin: CSS.CascadeOrigin) -> [CSSOM.CSSStyleRule] {
+            var rules: [CSSOM.CSSStyleRule] = []
+            for sheet in styleSheets {
+                guard sheet.cascadeOrigin == cascadeOrigin else { continue }
+                for styleRule in sheet.styleRules {
+                    guard styleRule.selector.match(element: element) else { continue }
+                    rules.append(styleRule)
                 }
             }
+
+            return rules
         }
     }
 }

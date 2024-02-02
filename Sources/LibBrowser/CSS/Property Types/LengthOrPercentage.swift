@@ -3,6 +3,10 @@ extension CSS {
         case length(Length)
         case percentage(Number)
 
+        static func zero() -> LengthOrPercentage {
+            .length(.absolute(.px(.Integer(0))))
+        }
+
         init(value: String) {
             if value.hasSuffix("%") {
                 self = .percentage(.Number(Double(value.dropLast())!))
@@ -29,6 +33,10 @@ extension CSS {
         case percentage(Number)
         case auto
 
+        static func zero() -> LengthOrPercentageOrAuto {
+            .length(.absolute(.px(.Integer(0))))
+        }
+
         var description: String {
             switch self {
             case let .length(length):
@@ -41,7 +49,7 @@ extension CSS {
         }
     }
 
-    static func parseLengthOrPercentage(propertyName: String, value: CSS.ComponentValue) -> LengthOrPercentage {
+    static func parseLengthOrPercentage(value: CSS.ComponentValue) -> LengthOrPercentage? {
         switch value {
         case let .token(.percentage(number: number)):
             .percentage(number)
@@ -50,53 +58,22 @@ extension CSS {
         case let .token(.dimension(number: number, unit: unit)):
             .length(Length(number: number, unit: unit))
         default:
-            DIE("\(propertyName) value: \(value) not implemented")
+            nil
         }
     }
 
-    static func parseLengthOrPercentageOrAuto(propertyName: String, value: CSS.ComponentValue) -> LengthOrPercentageOrAuto {
+    static func parseLengthOrPercentageOrAuto(value: CSS.ComponentValue) -> LengthOrPercentageOrAuto? {
         switch value {
         case .token(.ident("auto")):
-            return .auto
+            .auto
         case let .token(.percentage(number: number)):
-            return .percentage(number)
+            .percentage(number)
         case let .token(.number(number)):
-            return .length(Length(number: number, unit: "px"))
+            .length(Length(number: number, unit: "px"))
         case let .token(.dimension(number: number, unit: unit)):
-            return .length(Length(number: number, unit: unit))
+            .length(Length(number: number, unit: unit))
         default:
-            FIXME("\(propertyName) value: \(value) not implemented")
-            return .auto
+            nil
         }
-    }
-
-    static func parseLengthOrPercentage(context: ParseContext) -> Property<LengthOrPercentage> {
-        let result: ParseResult<LengthOrPercentage> = context.parseGlobal()
-        if let property = result.property {
-            return property
-        }
-        let declaration = result.declaration
-        var value: PropertyValue<LengthOrPercentage> = .initial
-        if declaration.count == 1 {
-            value = .set(parseLengthOrPercentage(propertyName: context.name, value: declaration[0]))
-        } else {
-            FIXME("\(context.name) value: \(declaration) not implemented")
-        }
-        return CSS.Property(name: context.name, value: value, important: declaration.important)
-    }
-
-    static func parseLengthOrPercentageOrAuto(context: ParseContext) -> Property<LengthOrPercentageOrAuto> {
-        let result: ParseResult<LengthOrPercentageOrAuto> = context.parseGlobal()
-        if let property = result.property {
-            return property
-        }
-        let declaration = result.declaration
-        var value: PropertyValue<LengthOrPercentageOrAuto> = .initial
-        if declaration.count == 1 {
-            value = .set(parseLengthOrPercentageOrAuto(propertyName: context.name, value: declaration[0]))
-        } else {
-            FIXME("\(context.name) value: \(declaration) not implemented")
-        }
-        return CSS.Property(name: context.name, value: value, important: declaration.important)
     }
 }

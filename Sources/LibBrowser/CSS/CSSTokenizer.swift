@@ -93,6 +93,15 @@ extension CSS {
             self = .Number(value)
         }
 
+        func toDouble() -> Double {
+            switch self {
+            case let .Integer(i):
+                Double(i)
+            case let .Number(n):
+                n
+            }
+        }
+
         var description: String {
             switch self {
             case let .Integer(i):
@@ -100,6 +109,10 @@ extension CSS {
             case let .Number(n):
                 "\(n)"
             }
+        }
+
+        static func * (lhs: Number, rhs: Double) -> Double {
+            lhs.toDouble() * rhs
         }
     }
 

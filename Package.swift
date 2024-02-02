@@ -5,6 +5,9 @@ import PackageDescription
 
 let package = Package(
     name: "SwiftHTML",
+    platforms: [
+        .macOS(.v12),
+    ],
     products: [
         .library(name: "LibBrowser", targets: ["LibBrowser"]),
     ],

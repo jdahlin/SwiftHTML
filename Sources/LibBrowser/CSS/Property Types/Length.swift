@@ -345,5 +345,99 @@ extension CSS {
                 absolute.description
             }
         }
+
+        func absoluteLengthToPx() -> CSS.Pixels {
+            let inchPixels = 96.0
+            let cmPixels = (inchPixels / 2.54)
+            let value = switch self {
+            case let .absolute(.cm(value)):
+                // 1cm = 96px/2.54
+                value * cmPixels
+            case let .absolute(.inch(value)):
+                // 1in = 2.54 cm = 96px
+                value * inchPixels
+            case let .absolute(.px(value)):
+                // 1px = 1/96th of 1in
+                value.toDouble()
+            case let .absolute(.pt(value)):
+                // 1pt = 1/72th of 1in
+                value * ((1.0 / 72.0) * inchPixels)
+            case let .absolute(.pc(value)):
+                // 1pc = 1/6th of 1in
+                value * ((1.0 / 6.0) * inchPixels)
+            case let .absolute(.mm(value)):
+                // 1mm = 1/10th of 1cm
+                value * ((1.0 / 10.0) * cmPixels)
+            case let .absolute(.Q(value)):
+                // 1Q = 1/40th of 1cm
+                value * ((1.0 / 40.0) * cmPixels)
+            default:
+                preconditionFailure()
+            }
+            return CSS.Pixels.nearestValueFor(value)
+        }
+
+        func toPx(viewPortRect: CSS.PixelRect, fontMetrics: FontMetrics, rootFontMetrics: FontMetrics) -> CSS.Pixels {
+            switch self {
+            case .absolute:
+                absoluteLengthToPx()
+            case let .relative(.em(value)):
+                CSS.Pixels.nearestValueFor(value * fontMetrics.fontSize)
+            case let .relative(.rem(value)):
+                CSS.Pixels.nearestValueFor(value * rootFontMetrics.fontSize)
+            case let .relative(.ex(value)):
+                CSS.Pixels.nearestValueFor(value * fontMetrics.xHeight)
+            case let .relative(.rex(value)):
+                CSS.Pixels.nearestValueFor(value * rootFontMetrics.xHeight)
+            case let .relative(.cap(value)):
+                CSS.Pixels.nearestValueFor(value * fontMetrics.capHeight)
+            case let .relative(.rcap(value)):
+                CSS.Pixels.nearestValueFor(value * rootFontMetrics.capHeight)
+            case let .relative(.ch(value)):
+                CSS.Pixels.nearestValueFor(value * fontMetrics.zeroAdvance)
+            case let .relative(.rch(value)):
+                CSS.Pixels.nearestValueFor(value * rootFontMetrics.zeroAdvance)
+            case let .relative(.ic(value)):
+                CSS.Pixels.nearestValueFor(value * fontMetrics.fontSize)
+            case let .relative(.ric(value)):
+                CSS.Pixels.nearestValueFor(value * rootFontMetrics.fontSize)
+            case let .relative(.lh(value)):
+                CSS.Pixels.nearestValueFor(value * fontMetrics.lineHeight)
+            case let .relative(.rlh(value)):
+                CSS.Pixels.nearestValueFor(value * rootFontMetrics.lineHeight)
+            case let .relative(.vw(value)),
+                 let .relative(.svw(value)),
+                 let .relative(.lvw(value)),
+                 let .relative(.dvw(value)):
+                viewPortRect.width * (CSS.Pixels.nearestValueFor(value.toDouble()) / 100)
+            case let .relative(.vh(value)),
+                 let .relative(.svh(value)),
+                 let .relative(.lvh(value)),
+                 let .relative(.dvh(value)):
+                viewPortRect.height * (CSS.Pixels.nearestValueFor(value.toDouble()) / 100)
+            case let .relative(.vi(value)),
+                 let .relative(.svi(value)),
+                 let .relative(.lvi(value)),
+                 let .relative(.dvi(value)):
+                // FIXME: Select the width or height based on which is the inline axis.
+                viewPortRect.width * (CSS.Pixels.nearestValueFor(value.toDouble()) / 100)
+            case let .relative(.vb(value)),
+                 let .relative(.svb(value)),
+                 let .relative(.lvb(value)),
+                 let .relative(.dvb(value)):
+                // FIXME: Select the width or height based on which is the block axis.
+                viewPortRect.height * (CSS.Pixels.nearestValueFor(value.toDouble()) / 100)
+            case let .relative(.vmin(value)),
+                 let .relative(.svmin(value)),
+                 let .relative(.lvmin(value)),
+                 let .relative(.dvmin(value)):
+                min(viewPortRect.width, viewPortRect.height) * (CSS.Pixels.nearestValueFor(value.toDouble()) / 100)
+            case let .relative(.vmax(value)),
+                 let .relative(.svmax(value)),
+                 let .relative(.lvmax(value)),
+                 let .relative(.dvmax(value)):
+                max(viewPortRect.width, viewPortRect.height) * (CSS.Pixels.nearestValueFor(value.toDouble()) / 100)
+            }
+        }
     }
 }

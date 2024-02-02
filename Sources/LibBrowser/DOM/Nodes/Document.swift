@@ -123,6 +123,8 @@ extension DOM {
 
         var rootStyleSheets: [CSSOM.CSSStyleSheet] = []
 
+        var navigable: Navigable? = .init()
+
         init() {
             super.init()
             // A document’s node document is itself.

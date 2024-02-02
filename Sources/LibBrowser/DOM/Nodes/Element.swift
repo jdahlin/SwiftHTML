@@ -94,6 +94,8 @@ extension DOM {
             }
         }
 
+        var computedCSSValues: CSS.StyleProperties?
+
         required init(localName: DOM.String,
                       attributes: [DOM.Attr] = [],
                       namespace: DOM.String,
@@ -141,6 +143,22 @@ extension DOM {
             // names of the attributes in this’s attribute list, in order; otherwise
             // a new list.
             attributes.attributes.keys.map { $0 }
+        }
+
+        func recomputeStyle() {
+            ownerDocument!.styleComputer.computeStyle(element: self)
+        }
+
+        func parentOrShadowHostElement() -> Element? {
+            // The parent or shadow host element of an element is its parent element,
+            // if it has one, and its shadow host otherwise.
+            if let parent = parentNode as? Element {
+                return parent
+            }
+            // if let shadowRoot = parentNode as? ShadowRoot {
+            //     return shadowRoot.host
+            // }
+            return nil
         }
     }
 }

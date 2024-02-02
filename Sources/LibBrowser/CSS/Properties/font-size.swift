@@ -54,6 +54,21 @@ extension CSS {
                 "xxx-large"
             }
         }
+
+        func toPx() -> CSS.Pixels {
+            // FIXME: Completely ad-hoc
+            let value = switch self {
+            case .xxSmall: 9
+            case .xSmall: 10
+            case .small: 13
+            case .medium: 16
+            case .large: 18
+            case .xLarge: 24
+            case .xxLarge: 32
+            case .xxxLarge: 48
+            }
+            return CSS.Pixels(value)
+        }
     }
 
     enum FontSizeRelative: String, EnumStringInit {
@@ -121,51 +136,78 @@ extension CSS {
                 "math"
             }
         }
-    }
 
-    static func parseFontSize(context: ParseContext) -> Property<FontSize> {
-        let result: ParseResult<FontSize> = context.parseGlobal()
-        if let property = result.property {
-            return property
-        }
-        let declaration = result.declaration
-        var value: PropertyValue<FontSize> = .initial
-        if declaration.count == 1, case let .token(.ident(ident)) = declaration[0] {
-            switch ident {
-            case "xx-small":
-                value = .set(.absolute(.xxSmall))
-            case "x-small":
-                value = .set(.absolute(.xSmall))
-            case "small":
-                value = .set(.absolute(.small))
-            case "medium":
-                value = .set(.absolute(.medium))
-            case "large":
-                value = .set(.absolute(.large))
-            case "x-large":
-                value = .set(.absolute(.xLarge))
-            case "xx-large":
-                value = .set(.absolute(.xxLarge))
-            case "xxx-large":
-                value = .set(.absolute(.xxxLarge))
-            case "larger":
-                value = .set(.relative(.larger))
-            case "smaller":
-                value = .set(.relative(.smaller))
-            case "math":
-                value = .set(.math)
-            default:
-                if ident.hasSuffix("%") {
-                    value = .set(.percent(.Number(Double(ident.dropLast())!)))
-                } else if ident.hasSuffix("px") {
-                    let number = Number(Double(ident.dropLast(2))!)
-                    value = .set(.length(Length(number: number, unit: "px")))
-                } else {
-                    DIE("\(context.name): \(ident) not implemented")
-                }
+        func isAbsolute() -> Bool {
+            switch self {
+            case .absolute: true
+            default: false
             }
         }
 
-        return CSS.Property(name: context.name, value: value, important: declaration.important)
+        func length() -> Length {
+            switch self {
+            case let .length(length):
+                length
+            default:
+                preconditionFailure()
+            }
+        }
+
+        func absoluteLengthToPx() -> Pixels {
+            switch self {
+            case let .absolute(absoluteLength):
+                absoluteLength.toPx()
+            default:
+                preconditionFailure()
+            }
+        }
+    }
+}
+
+extension CSS.StyleProperties {
+    func parseFontSize(context: CSS.ParseContext) {
+        let declaration = context.parseDeclaration()
+        guard declaration.count == 1 else {
+            return
+        }
+        var value: CSS.StyleValue
+        if declaration.count == 1, case let .token(.ident(ident)) = declaration[0] {
+            switch ident {
+            case "xx-small":
+                value = .fontSize(.absolute(.xxSmall))
+            case "x-small":
+                value = .fontSize(.absolute(.xSmall))
+            case "small":
+                value = .fontSize(.absolute(.small))
+            case "medium":
+                value = .fontSize(.absolute(.medium))
+            case "large":
+                value = .fontSize(.absolute(.large))
+            case "x-large":
+                value = .fontSize(.absolute(.xLarge))
+            case "xx-large":
+                value = .fontSize(.absolute(.xxLarge))
+            case "xxx-large":
+                value = .fontSize(.absolute(.xxxLarge))
+            case "larger":
+                value = .fontSize(.relative(.larger))
+            case "smaller":
+                value = .fontSize(.relative(.smaller))
+            case "math":
+                value = .fontSize(.math)
+            default:
+                if let keyword = parseGlobalKeywords(ident) {
+                    value = keyword
+                } else if ident.hasSuffix("%") {
+                    value = .fontSize(.percent(.Number(Double(ident.dropLast())!)))
+                } else if ident.hasSuffix("px") {
+                    let number = CSS.Number(Double(ident.dropLast(2))!)
+                    value = .fontSize(.length(CSS.Length(number: number, unit: "px")))
+                } else {
+                    return
+                }
+            }
+            fontSize.value = value
+        }
     }
 }

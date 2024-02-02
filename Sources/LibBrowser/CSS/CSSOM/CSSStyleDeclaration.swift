@@ -13,14 +13,14 @@ extension CSSOM {
             propertyValues.toStringDict()
         }
 
-        var propertyValues: CSS.PropertyValues = .init()
+        var propertyValues = CSS.StyleProperties()
         init(items: [CSS.Item]) {
             for item in items {
                 switch item {
                 case let .declaration(declaration):
                     switch declaration.name {
                     case let .token(.ident(name)):
-                        propertyValues.parseCSSValue(name: name, value: declaration.value)
+                        propertyValues.parseCSSValue(name: name, componentValues: declaration.value)
                     default:
                         FIXME("declaration name: \(declaration.name) not implemented")
                     }

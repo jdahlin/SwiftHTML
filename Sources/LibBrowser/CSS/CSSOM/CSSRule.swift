@@ -44,12 +44,18 @@
 // };
 
 extension CSSOM {
-    class CSSRule {}
+    class CSSRule {
+        var parentStyleSheet: CSSOM.CSSStyleSheet?
 
-    static func cssRuleFromRaw(rawRule: CSS.Rule) -> CSSRule {
+        init(parentStyleSheet: CSSOM.CSSStyleSheet) {
+            self.parentStyleSheet = parentStyleSheet
+        }
+    }
+
+    static func cssRuleFromRaw(rawRule: CSS.Rule, parentStyleSheet: CSSOM.CSSStyleSheet) -> CSSRule {
         switch rawRule {
         case let .qualified(qualifiedRule):
-            CSSStyleRule(qualifiedRule: qualifiedRule)
+            CSSStyleRule(qualifiedRule: qualifiedRule, parentStyleSheet: parentStyleSheet)
         default:
             DIE("not implemented: \(rawRule)")
         }

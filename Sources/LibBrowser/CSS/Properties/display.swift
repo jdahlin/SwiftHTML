@@ -1,147 +1,163 @@
 extension CSS {
-    // https://drafts.csswg.org/css-display/#the-display-properties
-    enum Display: CustomStringConvertible, EnumStringInit {
+    // 2.1. Outer Display Roles for Flow Layout: the block, inline, and run-in keywords
+    // https://drafts.csswg.org/css-display/#outer-role
+    enum OuterDisplayType: CustomStringConvertible, EnumStringInit {
         case block
         case inline
         case runIn
+
+        init?(value: String) {
+            switch value {
+            case "block":
+                self = .block
+            case "inline":
+                self = .inline
+            case "run-in":
+                self = .runIn
+            default:
+                return nil
+            }
+        }
+
+        var description: String {
+            switch self {
+            case .block:
+                "block"
+            case .inline:
+                "inline"
+            case .runIn:
+                "run-in"
+            }
+        }
+    }
+
+    // 2.2. Inner Display Layout Models: the flow, flow-root, table, flex, grid, and ruby keywords
+    // https://drafts.csswg.org/css-display/#inner-model
+    enum InnerDisplayType: CustomStringConvertible, EnumStringInit {
         case flow
         case flowRoot
         case table
         case flex
         case grid
         case ruby
-        case listItem
-        case listItemBlock
-        case listItemInline
-        case listItemInlineBlock
-        case tableRowGroup
-        case tableHeaderGroup
-        case tableFooterGroup
-        case tableRow
-        case tableCell
-        case tableColumnGroup
-        case tableColumn
-        case tableCaption
-        case rubyBase
-        case rubyText
-        case rubyBaseContainer
-        case rubyTextContainer
-        case contents
-        case none
-        case inlineBlock
-        case inlineTable
-        case inlineFlex
-        case inlineGrid
-        init(value: String) {
-            switch value {
-            case "block": self = .block
-            case "inline": self = .inline
-            case "run-in": self = .runIn
-            case "flow": self = .flow
-            case "flow-root": self = .flowRoot
-            case "table": self = .table
-            case "flex": self = .flex
-            case "grid": self = .grid
-            case "ruby": self = .ruby
-            case "list-item": self = .listItem
-            case "list-item-block": self = .listItemBlock
-            case "list-item-inline": self = .listItemInline
-            case "list-item-inline-block": self = .listItemInlineBlock
-            case "table-row-group": self = .tableRowGroup
-            case "table-header-group": self = .tableHeaderGroup
-            case "table-footer-group": self = .tableFooterGroup
-            case "table-row": self = .tableRow
-            case "table-cell": self = .tableCell
-            case "table-column-group": self = .tableColumnGroup
-            case "table-column": self = .tableColumn
-            case "table-caption": self = .tableCaption
-            case "ruby-base": self = .rubyBase
-            case "ruby-text": self = .rubyText
-            case "ruby-base-container": self = .rubyBaseContainer
-            case "ruby-text-container": self = .rubyTextContainer
-            case "contents": self = .contents
-            case "none": self = .none
-            case "inline-block": self = .inlineBlock
-            case "inline-table": self = .inlineTable
-            case "inline-flex": self = .inlineFlex
-            case "inline-grid": self = .inlineGrid
-            default:
-                self = .inline // Default value
-            }
-        }
 
-        static func fromString(value: String) -> Self {
+        init?(value: String) {
             switch value {
-            case "block": .block
-            case "inline": .inline
-            case "run-in": .runIn
-            case "flow": .flow
-            case "flow-root": .flowRoot
-            case "table": .table
-            case "flex": .flex
-            case "grid": .grid
-            case "ruby": .ruby
-            case "list-item": .listItem
-            case "list-item-block": .listItemBlock
-            case "list-item-inline": .listItemInline
-            case "list-item-inline-block": .listItemInlineBlock
-            case "table-row-group": .tableRowGroup
-            case "table-header-group": .tableHeaderGroup
-            case "table-footer-group": .tableFooterGroup
-            case "table-row": .tableRow
-            case "table-cell": .tableCell
-            case "table-column-group": .tableColumnGroup
-            case "table-column": .tableColumn
-            case "table-caption": .tableCaption
-            case "ruby-base": .rubyBase
-            case "ruby-text": .rubyText
-            case "ruby-base-container": .rubyBaseContainer
-            case "ruby-text-container": .rubyTextContainer
-            case "contents": .contents
-            case "none": .none
-            case "inline-block": .inlineBlock
-            case "inline-table": .inlineTable
-            case "inline-flex": .inlineFlex
-            case "inline-grid": .inlineGrid
+            case "flow":
+                self = .flow
+            case "flow-root":
+                self = .flowRoot
+            case "table":
+                self = .table
+            case "flex":
+                self = .flex
+            case "grid":
+                self = .grid
+            case "ruby":
+                self = .ruby
             default:
-                .inline // Default value
+                return nil
             }
         }
 
         var description: String {
             switch self {
-            case .block: "block"
-            case .inline: "inline"
-            case .runIn: "run-in"
-            case .flow: "flow"
-            case .flowRoot: "flow-root"
-            case .table: "table"
-            case .flex: "flex"
-            case .grid: "grid"
-            case .ruby: "ruby"
-            case .listItem: "list-item"
-            case .listItemBlock: "list-item-block"
-            case .listItemInline: "list-item-inline"
-            case .listItemInlineBlock: "list-item-inline-block"
-            case .tableRowGroup: "table-row-group"
-            case .tableHeaderGroup: "table-header-group"
-            case .tableFooterGroup: "table-footer-group"
-            case .tableRow: "table-row"
-            case .tableCell: "table-cell"
-            case .tableColumnGroup: "table-column-group"
-            case .tableColumn: "table-column"
-            case .tableCaption: "table-caption"
-            case .rubyBase: "ruby-base"
-            case .rubyText: "ruby-text"
-            case .rubyBaseContainer: "ruby-base-container"
-            case .rubyTextContainer: "ruby-text-container"
-            case .contents: "contents"
-            case .none: "none"
-            case .inlineBlock: "inline-block"
-            case .inlineTable: "inline-table"
-            case .inlineFlex: "inline-flex"
-            case .inlineGrid: "inline-grid"
+            case .flow:
+                "flow"
+            case .flowRoot:
+                "flow-root"
+            case .table:
+                "table"
+            case .flex:
+                "flex"
+            case .grid:
+                "grid"
+            case .ruby:
+                "ruby"
             }
         }
+    }
+
+    struct Display: CustomStringConvertible {
+        var outer: OuterDisplayType?
+        var inner: InnerDisplayType?
+        var markerBox = false
+
+        var description: String {
+            var result = ""
+            if let outer {
+                result += "\(outer)"
+            }
+            if let inner {
+                if !result.isEmpty {
+                    result += " "
+                }
+                result += "\(inner)"
+            }
+            if markerBox {
+                if !result.isEmpty {
+                    result += " "
+                }
+                result += "marker"
+            }
+            return result
+        }
+    }
+}
+
+extension CSS.StyleProperties {
+    func parseDisplay(context: CSS.ParseContext) {
+        let idents = context.parseIndentArray()
+        if idents.isEmpty {
+            return
+        }
+        let value: CSS.StyleValue
+        if let keyword = parseGlobalKeywords(idents[0]) {
+            value = keyword
+        } else {
+            switch idents.count {
+            case 1 where idents[0] == "none" || idents[0] == "contents":
+                value = .display(CSS.Display(outer: nil, inner: nil))
+            case 1 where idents[0] == "block":
+                value = .display(CSS.Display(outer: .block, inner: .flow))
+            case 1 where idents[0] == "flow-root":
+                value = .display(CSS.Display(outer: .block, inner: .flowRoot))
+            case 1 where idents[0] == "inline":
+                value = .display(CSS.Display(outer: .inline, inner: .flow))
+            case 1 where idents[0] == "inline-block":
+                value = .display(CSS.Display(outer: .inline, inner: .flowRoot))
+            case 1 where idents[0] == "run-in":
+                value = .display(CSS.Display(outer: .runIn, inner: .flow))
+            case 1 where idents[0] == "list-item":
+                value = .display(CSS.Display(outer: .block, inner: .flow, markerBox: true))
+            case 2 where idents[0] == "inline" && idents[1] == "list-item":
+                value = .display(CSS.Display(outer: .inline, inner: .flow, markerBox: true))
+            case 1 where idents[0] == "flex":
+                value = .display(CSS.Display(outer: .block, inner: .flex))
+            case 1 where idents[0] == "inline-flex":
+                value = .display(CSS.Display(outer: .inline, inner: .flex))
+            case 1 where idents[0] == "grid":
+                value = .display(CSS.Display(outer: .block, inner: .grid))
+            case 1 where idents[0] == "inline-grid":
+                value = .display(CSS.Display(outer: .inline, inner: .grid))
+            case 1 where idents[0] == "ruby":
+                value = .display(CSS.Display(outer: .block, inner: .ruby))
+            case 1 where idents[0] == "block-ruby":
+                value = .display(CSS.Display(outer: .block, inner: .ruby))
+            case 1 where idents[0] == "table":
+                value = .display(CSS.Display(outer: .block, inner: .table))
+            case 2:
+                if let outer = CSS.OuterDisplayType(value: idents[0]),
+                   let inner = CSS.InnerDisplayType(value: idents[1])
+                {
+                    value = .display(CSS.Display(outer: outer, inner: inner))
+                } else {
+                    return
+                }
+            default:
+                return
+            }
+        }
+        display.value = value
     }
 }
