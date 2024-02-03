@@ -1,13 +1,30 @@
 extension CSS {
+    enum PropertyID {
+        case all
+        case display
+        case fontSize
+        case lineHeight
+        case margin
+        case marginTop
+        case marginRight
+        case marginBottom
+        case marginLeft
+        case padding
+        case paddingTop
+        case paddingRight
+        case paddingBottom
+        case paddingLeft
+    }
+
     struct StyleProperty: CustomStringConvertible {
-        var name: String
+        var id: PropertyID
         var important: Bool = false
         var value: StyleValue?
         var initial: StyleValue
         var inherited = false
 
-        init(name: String, important: Bool = false, initial: StyleValue, inherited: Bool = false) {
-            self.name = name
+        init(id: PropertyID, important: Bool = false, initial: StyleValue, inherited: Bool = false) {
+            self.id = id
             self.important = important
             self.initial = initial
             self.inherited = inherited
@@ -15,9 +32,9 @@ extension CSS {
 
         var description: String {
             if let value {
-                return "\(name): \(value)\(important ? " !important" : "")"
+                return "\(id): \(value)\(important ? " !important" : "")"
             }
-            return "\(name): <not set>\(important ? " !important" : "")"
+            return "\(id): <not set>\(important ? " !important" : "")"
         }
 
         func hasValue() -> Bool {

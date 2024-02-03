@@ -42,7 +42,7 @@ extension CSS {
         ) {
             if property.isRevert() {}
             if let value = property.value {
-                style.setProperty(name: property.name, value: value)
+                style.setProperty(id: property.id, value: value)
             }
         }
 
@@ -59,7 +59,7 @@ extension CSS {
                         continue
                     }
 
-                    if property.name == "all" {
+                    if property.id == .all {
                         print("\(#function): FIXME: set all")
                     }
 
@@ -172,11 +172,11 @@ extension CSS {
             let pixelSize = CTFontGetSize(font)
 
             style.setProperty(
-                name: "font-size",
+                id: .fontSize,
                 value: .fontSize(.length(CSS.Length(number: pixelSize, unit: "px")))
             )
             style.setProperty(
-                name: "line-height",
+                id: .lineHeight,
                 value: .lineHeight(.normal)
             )
 
@@ -222,7 +222,7 @@ extension CSS {
                 guard let value = property.value else { continue }
                 let newValue = value.absolutized(fontMeasurements: fontMeasurements)
                 // print("absolutizeValues: \(property.name) \(value) -> \(newValue)")
-                style.setProperty(name: property.name, value: newValue)
+                style.setProperty(id: property.id, value: newValue)
             }
         }
 
@@ -243,7 +243,7 @@ extension CSS {
             if let parentElement = elementToInheritStyleFrom(element: element),
                let parentComputedCSSValues = parentElement.computedCSSValues
             {
-                return parentComputedCSSValues.getProperty(name: property.name)?.value
+                return parentComputedCSSValues.getProperty(id: property.id)?.value
             }
             return property.initial
         }
@@ -252,24 +252,24 @@ extension CSS {
             if !property.hasValue() {
                 if property.inherited {
                     let value = getInheritValue(style: style, element: element, property: property)
-                    style.setProperty(name: property.name, value: value)
+                    style.setProperty(id: property.id, value: value)
                 } else {
-                    style.setProperty(name: property.name, value: property.initial)
+                    style.setProperty(id: property.id, value: property.initial)
                 }
                 return
             }
 
             switch property.value {
             case .initial:
-                style.setProperty(name: property.name, value: property.initial)
+                style.setProperty(id: property.id, value: property.initial)
             case .inherit:
                 let value = getInheritValue(style: style, element: element, property: property)
-                style.setProperty(name: property.name, value: value)
+                style.setProperty(id: property.id, value: value)
             case .unset where property.inherited:
                 let value = getInheritValue(style: style, element: element, property: property)
-                style.setProperty(name: property.name, value: value)
+                style.setProperty(id: property.id, value: value)
             case .unset where !property.inherited:
-                style.setProperty(name: property.name, value: property.initial)
+                style.setProperty(id: property.id, value: property.initial)
             default:
                 break
             }
