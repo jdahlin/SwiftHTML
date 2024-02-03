@@ -165,12 +165,12 @@ extension CSS {
 }
 
 extension CSS.StyleProperties {
-    func parseFontSize(context: CSS.ParseContext) {
+    func parseFontSize(context: CSS.ParseContext) -> CSS.StyleValue? {
         let declaration = context.parseDeclaration()
         guard declaration.count == 1 else {
-            return
+            return nil
         }
-        var value: CSS.StyleValue
+        var value: CSS.StyleValue? = nil
         if declaration.count == 1, case let .token(.ident(ident)) = declaration[0] {
             switch ident {
             case "xx-small":
@@ -203,11 +203,9 @@ extension CSS.StyleProperties {
                 } else if ident.hasSuffix("px") {
                     let number = Double(ident.dropLast(2))!
                     value = .fontSize(.length(CSS.Length(number: number, unit: "px")))
-                } else {
-                    return
                 }
             }
-            fontSize.value = value
         }
+        return value
     }
 }

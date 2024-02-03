@@ -77,3 +77,16 @@ extension CSS {
         }
     }
 }
+
+extension CSS.StyleProperties {
+    func parseLengthPercentageOrAuto(context: CSS.ParseContext) -> CSS.StyleValue? {
+        let declaration = context.parseDeclaration()
+        guard declaration.count == 1 else {
+            return nil
+        }
+        if let value = CSS.parseLengthOrPercentageOrAuto(value: declaration[0]) {
+            return .lengthPercentageOrAuto(value)
+        }
+        return nil
+    }
+}

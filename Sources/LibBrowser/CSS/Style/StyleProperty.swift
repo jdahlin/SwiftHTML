@@ -1,8 +1,14 @@
 extension CSS {
     enum PropertyID {
         case all
+        case backgroundColor
+        case color
         case display
         case fontSize
+        case insetBlockEnd
+        case insetBlockStart
+        case insetInlineEnd
+        case insetInlineStart
         case lineHeight
         case margin
         case marginTop
@@ -14,12 +20,18 @@ extension CSS {
         case paddingRight
         case paddingBottom
         case paddingLeft
+        case top
+        case right
+        case bottom
+        case left
     }
 
     struct StyleProperty: CustomStringConvertible {
         var id: PropertyID
         var important: Bool = false
         var value: StyleValue?
+
+        // FIXME: These two should be moved out of the struct to save space
         var initial: StyleValue
         var inherited = false
 

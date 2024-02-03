@@ -18,29 +18,17 @@ extension CSS {
             }
         }
     }
+}
 
-    #if false
-        static func parseColor(context: ParseContext) -> CSS.Property<CSS.Color> {
-            let result: ParseResult<CSS.Color> = context.parseGlobal()
-            if let property = result.property {
-                return property
-            }
-            let declaration = result.declaration
-
-            let value: PropertyValue<Color> = if declaration.count == 1,
-                                                 case let .token(.ident(name)) = declaration[0]
-            {
-                .set(CSS.Color.named(CSS.Color.Named(string: name)))
-            } else {
-                .initial
-            }
-
-            return CSS.Property(
-                name: context.name,
-                value: value,
-                important: declaration.important,
-                caseSensitive: true
-            )
+extension CSS.StyleProperties {
+    func parseColor(context: CSS.ParseContext) -> CSS.StyleValue? {
+        let declaration = context.parseDeclaration()
+        guard declaration.count == 1 else {
+            return nil
         }
-    #endif
+        if case let .token(.ident(ident)) = declaration[0] {
+            return .color(CSS.Color.named(CSS.Color.Named(string: ident)))
+        }
+        return nil
+    }
 }
