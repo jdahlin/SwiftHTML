@@ -4,14 +4,14 @@ extension CSS {
         case percentage(Number)
 
         static func zero() -> LengthOrPercentage {
-            .length(.absolute(.px(.Integer(0))))
+            .length(.absolute(.px(0)))
         }
 
         init(value: String) {
             if value.hasSuffix("%") {
                 self = .percentage(.Number(Double(value.dropLast())!))
             } else if value.hasSuffix("px") {
-                let number = Number(Double(value.dropLast(2))!)
+                let number = Double(value.dropLast(2))!
                 self = .length(Length(number: number, unit: "px"))
             } else {
                 DIE("length-or-percentage: \(value) not implemented")
@@ -20,8 +20,8 @@ extension CSS {
 
         var description: String {
             switch self {
-            case let .length(dimension):
-                "\(dimension)"
+            case let .length(length):
+                "\(length)"
             case let .percentage(number):
                 "\(number)%"
             }
@@ -34,7 +34,7 @@ extension CSS {
         case auto
 
         static func zero() -> LengthOrPercentageOrAuto {
-            .length(.absolute(.px(.Integer(0))))
+            .length(.absolute(.px(0)))
         }
 
         var description: String {
@@ -54,9 +54,9 @@ extension CSS {
         case let .token(.percentage(number: number)):
             .percentage(number)
         case let .token(.number(number)):
-            .length(Length(number: number, unit: "px"))
+            .length(Length(number: number.toDouble(), unit: "px"))
         case let .token(.dimension(number: number, unit: unit)):
-            .length(Length(number: number, unit: unit))
+            .length(Length(number: number.toDouble(), unit: unit))
         default:
             nil
         }
@@ -69,9 +69,9 @@ extension CSS {
         case let .token(.percentage(number: number)):
             .percentage(number)
         case let .token(.number(number)):
-            .length(Length(number: number, unit: "px"))
+            .length(Length(number: number.toDouble(), unit: "px"))
         case let .token(.dimension(number: number, unit: unit)):
-            .length(Length(number: number, unit: unit))
+            .length(Length(number: number.toDouble(), unit: unit))
         default:
             nil
         }

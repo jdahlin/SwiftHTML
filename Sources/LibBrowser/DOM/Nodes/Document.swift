@@ -125,6 +125,8 @@ extension DOM {
 
         var navigable: Navigable? = .init()
 
+        var layoutRoot: Layout.ViewPort?
+
         init() {
             super.init()
             // A document’s node document is itself.
@@ -326,6 +328,14 @@ extension DOM {
             }
 
             return node
+        }
+
+        func updateLayout() {
+            updateStyle()
+            if layoutRoot == nil {
+                let treeBuilder = Layout.TreeBuilder()
+                layoutRoot = treeBuilder.build(domNode: self)
+            }
         }
     }
 }

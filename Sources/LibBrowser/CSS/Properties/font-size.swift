@@ -107,7 +107,7 @@ extension CSS {
             if value.hasSuffix("%") {
                 self = .percent(.Number(Double(value.dropLast())!))
             } else if value.hasSuffix("px") {
-                let number = Number(Double(value.dropLast(2))!)
+                let number = Double(value.dropLast(2))!
                 self = .length(Length(number: number, unit: "px"))
             } else if value == "math" {
                 self = .math
@@ -201,7 +201,7 @@ extension CSS.StyleProperties {
                 } else if ident.hasSuffix("%") {
                     value = .fontSize(.percent(.Number(Double(ident.dropLast())!)))
                 } else if ident.hasSuffix("px") {
-                    let number = CSS.Number(Double(ident.dropLast(2))!)
+                    let number = Double(ident.dropLast(2))!
                     value = .fontSize(.length(CSS.Length(number: number, unit: "px")))
                 } else {
                     return

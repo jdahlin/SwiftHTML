@@ -146,7 +146,11 @@ extension DOM {
         }
 
         func recomputeStyle() {
-            ownerDocument!.styleComputer.computeStyle(element: self)
+            assert(parentNode != nil, "\(#function): parent node is nil")
+
+            let newComputedCSSValues = ownerDocument!.styleComputer.computeStyle(element: self)
+            FIXME("invalidation of style")
+            computedCSSValues = newComputedCSSValues
         }
 
         func parentOrShadowHostElement() -> Element? {

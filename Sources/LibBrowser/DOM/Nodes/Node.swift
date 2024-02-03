@@ -240,5 +240,24 @@ extension DOM {
         func removeChild(_: Node) -> Node {
             DIE("not implemented")
         }
+
+        func updateStyleRecursively() {
+            FIXME("Not implemented")
+            if case let element as Element = self {
+                element.recomputeStyle()
+            }
+
+            for child in childNodes {
+                child.updateStyleRecursively()
+            }
+        }
+
+        func updateStyle() {
+            // FIXME: invalidation: needsFullStyleUpdate
+            // FIXME: invalidation: needsStyleUpdate
+            // FIXME: invalidation: childNeedsStyleUpdate
+            // FIXME: batch multiple requests together
+            updateStyleRecursively()
+        }
     }
 }

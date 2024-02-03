@@ -6,235 +6,192 @@ extension CSS {
         // https://www.w3.org/TR/css-values-4/#font-relative-lengths
 
         // Equal to the computed value of the font-size property of the element on which it is used.
-        case em(Number)
+        case em(Double)
 
         // Equal to the computed value of the em unit on the root element.
-        case rem(Number)
+        case rem(Double)
 
         // Equal to the used x-height of the first available font
-        case ex(Number)
+        case ex(Double)
 
         // Equal to the value of the ex unit on the root element.
-        case rex(Number)
+        case rex(Double)
 
         // Equal to the used cap-height of the first available font
-        case cap(Number)
+        case cap(Double)
 
         // Equal to the value of the cap unit on the root element.
-        case rcap(Number)
+        case rcap(Double)
 
         // Represents the typical advance measure of European alphanumeric
         // characters, and measured as the used advance measure of the “0”
         // (ZERO, U+0030) glyph in the font used to render it.
-        case ch(Number)
+        case ch(Double)
 
         // Equal to the value of the ch unit on the root element.
-        case rch(Number)
+        case rch(Double)
 
         // Represents the typical advance measure of CJK letters, and measured
         // as the used advance measure of the “水” (CJK water ideograph, U+6C34)
         // glyph found in the font used to render it.
-        case ic(Number)
+        case ic(Double)
 
         // Equal to the value of the ic unit on the root element.
-        case ric(Number)
+        case ric(Double)
 
         // Equal to the computed value of the line-height property of the
         // element on which it is used, converting normal to an absolute length
         // by using only the metrics of the first available font.
-        case lh(Number)
+        case lh(Double)
 
         // Equal to the value of the lh unit on the root element.
-        case rlh(Number)
+        case rlh(Double)
 
         // 6.1.2 Viewport-percentage Lengths
         // https://www.w3.org/TR/css-values-4/#viewport-relative-lengths
         // https://www.w3.org/TR/css-values-4/#viewport-variants
 
         // Equal to 1% of the width of the viewport size
-        case vw(Number)
+        case vw(Double)
 
         // Equal to 1% of the width of the small viewport size
-        case svw(Number)
+        case svw(Double)
 
         // Equal to 1% of the width of the large viewport size
-        case lvw(Number)
+        case lvw(Double)
 
         // Equal to 1% of the width of the dynamic viewport size
-        case dvw(Number)
+        case dvw(Double)
 
         // Equal to 1% of the height of the viewport size
-        case vh(Number)
+        case vh(Double)
 
         // Equal to 1% of the height of the small viewport size
-        case svh(Number)
+        case svh(Double)
 
         // Equal to 1% of the height of the large viewport size
-        case lvh(Number)
+        case lvh(Double)
 
         // Equal to 1% of the height of the dynamic viewport size
-        case dvh(Number)
+        case dvh(Double)
 
         // Equal to 1% of the size of the viewport size in the box’s inline
         // axis.
-        case vi(Number)
+        case vi(Double)
 
         // Equal to 1% of the size of the small viewport size in the box’s
         // inline axis.
-        case svi(Number)
+        case svi(Double)
 
         // Equal to 1% of the size of the large viewport size in the box’s
         // inline axis.
-        case lvi(Number)
+        case lvi(Double)
 
         // Equal to 1% of the size of the dynamic viewport size in the box’s
         // inline axis.
-        case dvi(Number)
+        case dvi(Double)
 
         // Equal to 1% of the size of the initial containing block of the
         // viewport size in the box’s block axis.
-        case vb(Number)
+        case vb(Double)
 
         // Equal to 1% of the size of the initial containing block of the
         // small viewport size in the box’s block axis.
-        case svb(Number)
+        case svb(Double)
 
         // Equal to 1% of the size of the initial containing block of the
         // large viewport size in the box’s block axis.
-        case lvb(Number)
+        case lvb(Double)
 
         // Equal to 1% of the size of the initial containing block of the
         // dynamic viewport size in the box’s block axis.
-        case dvb(Number)
+        case dvb(Double)
 
         // Equal to the smaller of vw and vh
-        case vmin(Number)
+        case vmin(Double)
 
         // Equal to the smaller of svw and svh
-        case svmin(Number)
+        case svmin(Double)
 
         // Equal to the smaller of lvw and lvh
-        case lvmin(Number)
+        case lvmin(Double)
 
         // Equal to the smaller of dvw and dvh
-        case dvmin(Number)
+        case dvmin(Double)
 
         // Equal to the larger of vw and vh
-        case vmax(Number)
+        case vmax(Double)
 
         // Equal to the larger of svw and svh
-        case svmax(Number)
+        case svmax(Double)
 
         // Equal to the larger of lvw and lvh
-        case lvmax(Number)
+        case lvmax(Double)
 
         // Equal to the larger of dvw and dvh
-        case dvmax(Number)
+        case dvmax(Double)
 
         var description: String {
             switch self {
-            case .em:
-                "em"
-            case .rem:
-                "rem"
-            case .ex:
-                "ex"
-            case .rex:
-                "rex"
-            case .cap:
-                "cap"
-            case .rcap:
-                "rcap"
-            case .ch:
-                "ch"
-            case .rch:
-                "rch"
-            case .ic:
-                "ic"
-            case .ric:
-                "ric"
-            case .lh:
-                "lh"
-            case .rlh:
-                "rlh"
-            case .vw:
-                "vw"
-            case .svw:
-                "svw"
-            case .lvw:
-                "lvw"
-            case .dvw:
-                "dvw"
-            case .vh:
-                "vh"
-            case .svh:
-                "svh"
-            case .lvh:
-                "lvh"
-            case .dvh:
-                "dvh"
-            case .vi:
-                "vi"
-            case .svi:
-                "svi"
-            case .lvi:
-                "lvi"
-            case .dvi:
-                "dvi"
-            case .vb:
-                "vb"
-            case .svb:
-                "svb"
-            case .lvb:
-                "lvb"
-            case .dvb:
-                "dvb"
-            case .vmin:
-                "vmin"
-            case .svmin:
-                "svmin"
-            case .lvmin:
-                "lvmin"
-            case .dvmin:
-                "dvmin"
-            case .vmax:
-                "vmax"
-            case .svmax:
-                "svmax"
-            case .lvmax:
-                "lvmax"
-            case .dvmax:
-                "dvmax"
+            case let .em(value): "\(value)em"
+            case let .rem(value): "\(value)rem"
+            case let .ex(value): "\(value)ex"
+            case let .rex(value): "\(value)rex"
+            case let .cap(value): "\(value)cap"
+            case let .rcap(value): "\(value)rcap"
+            case let .ch(value): "\(value)ch"
+            case let .rch(value): "\(value)rch"
+            case let .ic(value): "\(value)ic"
+            case let .ric(value): "\(value)ric"
+            case let .lh(value): "\(value)lh"
+            case let .rlh(value): "\(value)rlh"
+            case let .vw(value): "\(value)vw"
+            case let .svw(value): "\(value)svw"
+            case let .lvw(value): "\(value)lvw"
+            case let .dvw(value): "\(value)dvw"
+            case let .vh(value): "\(value)vh"
+            case let .svh(value): "\(value)svh"
+            case let .lvh(value): "\(value)lvh"
+            case let .dvh(value): "\(value)dvh"
+            case let .vi(value): "\(value)vi"
+            case let .svi(value): "\(value)svi"
+            case let .lvi(value): "\(value)lvi"
+            case let .dvi(value): "\(value)dvi"
+            case let .vb(value): "\(value)vb"
+            case let .svb(value): "\(value)svb"
+            case let .lvb(value): "\(value)lvb"
+            case let .dvb(value): "\(value)dvb"
+            case let .vmin(value): "\(value)vmin"
+            case let .svmin(value): "\(value)svmin"
+            case let .lvmin(value): "\(value)lvmin"
+            case let .dvmin(value): "\(value)dvmin"
+            case let .vmax(value): "\(value)vmax"
+            case let .svmax(value): "\(value)svmax"
+            case let .lvmax(value): "\(value)lvmax"
+            case let .dvmax(value): "\(value)dvmax"
             }
         }
     }
 
     // https://www.w3.org/TR/css-values-4/#absolute-lengths
     enum AbsoluteLength: CustomStringConvertible {
-        case px(Number)
-        case cm(Number)
-        case mm(Number)
-        case Q(Number)
-        case inch(Number)
-        case pc(Number)
-        case pt(Number)
+        case px(Double)
+        case cm(Double)
+        case mm(Double)
+        case Q(Double)
+        case inch(Double)
+        case pc(Double)
+        case pt(Double)
 
         var description: String {
             switch self {
-            case let .px(number):
-                "\(number)px"
-            case let .cm(number):
-                "\(number)cm"
-            case let .mm(number):
-                "\(number)mm"
-            case let .Q(number):
-                "\(number)Q"
-            case let .inch(number):
-                "\(number)in"
-            case let .pc(number):
-                "\(number)pc"
-            case let .pt(number):
-                "\(number)pt"
+            case let .px(number): "\(number)px"
+            case let .cm(number): "\(number)cm"
+            case let .mm(number): "\(number)mm"
+            case let .Q(number): "\(number)Q"
+            case let .inch(number): "\(number)in"
+            case let .pc(number): "\(number)pc"
+            case let .pt(number): "\(number)pt"
             }
         }
     }
@@ -243,95 +200,51 @@ extension CSS {
         case relative(RelativeLength)
         case absolute(AbsoluteLength)
 
-        init(number: Number, unit: String) {
-            switch unit {
-            case "px":
-                self = .absolute(.px(number))
-            case "cm":
-                self = .absolute(.cm(number))
-            case "mm":
-                self = .absolute(.mm(number))
-            case "Q":
-                self = .absolute(.Q(number))
-            case "in":
-                self = .absolute(.inch(number))
-            case "pc":
-                self = .absolute(.pc(number))
-            case "pt":
-                self = .absolute(.pt(number))
-            case "em":
-                self = .relative(.em(number))
-            case "rem":
-                self = .relative(.rem(number))
-            case "ex":
-                self = .relative(.ex(number))
-            case "rex":
-                self = .relative(.rex(number))
-            case "cap":
-                self = .relative(.cap(number))
-            case "rcap":
-                self = .relative(.rcap(number))
-            case "ch":
-                self = .relative(.ch(number))
-            case "rch":
-                self = .relative(.rch(number))
-            case "ic":
-                self = .relative(.ic(number))
-            case "ric":
-                self = .relative(.ric(number))
-            case "lh":
-                self = .relative(.lh(number))
-            case "rlh":
-                self = .relative(.rlh(number))
-            case "vw":
-                self = .relative(.vw(number))
-            case "svw":
-                self = .relative(.svw(number))
-            case "lvw":
-                self = .relative(.lvw(number))
-            case "dvw":
-                self = .relative(.dvw(number))
-            case "vh":
-                self = .relative(.vh(number))
-            case "svh":
-                self = .relative(.svh(number))
-            case "lvh":
-                self = .relative(.lvh(number))
-            case "dvh":
-                self = .relative(.dvh(number))
-            case "vi":
-                self = .relative(.vi(number))
-            case "svi":
-                self = .relative(.svi(number))
-            case "lvi":
-                self = .relative(.lvi(number))
-            case "dvi":
-                self = .relative(.dvi(number))
-            case "vb":
-                self = .relative(.vb(number))
-            case "svb":
-                self = .relative(.svb(number))
-            case "lvb":
-                self = .relative(.lvb(number))
-            case "dvb":
-                self = .relative(.dvb(number))
-            case "vmin":
-                self = .relative(.vmin(number))
-            case "svmin":
-                self = .relative(.svmin(number))
-            case "lvmin":
-                self = .relative(.lvmin(number))
-            case "dvmin":
-                self = .relative(.dvmin(number))
-            case "vmax":
-                self = .relative(.vmax(number))
-            case "svmax":
-                self = .relative(.svmax(number))
-            case "lvmax":
-                self = .relative(.lvmax(number))
-            case "dvmax":
-                self = .relative(.dvmax(number))
-
+        init(number: Double, unit: String) {
+            self = switch unit {
+            case "px": .absolute(.px(number))
+            case "cm": .absolute(.cm(number))
+            case "mm": .absolute(.mm(number))
+            case "Q": .absolute(.Q(number))
+            case "in": .absolute(.inch(number))
+            case "pc": .absolute(.pc(number))
+            case "pt": .absolute(.pt(number))
+            case "em": .relative(.em(number))
+            case "rem": .relative(.rem(number))
+            case "ex": .relative(.ex(number))
+            case "rex": .relative(.rex(number))
+            case "cap": .relative(.cap(number))
+            case "rcap": .relative(.rcap(number))
+            case "ch": .relative(.ch(number))
+            case "rch": .relative(.rch(number))
+            case "ic": .relative(.ic(number))
+            case "ric": .relative(.ric(number))
+            case "lh": .relative(.lh(number))
+            case "rlh": .relative(.rlh(number))
+            case "vw": .relative(.vw(number))
+            case "svw": .relative(.svw(number))
+            case "lvw": .relative(.lvw(number))
+            case "dvw": .relative(.dvw(number))
+            case "vh": .relative(.vh(number))
+            case "svh": .relative(.svh(number))
+            case "lvh": .relative(.lvh(number))
+            case "dvh": .relative(.dvh(number))
+            case "vi": .relative(.vi(number))
+            case "svi": .relative(.svi(number))
+            case "lvi": .relative(.lvi(number))
+            case "dvi": .relative(.dvi(number))
+            case "vb": .relative(.vb(number))
+            case "svb": .relative(.svb(number))
+            case "lvb": .relative(.lvb(number))
+            case "dvb": .relative(.dvb(number))
+            case "vmin": .relative(.vmin(number))
+            case "svmin": .relative(.svmin(number))
+            case "lvmin": .relative(.lvmin(number))
+            case "dvmin": .relative(.dvmin(number))
+            case "vmax": .relative(.vmax(number))
+            case "svmax": .relative(.svmax(number))
+            case "lvmax": .relative(.lvmax(number))
+            case "dvmax": .relative(.dvmax(number))
             default:
                 DIE("length: \(unit) not implemented")
             }
@@ -343,6 +256,17 @@ extension CSS {
                 relative.description
             case let .absolute(absolute):
                 absolute.description
+            }
+        }
+
+        func absolutized(fontMeasurements: FontMeasurements) -> Length {
+            switch self {
+            case .absolute(.px):
+                return self
+            default:
+                let pixels = toPx(fontMeasurements: fontMeasurements)
+                let value = pixels.toDouble()
+                return .absolute(.px(value))
             }
         }
 
@@ -358,7 +282,7 @@ extension CSS {
                 value * inchPixels
             case let .absolute(.px(value)):
                 // 1px = 1/96th of 1in
-                value.toDouble()
+                value
             case let .absolute(.pt(value)):
                 // 1pt = 1/72th of 1in
                 value * ((1.0 / 72.0) * inchPixels)
@@ -377,66 +301,68 @@ extension CSS {
             return CSS.Pixels.nearestValueFor(value)
         }
 
-        func toPx(viewPortRect: CSS.PixelRect, fontMetrics: FontMetrics, rootFontMetrics: FontMetrics) -> CSS.Pixels {
+        func toPx(fontMeasurements: FontMeasurements) -> CSS.Pixels {
             switch self {
             case .absolute:
                 absoluteLengthToPx()
             case let .relative(.em(value)):
-                CSS.Pixels.nearestValueFor(value * fontMetrics.fontSize)
+                CSS.Pixels.nearestValueFor(value * fontMeasurements.fontMetrics.fontSize)
             case let .relative(.rem(value)):
-                CSS.Pixels.nearestValueFor(value * rootFontMetrics.fontSize)
+                CSS.Pixels.nearestValueFor(value * fontMeasurements.rootFontMetrics.fontSize)
             case let .relative(.ex(value)):
-                CSS.Pixels.nearestValueFor(value * fontMetrics.xHeight)
+                CSS.Pixels.nearestValueFor(value * fontMeasurements.fontMetrics.xHeight)
             case let .relative(.rex(value)):
-                CSS.Pixels.nearestValueFor(value * rootFontMetrics.xHeight)
+                CSS.Pixels.nearestValueFor(value * fontMeasurements.rootFontMetrics.xHeight)
             case let .relative(.cap(value)):
-                CSS.Pixels.nearestValueFor(value * fontMetrics.capHeight)
+                CSS.Pixels.nearestValueFor(value * fontMeasurements.fontMetrics.capHeight)
             case let .relative(.rcap(value)):
-                CSS.Pixels.nearestValueFor(value * rootFontMetrics.capHeight)
+                CSS.Pixels.nearestValueFor(value * fontMeasurements.rootFontMetrics.capHeight)
             case let .relative(.ch(value)):
-                CSS.Pixels.nearestValueFor(value * fontMetrics.zeroAdvance)
+                CSS.Pixels.nearestValueFor(value * fontMeasurements.fontMetrics.zeroAdvance)
             case let .relative(.rch(value)):
-                CSS.Pixels.nearestValueFor(value * rootFontMetrics.zeroAdvance)
+                CSS.Pixels.nearestValueFor(value * fontMeasurements.rootFontMetrics.zeroAdvance)
             case let .relative(.ic(value)):
-                CSS.Pixels.nearestValueFor(value * fontMetrics.fontSize)
+                CSS.Pixels.nearestValueFor(value * fontMeasurements.fontMetrics.fontSize)
             case let .relative(.ric(value)):
-                CSS.Pixels.nearestValueFor(value * rootFontMetrics.fontSize)
+                CSS.Pixels.nearestValueFor(value * fontMeasurements.rootFontMetrics.fontSize)
             case let .relative(.lh(value)):
-                CSS.Pixels.nearestValueFor(value * fontMetrics.lineHeight)
+                CSS.Pixels.nearestValueFor(value * fontMeasurements.fontMetrics.lineHeight)
             case let .relative(.rlh(value)):
-                CSS.Pixels.nearestValueFor(value * rootFontMetrics.lineHeight)
+                CSS.Pixels.nearestValueFor(value * fontMeasurements.rootFontMetrics.lineHeight)
             case let .relative(.vw(value)),
                  let .relative(.svw(value)),
                  let .relative(.lvw(value)),
                  let .relative(.dvw(value)):
-                viewPortRect.width * (CSS.Pixels.nearestValueFor(value.toDouble()) / 100)
+                fontMeasurements.viewportRect.width * (CSS.Pixels.nearestValueFor(value) / 100)
             case let .relative(.vh(value)),
                  let .relative(.svh(value)),
                  let .relative(.lvh(value)),
                  let .relative(.dvh(value)):
-                viewPortRect.height * (CSS.Pixels.nearestValueFor(value.toDouble()) / 100)
+                fontMeasurements.viewportRect.height * (CSS.Pixels.nearestValueFor(value) / 100)
             case let .relative(.vi(value)),
                  let .relative(.svi(value)),
                  let .relative(.lvi(value)),
                  let .relative(.dvi(value)):
                 // FIXME: Select the width or height based on which is the inline axis.
-                viewPortRect.width * (CSS.Pixels.nearestValueFor(value.toDouble()) / 100)
+                fontMeasurements.viewportRect.width * (CSS.Pixels.nearestValueFor(value) / 100)
             case let .relative(.vb(value)),
                  let .relative(.svb(value)),
                  let .relative(.lvb(value)),
                  let .relative(.dvb(value)):
                 // FIXME: Select the width or height based on which is the block axis.
-                viewPortRect.height * (CSS.Pixels.nearestValueFor(value.toDouble()) / 100)
+                fontMeasurements.viewportRect.height * (CSS.Pixels.nearestValueFor(value) / 100)
             case let .relative(.vmin(value)),
                  let .relative(.svmin(value)),
                  let .relative(.lvmin(value)),
                  let .relative(.dvmin(value)):
-                min(viewPortRect.width, viewPortRect.height) * (CSS.Pixels.nearestValueFor(value.toDouble()) / 100)
+                min(fontMeasurements.viewportRect.width,
+                    fontMeasurements.viewportRect.height) * (CSS.Pixels.nearestValueFor(value) / 100)
             case let .relative(.vmax(value)),
                  let .relative(.svmax(value)),
                  let .relative(.lvmax(value)),
                  let .relative(.dvmax(value)):
-                max(viewPortRect.width, viewPortRect.height) * (CSS.Pixels.nearestValueFor(value.toDouble()) / 100)
+                max(fontMeasurements.viewportRect.width,
+                    fontMeasurements.viewportRect.height) * (CSS.Pixels.nearestValueFor(value) / 100)
             }
         }
     }

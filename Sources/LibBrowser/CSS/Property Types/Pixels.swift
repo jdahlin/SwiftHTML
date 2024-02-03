@@ -72,12 +72,12 @@ extension CSS {
             fromRaw(lhs.value &* rhs.value >> fractionalBits)
         }
 
-        static func * (lhs: Self, rhs: Number) -> Double {
-            Double(lhs.value) * rhs.toDouble()
+        static func * (lhs: Self, rhs: Double) -> Double {
+            Double(lhs.value) * rhs
         }
 
-        static func * (lhs: Number, rhs: Self) -> Double {
-            lhs.toDouble() * Double(rhs.value)
+        static func * (lhs: Double, rhs: Self) -> Double {
+            lhs * Double(rhs.value)
         }
 
         static func / (lhs: Self, rhs: Int) -> Self {

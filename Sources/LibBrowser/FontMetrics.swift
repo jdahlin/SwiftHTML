@@ -40,6 +40,12 @@ package struct FontMetrics {
     }
 }
 
+struct FontMeasurements {
+    var viewportRect: CSS.PixelRect
+    var fontMetrics: FontMetrics
+    var rootFontMetrics: FontMetrics
+}
+
 extension CTFont {
     static var defaultFont = CTFontCreateWithName("Helvetica" as CFString, 14.0, nil)
 

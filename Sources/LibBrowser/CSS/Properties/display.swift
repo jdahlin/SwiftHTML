@@ -83,6 +83,10 @@ extension CSS {
         var inner: InnerDisplayType?
         var markerBox = false
 
+        func isNoneOrContents() -> Bool {
+            outer == nil && inner == nil
+        }
+
         var description: String {
             var result = ""
             if let outer {

@@ -1,51 +1,27 @@
 extension CSS {
-    enum StyleValue: CustomStringConvertible {
-        case inherit
-        case initial
-        case revert
-        case unset
-        case appearance(Appearance)
-        case display(Display)
-        case fontSize(FontSize)
-        case lineHeight(LineHeight)
-        case margin(Margin)
-        case padding(Padding)
-
-        var description: String {
-            switch self {
-            case .inherit:
-                "inherit"
-            case .initial:
-                "initial"
-            case .revert:
-                "revert"
-            case .unset:
-                "unset"
-            case let .appearance(value):
-                "appearance(\(value))"
-            case let .display(value):
-                "display(\(value))"
-            case let .fontSize(value):
-                "fontSize(\(value))"
-            case let .lineHeight(value):
-                "lineHeight(\(value))"
-            case let .margin(value):
-                "margin(\(value)"
-            case let .padding(value):
-                "padding(\(value)"
-            }
-        }
-    }
-
-    struct StyleProperty {
+    struct StyleProperty: CustomStringConvertible {
         var name: String
         var important: Bool = false
-        var value: StyleValue
+        var value: StyleValue?
+        var initial: StyleValue
+        var inherited = false
 
-        init(name: String, important: Bool = false, value: StyleValue) {
+        init(name: String, important: Bool = false, initial: StyleValue, inherited: Bool = false) {
             self.name = name
             self.important = important
-            self.value = value
+            self.initial = initial
+            self.inherited = inherited
+        }
+
+        var description: String {
+            if let value {
+                return "\(name): \(value)\(important ? " !important" : "")"
+            }
+            return "\(name): <not set>\(important ? " !important" : "")"
+        }
+
+        func hasValue() -> Bool {
+            value != nil
         }
 
         func display() -> Display {

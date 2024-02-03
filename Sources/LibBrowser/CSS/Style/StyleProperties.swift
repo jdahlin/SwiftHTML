@@ -2,17 +2,17 @@ import AppKit
 
 extension CSS {
     class StyleProperties {
-        lazy var display: StyleProperty = .init(name: "display", value: .display(CSS.Display(outer: .inline, inner: .flow)))
-        lazy var fontSize: StyleProperty = .init(name: "font-size", value: .fontSize(.absolute(.medium)))
-        lazy var lineHeight: StyleProperty = .init(name: "line-height", value: .fontSize(.absolute(.medium)))
-        lazy var paddingBottom: StyleProperty = .init(name: "padding-bottom", value: .padding(.zero()))
-        lazy var paddingLeft: StyleProperty = .init(name: "padding-left", value: .padding(.zero()))
-        lazy var paddingRight: StyleProperty = .init(name: "padding-right", value: .padding(.zero()))
-        lazy var paddingTop: StyleProperty = .init(name: "padding-top", value: .padding(.zero()))
-        lazy var marginBottom: StyleProperty = .init(name: "margin-bottom", value: .margin(.zero()))
-        lazy var marginLeft: StyleProperty = .init(name: "margin-left", value: .margin(.zero()))
-        lazy var marginRight: StyleProperty = .init(name: "margin-right", value: .margin(.zero()))
-        lazy var marginTop: StyleProperty = .init(name: "margin-top", value: .margin(.zero()))
+        lazy var display: StyleProperty = .init(name: "display", initial: .display(CSS.Display(outer: .inline, inner: .flow)))
+        lazy var fontSize: StyleProperty = .init(name: "font-size", initial: .fontSize(.absolute(.medium)), inherited: true)
+        lazy var lineHeight: StyleProperty = .init(name: "line-height", initial: .fontSize(.absolute(.medium)), inherited: true)
+        lazy var paddingBottom: StyleProperty = .init(name: "padding-bottom", initial: .padding(.zero()))
+        lazy var paddingLeft: StyleProperty = .init(name: "padding-left", initial: .padding(.zero()))
+        lazy var paddingRight: StyleProperty = .init(name: "padding-right", initial: .padding(.zero()))
+        lazy var paddingTop: StyleProperty = .init(name: "padding-top", initial: .padding(.zero()))
+        lazy var marginBottom: StyleProperty = .init(name: "margin-bottom", initial: .margin(.zero()))
+        lazy var marginLeft: StyleProperty = .init(name: "margin-left", initial: .margin(.zero()))
+        lazy var marginRight: StyleProperty = .init(name: "margin-right", initial: .margin(.zero()))
+        lazy var marginTop: StyleProperty = .init(name: "margin-top", initial: .margin(.zero()))
 
         var computedFont: CTFont?
 
@@ -59,33 +59,43 @@ extension CSS {
             }
         }
 
-        func setProperty(property: StyleProperty) {
-            switch property.name {
+        func setProperty(name: String, value: StyleValue?) {
+            switch name {
             case "display":
-                display = property
+                display.value = value
             case "font-size":
-                fontSize = property
+                fontSize.value = value
             case "line-height":
-                lineHeight = property
+                lineHeight.value = value
             case "margin-bottom":
-                marginBottom = property
+                marginBottom.value = value
             case "margin-left":
-                marginLeft = property
+                marginLeft.value = value
             case "margin-right":
-                marginRight = property
+                marginRight.value = value
             case "margin-top":
-                marginTop = property
+                marginTop.value = value
             case "padding-bottom":
-                paddingBottom = property
+                paddingBottom.value = value
             case "padding-left":
-                paddingLeft = property
+                paddingLeft.value = value
             case "padding-right":
-                paddingRight = property
+                paddingRight.value = value
             case "padding-top":
-                paddingTop = property
+                paddingTop.value = value
             default:
-                FIXME("setProperty: \(property.name) not implemented")
+                FIXME("setProperty: \(name) not implemented")
             }
+        }
+
+        func getProperty(name: String) -> StyleProperty? {
+            let mirror = Mirror(reflecting: self)
+            for child in mirror.children {
+                if let propertyName = child.label, propertyName == name {
+                    return child.value as? StyleProperty
+                }
+            }
+            return nil
         }
 
         func parseCSSValue(name: String, componentValues: [CSS.ComponentValue]) {
@@ -142,7 +152,7 @@ extension CSS {
             let mirror = Mirror(reflecting: self)
             for child in mirror.children {
                 if let property = child.value as? StyleProperty {
-                    dict[property.name] = "\(property.value)"
+                    dict[property.name] = "\(property.value!)"
                 }
             }
             return dict
@@ -152,17 +162,14 @@ extension CSS {
             computedFont = font
         }
 
-        func calculateLineHeight(viewPortRect _: CSS.PixelRect?,
-                                 fontMetrics: FontMetrics,
-                                 rootFontMetrics _: FontMetrics) -> CSS.Pixels
-        {
+        func calculateLineHeight(fontMeasurements: FontMeasurements) -> CSS.Pixels {
             let lineHeight = lineHeight.lineHeight()
             switch lineHeight {
             case .normal:
-                return fontMetrics.lineHeight
+                return fontMeasurements.fontMetrics.lineHeight
             default:
                 FIXME("lineHeight: \(lineHeight) not implemented, defaulting to normal")
-                return fontMetrics.lineHeight
+                return fontMeasurements.fontMetrics.lineHeight
             }
         }
     }

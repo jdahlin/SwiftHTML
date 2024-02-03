@@ -31,7 +31,8 @@ class BrowserViewController: NSViewController {
 
         LibBrowser.browserLoadUrl(url: "file:///Users/johandahlin/dev/SwiftHTML/Resources/HTML/example112.html")
         // terminate app immediately
-        NSApp.terminate(nil)
+        // NSApp.terminate(nil)
+        view.wantsLayer = true
     }
 
     override func viewDidLoad() {
