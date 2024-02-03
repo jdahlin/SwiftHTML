@@ -90,18 +90,20 @@ extension CSS {
 
         func getProperty(id: PropertyID) -> StyleProperty? {
             switch id {
-            case .display: display
-            case .fontSize: fontSize
-            case .lineHeight: lineHeight
-            case .marginBottom: marginBottom
-            case .marginLeft: marginLeft
-            case .marginRight: marginRight
-            case .marginTop: marginTop
-            case .paddingBottom: paddingBottom
-            case .paddingLeft: paddingLeft
-            case .paddingRight: paddingRight
-            case .paddingTop: paddingTop
-            default: nil
+            case .display: return display
+            case .fontSize: return fontSize
+            case .lineHeight: return lineHeight
+            case .marginBottom: return marginBottom
+            case .marginLeft: return marginLeft
+            case .marginRight: return marginRight
+            case .marginTop: return marginTop
+            case .paddingBottom: return paddingBottom
+            case .paddingLeft: return paddingLeft
+            case .paddingRight: return paddingRight
+            case .paddingTop: return paddingTop
+            default:
+                FIXME("getProperty: \(id) not implemented")
+                return nil
             }
         }
 
