@@ -2,7 +2,7 @@ import AppKit
 
 extension CSS {
     class StyleProperties {
-        lazy var backgroundColor: StyleProperty = .init(id: .color, initial: .color(.transparent))
+        lazy var backgroundColor: StyleProperty = .init(id: .backgroundColor, initial: .color(.transparent))
         lazy var color: StyleProperty = .init(id: .color, initial: .color(.system(.canvasText)))
         lazy var display: StyleProperty = .init(id: .display, initial: .display(CSS.Display(outer: .inline, inner: .flow)))
         lazy var fontSize: StyleProperty = .init(id: .fontSize, initial: .fontSize(.absolute(.medium)), inherited: true)

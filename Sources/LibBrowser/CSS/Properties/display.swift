@@ -163,3 +163,9 @@ extension CSS.StyleProperties {
         return value
     }
 }
+
+extension CSS.Display: Equatable {
+    static func == (lhs: CSS.Display, rhs: CSS.Display) -> Bool {
+        lhs.outer == rhs.outer && lhs.inner == rhs.inner && lhs.markerBox == rhs.markerBox
+    }
+}

@@ -371,3 +371,120 @@ extension CSS {
         }
     }
 }
+
+extension CSS.AbsoluteLength: Equatable {
+    static func == (lhs: CSS.AbsoluteLength, rhs: CSS.AbsoluteLength) -> Bool {
+        switch (lhs, rhs) {
+        case let (.px(lhs), .px(rhs)):
+            lhs == rhs
+        case let (.cm(lhs), .cm(rhs)):
+            lhs == rhs
+        case let (.mm(lhs), .mm(rhs)):
+            lhs == rhs
+        case let (.Q(lhs), .Q(rhs)):
+            lhs == rhs
+        case let (.inch(lhs), .inch(rhs)):
+            lhs == rhs
+        case let (.pc(lhs), .pc(rhs)):
+            lhs == rhs
+        case let (.pt(lhs), .pt(rhs)):
+            lhs == rhs
+        default:
+            false
+        }
+    }
+}
+
+extension CSS.RelativeLength: Equatable {
+    static func == (lhs: CSS.RelativeLength, rhs: CSS.RelativeLength) -> Bool {
+        switch (lhs, rhs) {
+        case let (.em(lhs), .em(rhs)):
+            lhs == rhs
+        case let (.rem(lhs), .rem(rhs)):
+            lhs == rhs
+        case let (.ex(lhs), .ex(rhs)):
+            lhs == rhs
+        case let (.rex(lhs), .rex(rhs)):
+            lhs == rhs
+        case let (.cap(lhs), .cap(rhs)):
+            lhs == rhs
+        case let (.rcap(lhs), .rcap(rhs)):
+            lhs == rhs
+        case let (.ch(lhs), .ch(rhs)):
+            lhs == rhs
+        case let (.rch(lhs), .rch(rhs)):
+            lhs == rhs
+        case let (.ic(lhs), .ic(rhs)):
+            lhs == rhs
+        case let (.ric(lhs), .ric(rhs)):
+            lhs == rhs
+        case let (.lh(lhs), .lh(rhs)):
+            lhs == rhs
+        case let (.rlh(lhs), .rlh(rhs)):
+            lhs == rhs
+        case let (.vw(lhs), .vw(rhs)):
+            lhs == rhs
+        case let (.svw(lhs), .svw(rhs)):
+            lhs == rhs
+        case let (.lvw(lhs), .lvw(rhs)):
+            lhs == rhs
+        case let (.dvw(lhs), .dvw(rhs)):
+            lhs == rhs
+        case let (.vh(lhs), .vh(rhs)):
+            lhs == rhs
+        case let (.svh(lhs), .svh(rhs)):
+            lhs == rhs
+        case let (.lvh(lhs), .lvh(rhs)):
+            lhs == rhs
+        case let (.dvh(lhs), .dvh(rhs)):
+            lhs == rhs
+        case let (.vi(lhs), .vi(rhs)):
+            lhs == rhs
+        case let (.svi(lhs), .svi(rhs)):
+            lhs == rhs
+        case let (.lvi(lhs), .lvi(rhs)):
+            lhs == rhs
+        case let (.dvi(lhs), .dvi(rhs)):
+            lhs == rhs
+        case let (.vb(lhs), .vb(rhs)):
+            lhs == rhs
+        case let (.svb(lhs), .svb(rhs)):
+            lhs == rhs
+        case let (.lvb(lhs), .lvb(rhs)):
+            lhs == rhs
+        case let (.dvb(lhs), .dvb(rhs)):
+            lhs == rhs
+        case let (.vmin(lhs), .vmin(rhs)):
+            lhs == rhs
+        case let (.svmin(lhs), .svmin(rhs)):
+            lhs == rhs
+        case let (.lvmin(lhs), .lvmin(rhs)):
+            lhs == rhs
+        case let (.dvmin(lhs), .dvmin(rhs)):
+            lhs == rhs
+        case let (.vmax(lhs), .vmax(rhs)):
+            lhs == rhs
+        case let (.svmax(lhs), .svmax(rhs)):
+            lhs == rhs
+        case let (.lvmax(lhs), .lvmax(rhs)):
+            lhs == rhs
+        case let (.dvmax(lhs), .dvmax(rhs)):
+            lhs == rhs
+        default:
+            false
+        }
+    }
+}
+
+extension CSS.Length: Equatable {
+    static func == (lhs: CSS.Length, rhs: CSS.Length) -> Bool {
+        switch (lhs, rhs) {
+        case let (.relative(lhs), .relative(rhs)):
+            lhs == rhs
+        case let (.absolute(lhs), .absolute(rhs)):
+            lhs == rhs
+        default:
+            false
+        }
+    }
+}

@@ -23,3 +23,18 @@ extension CSS.StyleProperties {
         lineHeight.value = .lineHeight(.normal)
     }
 }
+
+extension CSS.LineHeight: Equatable {
+    static func == (lhs: CSS.LineHeight, rhs: CSS.LineHeight) -> Bool {
+        switch (lhs, rhs) {
+        case (.normal, .normal):
+            true
+        case let (.length(lhs), .length(rhs)):
+            lhs == rhs
+        case let (.percentage(lhs), .percentage(rhs)):
+            lhs == rhs
+        default:
+            false
+        }
+    }
+}

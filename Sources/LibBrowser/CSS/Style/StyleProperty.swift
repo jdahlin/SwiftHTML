@@ -27,20 +27,29 @@ extension CSS {
     }
 
     struct StyleProperty: CustomStringConvertible {
-        var id: PropertyID
+        let id: PropertyID
         var important: Bool = false
         var value: StyleValue?
-
-        // FIXME: These two should be moved out of the struct to save space
-        var initial: StyleValue
-        var inherited = false
+        static var initialValues: [PropertyID: StyleValue] = [:]
+        static var inheritedValues: [PropertyID: Bool] = [:]
 
         init(id: PropertyID, important: Bool = false, initial: StyleValue, inherited: Bool = false) {
             self.id = id
             self.important = important
-            self.initial = initial
-            self.inherited = inherited
+            if StyleProperty.initialValues.keys.contains(id) {
+                assert(StyleProperty.initialValues[id] == initial)
+            } else {
+                StyleProperty.initialValues[id] = initial
+            }
+            if StyleProperty.inheritedValues[id] == nil {
+                StyleProperty.inheritedValues[id] = inherited
+            } else {
+                assert(StyleProperty.inheritedValues[id] == inherited)
+            }
         }
+
+        var initial: StyleValue { StyleProperty.initialValues[id]! }
+        var inherited: Bool { StyleProperty.inheritedValues[id]! }
 
         var description: String {
             if let value {
