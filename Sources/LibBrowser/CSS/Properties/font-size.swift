@@ -210,21 +210,4 @@ extension CSS.StyleProperties {
     }
 }
 
-extension CSS.FontSize: Equatable {
-    static func == (lhs: CSS.FontSize, rhs: CSS.FontSize) -> Bool {
-        switch (lhs, rhs) {
-        case let (.absolute(lhs), .absolute(rhs)):
-            lhs == rhs
-        case let (.relative(lhs), .relative(rhs)):
-            lhs == rhs
-        case let (.length(lhs), .length(rhs)):
-            lhs == rhs
-        case let (.percent(lhs), .percent(rhs)):
-            lhs == rhs
-        case (.math, .math):
-            true
-        default:
-            false
-        }
-    }
-}
+extension CSS.FontSize: Equatable {}

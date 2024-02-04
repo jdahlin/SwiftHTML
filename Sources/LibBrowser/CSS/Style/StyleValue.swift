@@ -57,27 +57,4 @@ extension CSS {
     }
 }
 
-extension CSS.StyleValue: Equatable {
-    static func == (lhs: CSS.StyleValue, rhs: CSS.StyleValue) -> Bool {
-        switch (lhs, rhs) {
-        case (.inherit, .inherit), (.initial, .initial), (.revert, .revert), (.unset, .unset), (.auto, .auto):
-            true
-        case let (.appearance(lhs), .appearance(rhs)):
-            lhs == rhs
-        case let (.color(lhs), .color(rhs)):
-            lhs == rhs
-        case let (.display(lhs), .display(rhs)):
-            lhs == rhs
-        case let (.fontSize(lhs), .fontSize(rhs)):
-            lhs == rhs
-        case let (.lineHeight(lhs), .lineHeight(rhs)):
-            lhs == rhs
-        case let (.length(lhs), .length(rhs)):
-            lhs == rhs
-        case let (.percentage(lhs), .percentage(rhs)):
-            lhs == rhs
-        default:
-            false
-        }
-    }
-}
+extension CSS.StyleValue: Equatable {}
