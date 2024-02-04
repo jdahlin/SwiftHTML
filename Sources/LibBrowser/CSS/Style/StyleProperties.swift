@@ -46,14 +46,8 @@ extension CSS {
 
         func parseGlobalKeywords(_ value: CSS.ComponentValue) -> StyleValue? {
             switch value {
-            case .token(.ident("initial")):
-                .initial
-            case .token(.ident("inherit")):
-                .inherit
-            case .token(.ident("unset")):
-                .unset
-            case .token(.ident("revert")):
-                .revert
+            case let .token(.ident(ident)):
+                parseGlobalKeywords(ident)
             default:
                 nil
             }
@@ -113,7 +107,7 @@ extension CSS {
                 bottom.value = value
             case .left:
                 left.value = value
-            default:
+            case .all, .margin, .padding:
                 FIXME("setProperty: \(id) not implemented")
             }
         }
@@ -133,7 +127,15 @@ extension CSS {
             case .paddingLeft: return paddingLeft
             case .paddingRight: return paddingRight
             case .paddingTop: return paddingTop
-            default:
+            case .insetBlockEnd: return insetBlockEnd
+            case .insetBlockStart: return insetBlockStart
+            case .insetInlineEnd: return insetInlineEnd
+            case .insetInlineStart: return insetInlineStart
+            case .top: return top
+            case .right: return right
+            case .bottom: return bottom
+            case .left: return left
+            case .all, .margin, .padding:
                 FIXME("getProperty: \(id) not implemented")
                 return nil
             }
@@ -144,7 +146,7 @@ extension CSS {
 
             switch name {
             case "display":
-                parseDisplay(context: context)
+                display.value = parseDisplay(context: context)
             case "background-color":
                 backgroundColor.value = parseColor(context: context)
             case "color":

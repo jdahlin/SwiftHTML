@@ -110,12 +110,12 @@ extension CSS {
 }
 
 extension CSS.StyleProperties {
-    func parseDisplay(context: CSS.ParseContext) {
+    func parseDisplay(context: CSS.ParseContext) -> CSS.StyleValue? {
         let idents = context.parseIndentArray()
         if idents.isEmpty {
-            return
+            return nil
         }
-        let value: CSS.StyleValue
+        var value: CSS.StyleValue? = nil
         if let keyword = parseGlobalKeywords(idents[0]) {
             value = keyword
         } else {
@@ -155,13 +155,11 @@ extension CSS.StyleProperties {
                    let inner = CSS.InnerDisplayType(value: idents[1])
                 {
                     value = .display(CSS.Display(outer: outer, inner: inner))
-                } else {
-                    return
                 }
             default:
-                return
+                break
             }
         }
-        display.value = value
+        return value
     }
 }
