@@ -10,7 +10,6 @@ extension CSS {
         var rootElementFontMetrics: FontMetrics!
         lazy var defaultFontMetrics = FontMetrics(
             fontSize: CSS.Pixels(16.0),
-            lineHeight: CSS.Pixels(16.0),
             pixelMetrics: CTFont.defaultFont.pixelMetrics()
         )
 
@@ -73,7 +72,7 @@ extension CSS {
             }
         }
 
-        func computeCascadedValues(style: inout StyleProperties, element: DOM.Element) {
+        func computeCascadedValues(style: inout StyleProperties, element: DOM.Element?) {
             // First, we collect all the CSS rules whose selectors match `element`:
             let userAgentRules = collectMatchingRules(element: element, cascadeOrigin: .userAgent)
             let userRules = collectMatchingRules(element: element, cascadeOrigin: .user)
@@ -126,11 +125,10 @@ extension CSS {
             // FIXME: Transition declarations [css-transitions-1]
         }
 
-        mutating func computeStyle(element: DOM.Element) -> StyleProperties {
+        mutating func computeStyle(element: DOM.Element?) -> StyleProperties {
             var style = StyleProperties()
 
             // 1. Perform the cascade. This produces the "specified style"
-            // TRY(compute_cascaded_values(style, element, pseudo_element, did_match_any_pseudo_element_rules, mode));
             computeCascadedValues(style: &style, element: element)
 
             // 2. Compute the math-depth property, since that might affect the font-size
@@ -146,7 +144,9 @@ extension CSS {
             computeDefaultedValues(style: &style, element: element)
 
             // 6. Run automatic box type transformations
-            transformBoxTypeIfNeeded(style: &style, element: element)
+            if let element {
+                transformBoxTypeIfNeeded(style: &style, element: element)
+            }
 
             return style
         }
@@ -155,7 +155,7 @@ extension CSS {
             // FIXME: math, position: absolute/fixed or float, grid, flex
         }
 
-        mutating func computeFont(style: inout StyleProperties, element: DOM.Element) {
+        mutating func computeFont(style: inout StyleProperties, element: DOM.Element?) {
             // FIXME: Compute default using initial/inherit etc
             // let fontSize = style.fontSize.fontSize()
 
@@ -186,14 +186,11 @@ extension CSS {
             }
         }
 
-        func absolutizeValues(style: inout StyleProperties, element: DOM.Element) {
-            let parentOrRootLineHeight = parentOrRootLineHeight(element: element)
-
+        func absolutizeValues(style: inout StyleProperties, element _: DOM.Element?) {
             let fontPixelMetrics = style.computedFont!.pixelMetrics()
 
             var fontMetrics = FontMetrics(
                 fontSize: rootElementFontMetrics.fontSize,
-                lineHeight: parentOrRootLineHeight,
                 pixelMetrics: fontPixelMetrics
             )
             let fontMeasurements = FontMeasurements(
@@ -221,25 +218,28 @@ extension CSS {
             for property in style {
                 guard let value = property.value else { continue }
                 let newValue = value.absolutized(fontMeasurements: fontMeasurements)
-                // print("absolutizeValues: \(property.name) \(value) -> \(newValue)")
+                // print("absolutizeValues: \(property.id) \(value) -> \(newValue)")
                 style.setProperty(id: property.id, value: newValue)
             }
         }
 
-        func computeDefaultedValues(style: inout StyleProperties, element: DOM.Element) {
+        func computeDefaultedValues(style: inout StyleProperties, element: DOM.Element?) {
             // Walk the list of all known CSS properties and:
             // - Add them to `style` if they are missing.
             // - Resolve `inherit` and `initial` as needed.
             for var property in style {
-                computeDefaultedValue(style: &style, element: element, property: &property)
+                computeDefaultedPropertyValue(style: &style, element: element, property: &property)
             }
 
             // https://www.w3.org/TR/css-color-4/#resolving-other-colors
             // In the color property, the used value of currentcolor is the inherited value.
-            // FIXME: currentcolor
+            if case .currentColor = style.color.color() {
+                let color = getInheritValue(style: style, element: element, property: style.color)
+                style.setProperty(id: .color, value: color)
+            }
         }
 
-        func getInheritValue(style _: StyleProperties, element: DOM.Element, property: StyleProperty) -> StyleValue? {
+        func getInheritValue(style _: StyleProperties, element: DOM.Element?, property: StyleProperty) -> StyleValue? {
             if let parentElement = elementToInheritStyleFrom(element: element),
                let parentComputedCSSValues = parentElement.computedCSSValues
             {
@@ -248,7 +248,7 @@ extension CSS {
             return property.initial
         }
 
-        func computeDefaultedValue(style: inout StyleProperties, element: DOM.Element, property: inout StyleProperty) {
+        func computeDefaultedPropertyValue(style: inout StyleProperties, element: DOM.Element?, property: inout StyleProperty) {
             if !property.hasValue() {
                 if property.inherited {
                     let value = getInheritValue(style: style, element: element, property: property)
@@ -280,7 +280,6 @@ extension CSS {
             let fontPixelMetrics = style.computedFont!.pixelMetrics()
             var fontMetrics = FontMetrics(
                 fontSize: defaultFontMetrics.fontSize,
-                lineHeight: CSS.Pixels.nearestValueFor(fontPixelMetrics.lineSpacing()),
                 pixelMetrics: fontPixelMetrics
             )
             let fontMeasurements = FontMeasurements(
@@ -308,39 +307,10 @@ extension CSS {
             return nil
         }
 
-        func parentOrRootLineHeight(element: DOM.Element) -> CSS.Pixels {
-            let parentElement = elementToInheritStyleFrom(element: element)
-            guard let parentElement else {
-                return rootElementFontMetrics.lineHeight
-            }
-
-            let computedValues = parentElement.computedCSSValues
-            guard let computedValues else {
-                return rootElementFontMetrics.lineHeight
-            }
-
-            let parentFontPixelMetrics = computedValues.computedFont!.pixelMetrics()
-            let parentFontSize = computedValues.fontSize.fontSize()
-            let parentFontSizeValue = if case .absolute = parentFontSize {
-                parentFontSize.absoluteLengthToPx()
-            } else {
-                rootElementFontMetrics.fontSize
-            }
-            let parentParentLineHeight = parentOrRootLineHeight(element: parentElement)
-            let parentFontMetrics = FontMetrics(
-                fontSize: parentFontSizeValue,
-                lineHeight: parentParentLineHeight,
-                pixelMetrics: parentFontPixelMetrics
-            )
-            return computedValues.calculateLineHeight(fontMeasurements: FontMeasurements(
-                viewportRect: viewPortRect()!,
-                fontMetrics: parentFontMetrics,
-                rootFontMetrics: rootElementFontMetrics
-            ))
-        }
-
-        func collectMatchingRules(element: DOM.Element, cascadeOrigin: CSS.CascadeOrigin) -> [CSSOM.CSSStyleRule] {
+        func collectMatchingRules(element: DOM.Element?, cascadeOrigin: CSS.CascadeOrigin) -> [CSSOM.CSSStyleRule] {
             var rules: [CSSOM.CSSStyleRule] = []
+            guard let element else { return rules }
+
             for sheet in styleSheets {
                 guard sheet.cascadeOrigin == cascadeOrigin else { continue }
                 for styleRule in sheet.styleRules {
@@ -350,6 +320,18 @@ extension CSS {
             }
 
             return rules
+        }
+
+        mutating func createDocumentStyle() -> StyleProperties {
+            var style = StyleProperties()
+            computeFont(style: &style, element: nil)
+            computeDefaultedValues(style: &style, element: nil)
+            absolutizeValues(style: &style, element: nil)
+            let viewPort = viewPortRect()!
+            style.setProperty(id: .width, value: .length(CSS.Length(pixels: viewPort.width)))
+            style.setProperty(id: .height, value: .length(CSS.Length(pixels: viewPort.height)))
+            style.setProperty(id: .display, value: .display(CSS.Display(short: .block)))
+            return style
         }
     }
 }

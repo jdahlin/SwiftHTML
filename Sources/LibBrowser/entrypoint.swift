@@ -18,9 +18,13 @@ public func browserLoadUrl(url _: String) {
     let document = HTML.parseHTML(&data)
     // DOM.printTree(node: document)
     if let element = document.documentElement {
-        let style = document.styleComputer.computeStyle(element: element)
-        print(style.toStringDict())
-        let style2 = document.styleComputer.computeStyle(element: document.body!)
-        print(style2.toStringDict())
+        // print("------ HTML ------")
+        // let style = document.styleComputer.computeStyle(element: element)
+        // print(style.toStringDict())
+        // print("------ BODY ------")
+        // let style2 = document.styleComputer.computeStyle(element: document.body!)
+        // print(style2.toStringDict())
+
+        document.updateLayout()
     }
 }

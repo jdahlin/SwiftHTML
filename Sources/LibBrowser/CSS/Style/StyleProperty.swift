@@ -24,6 +24,8 @@ extension CSS {
         case right
         case bottom
         case left
+        case width
+        case height
     }
 
     struct StyleProperty: CustomStringConvertible {
@@ -66,7 +68,7 @@ extension CSS {
             if case let .display(value) = value {
                 return value
             }
-            preconditionFailure()
+            return Display(outer: .none)
         }
 
         func fontSize() -> FontSize {
@@ -94,6 +96,13 @@ extension CSS {
                 return .auto
             }
             preconditionFailure()
+        }
+
+        func color() -> Color? {
+            if case let .color(value) = value {
+                return value
+            }
+            return nil
         }
 
         func padding() -> Padding {

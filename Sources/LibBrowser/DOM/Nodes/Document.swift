@@ -335,6 +335,7 @@ extension DOM {
             if layoutRoot == nil {
                 let treeBuilder = Layout.TreeBuilder()
                 layoutRoot = treeBuilder.build(domNode: self)
+                print(layoutRoot)
             }
         }
     }

@@ -10,11 +10,11 @@ extension DOM {
         let publicId: DOM.String?
         let systemId: DOM.String?
 
-        init(name: DOM.String, publicId: DOM.String?, systemId: DOM.String?) {
+        init(name: DOM.String, publicId: DOM.String?, systemId: DOM.String?, ownerDocument: DOM.Document) {
             self.name = name
             self.publicId = publicId
             self.systemId = systemId
-            super.init()
+            super.init(ownerDocument: ownerDocument)
         }
     }
 }

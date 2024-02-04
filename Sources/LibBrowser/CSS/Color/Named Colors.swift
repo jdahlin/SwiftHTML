@@ -150,7 +150,7 @@ extension CSS.Color {
         case yellow
         case yellowgreen
 
-        init(string: String) {
+        init?(string: String) {
             switch string.lowercased() {
             case "aliceblue": self = .aliceblue
             case "antiquewhite": self = .antiquewhite
@@ -300,7 +300,7 @@ extension CSS.Color {
             case "whitesmoke": self = .whitesmoke
             case "yellow": self = .yellow
             case "yellowgreen": self = .yellowgreen
-            default: self = .black
+            default: return nil
             }
         }
 

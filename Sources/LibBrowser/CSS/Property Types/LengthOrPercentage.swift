@@ -1,5 +1,5 @@
 extension CSS {
-    enum LengthOrPercentage: CustomStringConvertible, EnumStringInit {
+    enum LengthOrPercentage: CustomStringConvertible, EnumStringInit, Equatable {
         case length(Length)
         case percentage(Number)
 
@@ -28,7 +28,7 @@ extension CSS {
         }
     }
 
-    enum LengthOrPercentageOrAuto: CustomStringConvertible {
+    enum LengthOrPercentageOrAuto: CustomStringConvertible, Equatable {
         case length(Length)
         case percentage(Number)
         case auto

@@ -242,7 +242,6 @@ extension DOM {
         }
 
         func updateStyleRecursively() {
-            FIXME("Not implemented")
             if case let element as Element = self {
                 element.recomputeStyle()
             }
@@ -258,6 +257,10 @@ extension DOM {
             // FIXME: invalidation: childNeedsStyleUpdate
             // FIXME: batch multiple requests together
             updateStyleRecursively()
+        }
+
+        func parentOrShadowHost() -> Node? {
+            parentNode
         }
     }
 }

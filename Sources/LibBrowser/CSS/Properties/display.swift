@@ -5,9 +5,15 @@ extension CSS {
         case block
         case inline
         case runIn
+        case none
+        case contents
 
         init?(value: String) {
             switch value {
+            case "none":
+                self = .none
+            case "contents":
+                self = .contents
             case "block":
                 self = .block
             case "inline":
@@ -21,6 +27,10 @@ extension CSS {
 
         var description: String {
             switch self {
+            case .none:
+                "none"
+            case .contents:
+                "contents"
             case .block:
                 "block"
             case .inline:
@@ -78,20 +88,55 @@ extension CSS {
         }
     }
 
+    enum DisplayShort {
+        case none
+        case contents
+        case block
+        case inline
+        case runIn
+        case flowRoot
+        case flow
+        case table
+        case flex
+        case grid
+        case ruby
+    }
+
     struct Display: CustomStringConvertible {
-        var outer: OuterDisplayType?
+        var outer: OuterDisplayType
         var inner: InnerDisplayType?
         var markerBox = false
 
+        init(outer: OuterDisplayType, inner: InnerDisplayType? = nil, markerBox: Bool = false) {
+            self.outer = outer
+            self.inner = inner
+            self.markerBox = markerBox
+        }
+
+        init(short: DisplayShort) {
+            switch short {
+            case .block:
+                outer = .block
+                inner = .flow
+            default:
+                DIE("DisplayShort \(short) not implemented")
+            }
+        }
+
+        func isNone() -> Bool {
+            outer == .none
+        }
+
+        func isContents() -> Bool {
+            outer == .contents
+        }
+
         func isNoneOrContents() -> Bool {
-            outer == nil && inner == nil
+            isNone() || isContents()
         }
 
         var description: String {
-            var result = ""
-            if let outer {
-                result += "\(outer)"
-            }
+            var result = "\(outer)"
             if let inner {
                 if !result.isEmpty {
                     result += " "
@@ -120,8 +165,10 @@ extension CSS.StyleProperties {
             value = keyword
         } else {
             switch idents.count {
-            case 1 where idents[0] == "none" || idents[0] == "contents":
-                value = .display(CSS.Display(outer: nil, inner: nil))
+            case 1 where idents[0] == "none":
+                value = .display(CSS.Display(outer: .none))
+            case 1 where idents[0] == "contents":
+                value = .display(CSS.Display(outer: .none))
             case 1 where idents[0] == "block":
                 value = .display(CSS.Display(outer: .block, inner: .flow))
             case 1 where idents[0] == "flow-root":

@@ -3,7 +3,7 @@ import AppKit
 extension CSS {
     class StyleProperties {
         lazy var backgroundColor: StyleProperty = .init(id: .backgroundColor, initial: .color(.transparent))
-        lazy var color: StyleProperty = .init(id: .color, initial: .color(.system(.canvasText)))
+        lazy var color: StyleProperty = .init(id: .color, initial: .color(.system(.canvasText)), inherited: true)
         lazy var display: StyleProperty = .init(id: .display, initial: .display(CSS.Display(outer: .inline, inner: .flow)))
         lazy var fontSize: StyleProperty = .init(id: .fontSize, initial: .fontSize(.absolute(.medium)), inherited: true)
         lazy var insetBlockStart: StyleProperty = .init(id: .insetBlockStart, initial: .auto)
@@ -23,6 +23,8 @@ extension CSS {
         lazy var right: StyleProperty = .init(id: .right, initial: .auto)
         lazy var bottom: StyleProperty = .init(id: .bottom, initial: .auto)
         lazy var left: StyleProperty = .init(id: .left, initial: .auto)
+        lazy var width: StyleProperty = .init(id: .width, initial: .auto)
+        lazy var height: StyleProperty = .init(id: .height, initial: .auto)
 
         var computedFont: CTFont?
 
@@ -107,6 +109,10 @@ extension CSS {
                 bottom.value = value
             case .left:
                 left.value = value
+            case .width:
+                width.value = value
+            case .height:
+                height.value = value
             case .all, .margin, .padding:
                 FIXME("setProperty: \(id) not implemented")
             }
@@ -135,6 +141,8 @@ extension CSS {
             case .right: return right
             case .bottom: return bottom
             case .left: return left
+            case .width: return width
+            case .height: return height
             case .all, .margin, .padding:
                 FIXME("getProperty: \(id) not implemented")
                 return nil
@@ -191,6 +199,10 @@ extension CSS {
                 bottom.value = parseLengthPercentageOrAuto(context: context)
             case "left":
                 left.value = parseLengthPercentageOrAuto(context: context)
+            case "width":
+                width.value = parseWidth(context: context)
+            case "height":
+                height.value = parseHeight(context: context)
             default:
                 FIXME("parseCSSValue: \(name) not implemented")
             }

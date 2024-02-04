@@ -200,6 +200,10 @@ extension CSS {
         case relative(RelativeLength)
         case absolute(AbsoluteLength)
 
+        init(pixels: CSS.Pixels) {
+            self = .absolute(.px(pixels.toDouble()))
+        }
+
         init(number: Double, unit: String) {
             self = switch unit {
             case "px": .absolute(.px(number))

@@ -36,7 +36,8 @@ extension HTML.TreeBuilder {
             let doctypeNode = DOM.DocumentType(
                 name: docType.name ?? "",
                 publicId: docType.publicIdentifier ?? "",
-                systemId: docType.systemIdentifier ?? ""
+                systemId: docType.systemIdentifier ?? "",
+                ownerDocument: document
             )
             document.appendChild(node: doctypeNode)
 

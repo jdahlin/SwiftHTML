@@ -1,7 +1,17 @@
+html {
+    font-family: serif;
+    color: CanvasText;
+}
+
 html, body {
     display: block;
 }
 
 body {
    margin: 8px;
+}
+
+area, base, basefont, datalist, head, link, meta, noembed,
+noframes, param, rp, script, style, template, title {
+    display: none;
 }

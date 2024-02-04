@@ -30,10 +30,10 @@ package struct FontMetrics {
     var zeroAdvance: CSS.Pixels
     // CTFontGetAdvancesForGlyphs(font, .horizontal, [0], nil, 1)
 
-    init(fontSize: CSS.Pixels, lineHeight: CSS.Pixels, pixelMetrics: FontPixelMetrics) {
+    init(fontSize: CSS.Pixels, pixelMetrics: FontPixelMetrics) {
         self.fontSize = fontSize
         xHeight = CSS.Pixels(pixelMetrics.xHeight)
-        self.lineHeight = lineHeight
+        lineHeight = CSS.Pixels(round(pixelMetrics.lineSpacing()))
         xHeight = CSS.Pixels(pixelMetrics.xHeight)
         capHeight = CSS.Pixels(pixelMetrics.ascent)
         zeroAdvance = CSS.Pixels(pixelMetrics.advanceOfAsciiZero + pixelMetrics.glyphSpacing)
