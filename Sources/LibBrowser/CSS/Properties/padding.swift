@@ -29,7 +29,7 @@ extension CSS {
 }
 
 extension CSS.StyleProperties {
-    func parsePadding(_ value: CSS.ComponentValue) -> CSS.Padding? {
+    func parsePadding(_ value: CSS.ComponentValue) -> CSS.StyleValue? {
         CSS.parseLengthOrPercentage(value: value)
     }
 
@@ -41,7 +41,7 @@ extension CSS.StyleProperties {
         let value: CSS.StyleValue? = if let keyword = parseGlobalKeywords(declaration[0]) {
             keyword
         } else if let padding = parsePadding(declaration[0]) {
-            .padding(padding)
+            padding
         } else {
             nil
         }
@@ -56,10 +56,10 @@ extension CSS.StyleProperties {
         case 1:
             // it applies to all sides.
             if let padding = parsePadding(declaration[0]) {
-                paddingTop.value = .padding(padding)
-                paddingRight.value = .padding(padding)
-                paddingBottom.value = .padding(padding)
-                paddingLeft.value = .padding(padding)
+                paddingTop.value = padding
+                paddingRight.value = padding
+                paddingBottom.value = padding
+                paddingLeft.value = padding
             }
 
         // If there are two values,
@@ -70,10 +70,10 @@ extension CSS.StyleProperties {
             if let topBottom = parsePadding(declaration[0]),
                let leftRight = parsePadding(declaration[1])
             {
-                paddingTop.value = .padding(topBottom)
-                paddingRight.value = .padding(leftRight)
-                paddingBottom.value = .padding(topBottom)
-                paddingLeft.value = .padding(leftRight)
+                paddingTop.value = topBottom
+                paddingRight.value = leftRight
+                paddingBottom.value = topBottom
+                paddingLeft.value = leftRight
             }
 
         // If there are three values,
@@ -86,10 +86,10 @@ extension CSS.StyleProperties {
                let leftRight = parsePadding(declaration[1]),
                let bottom = parsePadding(declaration[2])
             {
-                paddingTop.value = .padding(top)
-                paddingRight.value = .padding(leftRight)
-                paddingBottom.value = .padding(bottom)
-                paddingLeft.value = .padding(leftRight)
+                paddingTop.value = top
+                paddingRight.value = leftRight
+                paddingBottom.value = bottom
+                paddingLeft.value = leftRight
             }
 
         // Note: comments missing from spec
@@ -102,10 +102,10 @@ extension CSS.StyleProperties {
                let bottom = parsePadding(declaration[2]),
                let left = parsePadding(declaration[3])
             {
-                paddingTop.value = .padding(top)
-                paddingRight.value = .padding(right)
-                paddingBottom.value = .padding(bottom)
-                paddingLeft.value = .padding(left)
+                paddingTop.value = top
+                paddingRight.value = right
+                paddingBottom.value = bottom
+                paddingLeft.value = left
             }
 
         default:

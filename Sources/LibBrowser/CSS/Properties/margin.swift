@@ -28,7 +28,7 @@ extension CSS {
 }
 
 extension CSS.StyleProperties {
-    func parseMargin(_ value: CSS.ComponentValue) -> CSS.Margin? {
+    func parseMargin(_ value: CSS.ComponentValue) -> CSS.StyleValue? {
         CSS.parseLengthOrPercentageOrAuto(value: value)
     }
 
@@ -40,7 +40,7 @@ extension CSS.StyleProperties {
         let value: CSS.StyleValue? = if let keyword = parseGlobalKeywords(declaration[0]) {
             keyword
         } else if let margin = parseMargin(declaration[0]) {
-            .margin(margin)
+            margin
         } else {
             nil
         }
@@ -56,11 +56,11 @@ extension CSS.StyleProperties {
         // body { margin: 2em }         /* all margins set to 2em */
         case 1:
             // it applies to all sides.
-            if let margin = parseMargin(declaration[0]) {
-                marginTop.value = .margin(margin)
-                marginRight.value = .margin(margin)
-                marginBottom.value = .margin(margin)
-                marginLeft.value = .margin(margin)
+            if let value = parseMargin(declaration[0]) {
+                marginTop.value = value
+                marginRight.value = value
+                marginBottom.value = value
+                marginLeft.value = value
             }
 
         // If there are two values,
@@ -71,10 +71,10 @@ extension CSS.StyleProperties {
             if let topBottom = parseMargin(declaration[0]),
                let leftRight = parseMargin(declaration[1])
             {
-                marginTop.value = .margin(topBottom)
-                marginRight.value = .margin(leftRight)
-                marginBottom.value = .margin(topBottom)
-                marginLeft.value = .margin(leftRight)
+                marginTop.value = topBottom
+                marginRight.value = leftRight
+                marginBottom.value = topBottom
+                marginLeft.value = leftRight
             }
 
         // If there are three values
@@ -87,10 +87,10 @@ extension CSS.StyleProperties {
                let leftRight = parseMargin(declaration[1]),
                let bottom = parseMargin(declaration[2])
             {
-                marginTop.value = .margin(top)
-                marginRight.value = .margin(leftRight)
-                marginBottom.value = .margin(bottom)
-                marginLeft.value = .margin(leftRight)
+                marginTop.value = top
+                marginRight.value = leftRight
+                marginBottom.value = bottom
+                marginLeft.value = leftRight
             }
 
         // If there are four values
@@ -102,10 +102,10 @@ extension CSS.StyleProperties {
                let bottom = parseMargin(declaration[2]),
                let left = parseMargin(declaration[3])
             {
-                marginTop.value = .margin(top)
-                marginRight.value = .margin(right)
-                marginBottom.value = .margin(bottom)
-                marginLeft.value = .margin(left)
+                marginTop.value = top
+                marginRight.value = right
+                marginBottom.value = bottom
+                marginLeft.value = left
             }
 
         default:

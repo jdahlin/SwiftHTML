@@ -60,20 +60,6 @@ extension CSS {
             preconditionFailure()
         }
 
-        func margin() -> Margin {
-            if case let .margin(value) = value {
-                return value
-            }
-            preconditionFailure()
-        }
-
-        func padding() -> Padding {
-            if case let .padding(value) = value {
-                return value
-            }
-            preconditionFailure()
-        }
-
         func fontSize() -> FontSize {
             if case let .fontSize(value) = value {
                 return value
@@ -84,6 +70,29 @@ extension CSS {
         func lineHeight() -> LineHeight {
             if case let .lineHeight(value) = value {
                 return value
+            }
+            preconditionFailure()
+        }
+
+        func margin() -> Margin {
+            if case let .length(value) = value {
+                return .length(value)
+            }
+            if case let .percentage(value) = value {
+                return .percentage(value)
+            }
+            if case .auto = value {
+                return .auto
+            }
+            preconditionFailure()
+        }
+
+        func padding() -> Padding {
+            if case let .length(value) = value {
+                return .length(value)
+            }
+            if case let .percentage(value) = value {
+                return .percentage(value)
             }
             preconditionFailure()
         }

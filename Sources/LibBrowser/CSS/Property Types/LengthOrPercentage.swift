@@ -49,7 +49,7 @@ extension CSS {
         }
     }
 
-    static func parseLengthOrPercentage(value: CSS.ComponentValue) -> LengthOrPercentage? {
+    static func parseLengthOrPercentage(value: CSS.ComponentValue) -> StyleValue? {
         switch value {
         case let .token(.percentage(number: number)):
             .percentage(number)
@@ -62,7 +62,7 @@ extension CSS {
         }
     }
 
-    static func parseLengthOrPercentageOrAuto(value: CSS.ComponentValue) -> LengthOrPercentageOrAuto? {
+    static func parseLengthOrPercentageOrAuto(value: CSS.ComponentValue) -> StyleValue? {
         switch value {
         case .token(.ident("auto")):
             .auto
@@ -85,7 +85,7 @@ extension CSS.StyleProperties {
             return nil
         }
         if let value = CSS.parseLengthOrPercentageOrAuto(value: declaration[0]) {
-            return .lengthPercentageOrAuto(value)
+            return value
         }
         return nil
     }

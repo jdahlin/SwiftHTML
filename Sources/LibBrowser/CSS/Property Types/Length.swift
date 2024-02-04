@@ -250,6 +250,10 @@ extension CSS {
             }
         }
 
+        var zeroPx: Self {
+            .absolute(.px(0))
+        }
+
         var description: String {
             switch self {
             case let .relative(relative):
