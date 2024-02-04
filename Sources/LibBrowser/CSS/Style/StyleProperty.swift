@@ -41,10 +41,10 @@ extension CSS {
             } else {
                 StyleProperty.initialValues[id] = initial
             }
-            if StyleProperty.inheritedValues[id] == nil {
-                StyleProperty.inheritedValues[id] = inherited
-            } else {
+            if StyleProperty.inheritedValues.keys.contains(id) {
                 assert(StyleProperty.inheritedValues[id] == inherited)
+            } else {
+                StyleProperty.inheritedValues[id] = inherited
             }
         }
 
