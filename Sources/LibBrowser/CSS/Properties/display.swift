@@ -123,29 +123,14 @@ extension CSS {
             }
         }
 
-        func isNone() -> Bool {
-            outer == .none
-        }
-
-        func isContents() -> Bool {
-            outer == .contents
-        }
-
-        func isNoneOrContents() -> Bool {
-            isNone() || isContents()
-        }
-
-        func isFlow() -> Bool {
-            inner == .flow
-        }
-
-        func isInlineOutside() -> Bool {
-            outer == .inline
-        }
-
-        func isFlowInside() -> Bool {
-            inner == .flow
-        }
+        func isNone() -> Bool { outer == .none }
+        func isContents() -> Bool { outer == .contents }
+        func isNoneOrContents() -> Bool { isNone() || isContents() }
+        func isFlow() -> Bool { inner == .flow }
+        func isInlineOutside() -> Bool { outer == .inline }
+        func isFlowInside() -> Bool { inner == .flow }
+        func isBlockOutside() -> Bool { outer == .block }
+        func isFlowRootInside() -> Bool { inner == .flowRoot }
 
         var description: String {
             var result = "\(outer)"
@@ -224,3 +209,23 @@ extension CSS.StyleProperties {
 }
 
 extension CSS.Display: Equatable {}
+
+extension CSS.Display: CSSPropertyValue {
+    typealias T = CSS.Display
+
+    init?(_ styleValue: CSS.StyleValue?) {
+        switch styleValue {
+        case let .display(display):
+            self = display
+        case nil:
+            return nil
+        default:
+            FIXME("Unable to convert display from StyleValue: \(styleValue!)")
+            return nil
+        }
+    }
+
+    func styleValue() -> CSS.StyleValue {
+        .display(self)
+    }
+}

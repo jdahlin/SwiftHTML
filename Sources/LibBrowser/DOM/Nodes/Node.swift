@@ -73,6 +73,8 @@ extension DOM {
         // readonly attribute Node? parentNode;
         var parentNode: Node?
 
+        var layoutNode: Layout.Node?
+
         init(ownerDocument: DOM.Document? = nil, parentNode _: Node? = nil) {
             self.ownerDocument = ownerDocument
             parentNode = nil

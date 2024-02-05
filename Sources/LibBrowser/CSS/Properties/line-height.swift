@@ -18,9 +18,8 @@ extension CSS {
 }
 
 extension CSS.StyleProperties {
-    func parseLineHeight(context _: CSS.ParseContext) {
-        FIXME("parse line-height")
-        lineHeight.value = .lineHeight(.normal)
+    func parseLineHeight(context _: CSS.ParseContext) -> CSS.StyleValue? {
+        .lineHeight(CSS.LineHeight.normal)
     }
 }
 
@@ -36,5 +35,25 @@ extension CSS.LineHeight: Equatable {
         default:
             false
         }
+    }
+}
+
+extension CSS.LineHeight: CSSPropertyValue {
+    typealias T = CSS.LineHeight
+
+    init?(_ styleValue: CSS.StyleValue?) {
+        switch styleValue {
+        case let .lineHeight(lineHeight):
+            self = lineHeight
+        case nil:
+            return nil
+        default:
+            FIXME("Unable to convert lineHeight from StyleValue: \(styleValue!)")
+            return nil
+        }
+    }
+
+    func styleValue() -> CSS.StyleValue {
+        .lineHeight(self)
     }
 }

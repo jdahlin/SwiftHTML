@@ -57,10 +57,10 @@ extension CSS.StyleProperties {
         case 1:
             // it applies to all sides.
             if let value = parseMargin(declaration[0]) {
-                marginTop.value = value
-                marginRight.value = value
-                marginBottom.value = value
-                marginLeft.value = value
+                marginTop = CSS.Length(value)
+                marginRight = CSS.Length(value)
+                marginBottom = CSS.Length(value)
+                marginLeft = CSS.Length(value)
             }
 
         // If there are two values,
@@ -71,10 +71,10 @@ extension CSS.StyleProperties {
             if let topBottom = parseMargin(declaration[0]),
                let leftRight = parseMargin(declaration[1])
             {
-                marginTop.value = topBottom
-                marginRight.value = leftRight
-                marginBottom.value = topBottom
-                marginLeft.value = leftRight
+                marginTop = CSS.Length(topBottom)
+                marginRight = CSS.Length(leftRight)
+                marginBottom = CSS.Length(topBottom)
+                marginLeft = CSS.Length(leftRight)
             }
 
         // If there are three values
@@ -87,10 +87,10 @@ extension CSS.StyleProperties {
                let leftRight = parseMargin(declaration[1]),
                let bottom = parseMargin(declaration[2])
             {
-                marginTop.value = top
-                marginRight.value = leftRight
-                marginBottom.value = bottom
-                marginLeft.value = leftRight
+                marginTop = CSS.Length(top)
+                marginRight = CSS.Length(leftRight)
+                marginBottom = CSS.Length(bottom)
+                marginLeft = CSS.Length(leftRight)
             }
 
         // If there are four values
@@ -102,10 +102,10 @@ extension CSS.StyleProperties {
                let bottom = parseMargin(declaration[2]),
                let left = parseMargin(declaration[3])
             {
-                marginTop.value = top
-                marginRight.value = right
-                marginBottom.value = bottom
-                marginLeft.value = left
+                marginTop = CSS.Length(top)
+                marginRight = CSS.Length(right)
+                marginBottom = CSS.Length(bottom)
+                marginLeft = CSS.Length(left)
             }
 
         default:

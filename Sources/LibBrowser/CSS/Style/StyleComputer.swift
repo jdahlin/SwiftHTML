@@ -199,21 +199,17 @@ extension CSS {
                 rootFontMetrics: rootElementFontMetrics
             )
 
-            let fontSize = style.fontSize.fontSize().length().toPx(fontMeasurements: fontMeasurements)
+            let fontSize = style.fontSize!.length().toPx(fontMeasurements: fontMeasurements)
             fontMetrics.fontSize = fontSize
 
-            if style.lineHeight.hasValue(),
-               case let .lineHeight(.percentage(number)) = style.lineHeight.value
-            {
-                style.lineHeight.value = .lineHeight(.length(.absolute(.px(fontSize * number.toDouble()))))
+            if case let .percentage(number) = style.lineHeight {
+                style.lineHeight = CSS.LineHeight(.length(.absolute(.px(fontSize * number.toDouble()))))
             }
             let lineHeight = style.calculateLineHeight(fontMeasurements: fontMeasurements)
             fontMetrics.lineHeight = lineHeight
 
-            if style.lineHeight.hasValue(),
-               case .lineHeight(.length) = style.lineHeight.value
-            {
-                style.lineHeight.value = .lineHeight(.length(CSS.Length(number: lineHeight.toDouble(), unit: "px")))
+            if case .length = style.lineHeight {
+                FIXME("set lineHeight")
             }
             for property in style {
                 guard let value = property.value else { continue }
@@ -233,8 +229,8 @@ extension CSS {
 
             // https://www.w3.org/TR/css-color-4/#resolving-other-colors
             // In the color property, the used value of currentcolor is the inherited value.
-            if case .currentColor = style.color.color() {
-                let color = getInheritValue(style: style, element: element, property: style.color)
+            if case .currentColor = style.color {
+                let color = getInheritValue(style: style, element: element, property: style.$color)
                 style.setProperty(id: .color, value: color)
             }
         }
@@ -276,7 +272,7 @@ extension CSS {
         }
 
         mutating func calculateRootElementFontMetrics(_ style: StyleProperties) -> FontMetrics {
-            let rootValue = style.fontSize.fontSize()
+            let rootValue = style.fontSize!
             let fontPixelMetrics = style.computedFont!.pixelMetrics()
             var fontMetrics = FontMetrics(
                 fontSize: defaultFontMetrics.fontSize,
@@ -328,9 +324,9 @@ extension CSS {
             computeDefaultedValues(style: &style, element: nil)
             absolutizeValues(style: &style, element: nil)
             let viewPort = viewPortRect()!
-            style.setProperty(id: .width, value: .length(CSS.Length(pixels: viewPort.width)))
-            style.setProperty(id: .height, value: .length(CSS.Length(pixels: viewPort.height)))
-            style.setProperty(id: .display, value: .display(CSS.Display(short: .block)))
+            style.width = CSS.Size(pixels: viewPort.width)
+            style.height = CSS.Size(pixels: viewPort.height)
+            style.display = CSS.Display(short: .block)
             return style
         }
     }

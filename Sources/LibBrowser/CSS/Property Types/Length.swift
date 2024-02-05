@@ -196,7 +196,7 @@ extension CSS {
         }
     }
 
-    enum Length: CustomStringConvertible {
+    enum Length: CustomStringConvertible, Equatable {
         case relative(RelativeLength)
         case absolute(AbsoluteLength)
 
@@ -309,6 +309,10 @@ extension CSS {
             return CSS.Pixels.nearestValueFor(value)
         }
 
+        func toPx(layoutNode: Layout.Node) -> CSS.Pixels {
+            toPx(fontMeasurements: layoutNode.fontMeasurements())
+        }
+
         func toPx(fontMeasurements: FontMeasurements) -> CSS.Pixels {
             switch self {
             case .absolute:
@@ -380,4 +384,22 @@ extension CSS.AbsoluteLength: Equatable {}
 
 extension CSS.RelativeLength: Equatable {}
 
-extension CSS.Length: Equatable {}
+extension CSS.Length: CSSPropertyValue {
+    typealias T = CSS.Length
+
+    init?(_ styleValue: CSS.StyleValue?) {
+        switch styleValue {
+        case let .length(length):
+            self = length
+        case nil:
+            return nil
+        default:
+            FIXME("Unable to convert length from StyleValue: \(styleValue!)")
+            return nil
+        }
+    }
+
+    func styleValue() -> CSS.StyleValue {
+        .length(self)
+    }
+}

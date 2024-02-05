@@ -80,6 +80,14 @@ extension CSS {
             lhs * Double(rhs.value)
         }
 
+        static func + (lhs: Self, rhs: Self) -> Self {
+            fromRaw(lhs.value &+ rhs.value)
+        }
+
+        static func - (lhs: Self, rhs: Self) -> Self {
+            fromRaw(lhs.value &- rhs.value)
+        }
+
         static func / (lhs: Self, rhs: Int) -> Self {
             fromRaw(lhs.value / rhs)
         }

@@ -56,10 +56,10 @@ extension CSS.StyleProperties {
         case 1:
             // it applies to all sides.
             if let padding = parsePadding(declaration[0]) {
-                paddingTop.value = padding
-                paddingRight.value = padding
-                paddingBottom.value = padding
-                paddingLeft.value = padding
+                paddingTop = CSS.Length(padding)
+                paddingRight = CSS.Length(padding)
+                paddingBottom = CSS.Length(padding)
+                paddingLeft = CSS.Length(padding)
             }
 
         // If there are two values,
@@ -70,10 +70,10 @@ extension CSS.StyleProperties {
             if let topBottom = parsePadding(declaration[0]),
                let leftRight = parsePadding(declaration[1])
             {
-                paddingTop.value = topBottom
-                paddingRight.value = leftRight
-                paddingBottom.value = topBottom
-                paddingLeft.value = leftRight
+                paddingTop = CSS.Length(topBottom)
+                paddingRight = CSS.Length(leftRight)
+                paddingBottom = CSS.Length(topBottom)
+                paddingLeft = CSS.Length(leftRight)
             }
 
         // If there are three values,
@@ -86,10 +86,10 @@ extension CSS.StyleProperties {
                let leftRight = parsePadding(declaration[1]),
                let bottom = parsePadding(declaration[2])
             {
-                paddingTop.value = top
-                paddingRight.value = leftRight
-                paddingBottom.value = bottom
-                paddingLeft.value = leftRight
+                paddingTop = CSS.Length(top)
+                paddingRight = CSS.Length(leftRight)
+                paddingBottom = CSS.Length(bottom)
+                paddingLeft = CSS.Length(leftRight)
             }
 
         // Note: comments missing from spec
@@ -102,10 +102,10 @@ extension CSS.StyleProperties {
                let bottom = parsePadding(declaration[2]),
                let left = parsePadding(declaration[3])
             {
-                paddingTop.value = top
-                paddingRight.value = right
-                paddingBottom.value = bottom
-                paddingLeft.value = left
+                paddingTop = CSS.Length(top)
+                paddingRight = CSS.Length(right)
+                paddingBottom = CSS.Length(bottom)
+                paddingLeft = CSS.Length(left)
             }
 
         default:

@@ -1,3 +1,5 @@
+import CoreText
+
 extension Layout {
     class NodeWithStyle: Node {
         var computedValues: CSS.ComputedValues
@@ -22,8 +24,7 @@ extension Layout {
         }
 
         func applyStyle(style: CSS.StyleProperties) {
-            computedValues.color = style.color.color(fallback: CSS.InitialValues.color)!
-            computedValues.display = style.display.display()
+            computedValues.apply(style: style)
         }
 
         func hasInFlowBlockChildren() -> Bool {
@@ -42,21 +43,35 @@ extension Layout {
                 computedValues: computedValues.cloneInheritedValues()
             )
         }
+
+        func firstAvailableFont() -> CTFont {
+            let font = CTFontCreateUIFontForLanguage(.system, 12, nil)
+            return font!
+        }
     }
 }
 
 extension Layout.Node {
     func printTree(indent: String = "") {
         var extra = ""
-        if isAnonymous() {
-            extra += " (anonymous)"
+        if let domNode {
+            extra += " \(domNode.nodeName ?? "")"
         } else {
-            extra += " " + String(describing: domNode)
+            extra += " (anonymous)"
         }
-
         print("\(indent)\(type(of: self))\(extra)")
         for child in children {
             child.printTree(indent: indent + "  ")
         }
+    }
+}
+
+extension Layout.Node: Hashable {
+    static func == (lhs: Layout.Node, rhs: Layout.Node) -> Bool {
+        lhs === rhs
+    }
+
+    func hash(into hasher: inout Hasher) {
+        ObjectIdentifier(self).hash(into: &hasher)
     }
 }

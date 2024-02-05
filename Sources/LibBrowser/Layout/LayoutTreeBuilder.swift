@@ -31,14 +31,13 @@ extension Layout {
             var layoutNode: Layout.Node?
             if let element = domNode as? DOM.Element {
                 style = element.computedCSSValues!
-                display = style.display.display()
-                if display.isNone() {
+                if let display = style.display, display.isNone() {
                     return
                 }
                 layoutNode = element.createLayoutNode(style: style)
             } else if let document = domNode as? DOM.Document {
                 style = styleComputer.createDocumentStyle()
-                display = style.display.display()
+                display = style.display!
                 layoutNode = Layout.ViewPort(document: document, style: style)
             } else if let textNode = domNode as? DOM.Text {
                 layoutNode = Layout.TextNode(document: domNode.ownerDocument!, domNode: textNode)
@@ -152,7 +151,7 @@ extension Layout {
 
 extension DOM.Element {
     func createLayoutNode(style: CSS.StyleProperties) -> Layout.Node {
-        let display = style.display.display()
+        let display = style.display!
         return createLayoutNodeFromDisplay(
             style: style,
             document: ownerDocument!,

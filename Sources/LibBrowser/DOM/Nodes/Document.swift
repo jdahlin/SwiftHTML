@@ -332,11 +332,45 @@ extension DOM {
 
         func updateLayout() {
             updateStyle()
+            let viewportRect = navigable!.viewportRect()
             if layoutRoot == nil {
                 let treeBuilder = Layout.TreeBuilder()
                 layoutRoot = treeBuilder.build(domNode: self)
-                layoutRoot?.printTree()
+                if let _ = documentElement {
+                    FIXME("overflow propagation")
+                }
             }
+
+            let viewPort = layoutRoot!
+
+            let layoutState = Layout.State()
+            let rootFormattingContext = Layout.BlockFormattingContext(
+                state: layoutState,
+                contextBox: viewPort,
+                parent: nil
+            )
+            let viewportState = layoutState.getMutable(node: viewPort as Layout.NodeWithStyle)
+            viewportState.contentHeight = viewportRect.height
+            viewportState.contentWidth = viewportRect.width
+
+            if let documentElement,
+               let layoutNode = documentElement.layoutNode,
+               let node = layoutNode as? Layout.NodeWithStyle
+            {
+                let icbState = layoutState.getMutable(node: node)
+                icbState.contentWidth = viewportRect.width
+            }
+
+            rootFormattingContext.run(
+                box: viewPort,
+                mode: .normal,
+                availableSpace: Layout.AvailableSpace(
+                    width: .definite(viewportRect.width),
+                    height: .definite(viewportRect.height)
+                )
+            )
+
+            layoutState.commit()
         }
     }
 }

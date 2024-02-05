@@ -19,22 +19,3 @@ extension CSS {
         }
     }
 }
-
-extension CSS.StyleProperties {
-    func parseColor(context: CSS.ParseContext) -> CSS.StyleValue? {
-        let declaration = context.parseDeclaration()
-        guard declaration.count == 1 else {
-            return nil
-        }
-        if case let .token(.ident(ident)) = declaration[0] {
-            if let named = CSS.Color.Named(string: ident) {
-                return .color(.named(named))
-            }
-            if let system = CSS.Color.System(string: ident) {
-                return .color(.system(system))
-            }
-            FIXME("Don't know how to parse color: \(ident)")
-        }
-        return nil
-    }
-}

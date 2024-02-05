@@ -11,8 +11,7 @@ extension CSS {
         case lineHeight(LineHeight)
         case length(Length)
         case percentage(Number)
-        case width(Size)
-        case height(Size)
+        case size(Size)
         case auto
 
         var description: String {
@@ -27,8 +26,6 @@ extension CSS {
                 "display(\(value))"
             case let .fontSize(value):
                 "fontSize(\(value))"
-            case let .height(value):
-                "height(\(value))"
             case .inherit:
                 "inherit"
             case .initial:
@@ -43,8 +40,8 @@ extension CSS {
                 "revert"
             case .unset:
                 "unset"
-            case let .width(value):
-                "width(\(value))"
+            case let .size(value):
+                "size(\(value))"
             }
         }
 

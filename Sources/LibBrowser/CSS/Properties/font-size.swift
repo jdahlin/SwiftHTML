@@ -211,3 +211,23 @@ extension CSS.StyleProperties {
 }
 
 extension CSS.FontSize: Equatable {}
+
+extension CSS.FontSize: CSSPropertyValue {
+    typealias T = CSS.FontSize
+
+    init?(_ styleValue: CSS.StyleValue?) {
+        switch styleValue {
+        case let .fontSize(fontSize):
+            self = fontSize
+        case nil:
+            return nil
+        default:
+            FIXME("Unable to convert font-size from StyleValue: \(styleValue!)")
+            return nil
+        }
+    }
+
+    func styleValue() -> CSS.StyleValue {
+        .fontSize(self)
+    }
+}

@@ -26,6 +26,16 @@ extension CSS {
                 "\(number)%"
             }
         }
+
+        func length() -> CSS.Pixels {
+            switch self {
+            case let .length(length):
+                return length.absoluteLengthToPx()
+            case .percentage:
+                FIXME("LengthOrPercentage resolve percentage")
+                return CSS.Pixels(0)
+            }
+        }
     }
 
     enum LengthOrPercentageOrAuto: CustomStringConvertible, Equatable {

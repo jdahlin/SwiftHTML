@@ -28,6 +28,29 @@ extension CSS {
         case height
     }
 
+    @propertyWrapper
+    struct StylePropertyWrapper<Value: CSSPropertyValue> {
+        private var value: StyleValue?
+        private(set) var projectedValue: StyleProperty
+        var wrappedValue: Value? {
+            get {
+                if let styleValue = value,
+                   let value = Value(styleValue)
+                {
+                    return value
+                }
+                return nil
+            }
+            set {
+                value = newValue?.styleValue()
+            }
+        }
+
+        init(_ id: PropertyID, inherited: Bool = false) {
+            projectedValue = StyleProperty(id: id, inherited: inherited)
+        }
+    }
+
     struct StyleProperty: CustomStringConvertible {
         let id: PropertyID
         var important: Bool = false
@@ -35,19 +58,20 @@ extension CSS {
         static var initialValues: [PropertyID: StyleValue] = [:]
         static var inheritedValues: [PropertyID: Bool] = [:]
 
-        init(id: PropertyID, important: Bool = false, initial: StyleValue, inherited: Bool = false) {
+        init(id: PropertyID, important: Bool = false, value: StyleValue? = nil, inherited _: Bool = false) {
             self.id = id
             self.important = important
-            if StyleProperty.initialValues.keys.contains(id) {
-                assert(StyleProperty.initialValues[id] == initial)
-            } else {
-                StyleProperty.initialValues[id] = initial
-            }
-            if StyleProperty.inheritedValues.keys.contains(id) {
-                assert(StyleProperty.inheritedValues[id] == inherited)
-            } else {
-                StyleProperty.inheritedValues[id] = inherited
-            }
+            self.value = value
+            // if StyleProperty.initialValues.keys.contains(id) {
+            //     assert(StyleProperty.initialValues[id] == initial)
+            // } else {
+            //     StyleProperty.initialValues[id] = initial
+            // }
+            // if StyleProperty.inheritedValues.keys.contains(id) {
+            //     assert(StyleProperty.inheritedValues[id] == inherited)
+            // } else {
+            //     StyleProperty.inheritedValues[id] = inherited
+            // }
         }
 
         var initial: StyleValue { StyleProperty.initialValues[id]! }
@@ -62,57 +86,6 @@ extension CSS {
 
         func hasValue() -> Bool {
             value != nil
-        }
-
-        func display() -> Display {
-            if case let .display(value) = value {
-                return value
-            }
-            return Display(outer: .none)
-        }
-
-        func fontSize() -> FontSize {
-            if case let .fontSize(value) = value {
-                return value
-            }
-            preconditionFailure()
-        }
-
-        func lineHeight() -> LineHeight {
-            if case let .lineHeight(value) = value {
-                return value
-            }
-            preconditionFailure()
-        }
-
-        func margin() -> Margin {
-            if case let .length(value) = value {
-                return .length(value)
-            }
-            if case let .percentage(value) = value {
-                return .percentage(value)
-            }
-            if case .auto = value {
-                return .auto
-            }
-            preconditionFailure()
-        }
-
-        func color(fallback: Color? = nil) -> Color? {
-            if case let .color(value) = value {
-                return value
-            }
-            return fallback
-        }
-
-        func padding() -> Padding {
-            if case let .length(value) = value {
-                return .length(value)
-            }
-            if case let .percentage(value) = value {
-                return .percentage(value)
-            }
-            preconditionFailure()
         }
 
         func isRevert() -> Bool {
