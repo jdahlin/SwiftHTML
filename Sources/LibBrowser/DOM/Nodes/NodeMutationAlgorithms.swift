@@ -439,8 +439,8 @@ extension DOM {
             return
         }
 
-        if parent.lastChild != nil {
-            parent.lastChild!.nextSibling = node
+        if let lastChild = parent.lastChild {
+            lastChild.nextSibling = node
         }
 
         node.previousSibling = parent.lastChild
@@ -465,8 +465,8 @@ extension DOM {
         node.previousSibling = child.previousSibling
         node.nextSibling = child
 
-        if child.previousSibling != nil {
-            child.previousSibling!.nextSibling = node
+        if let previousSibling = child.previousSibling {
+            previousSibling.nextSibling = node
         }
         if parent.firstChild == child {
             parent.firstChild = node
@@ -485,12 +485,12 @@ extension DOM {
             parent.lastChild = node.previousSibling
         }
 
-        if node.nextSibling != nil {
-            node.nextSibling!.previousSibling = node.previousSibling
+        if let nextSibling = node.nextSibling {
+            nextSibling.previousSibling = node.previousSibling
         }
 
-        if node.previousSibling != nil {
-            node.previousSibling!.nextSibling = node.nextSibling
+        if let previousSibling = node.previousSibling {
+            previousSibling.nextSibling = node.nextSibling
         }
         node.nextSibling = nil
         node.previousSibling = nil

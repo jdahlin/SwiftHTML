@@ -135,6 +135,18 @@ extension CSS {
             isNone() || isContents()
         }
 
+        func isFlow() -> Bool {
+            inner == .flow
+        }
+
+        func isInlineOutside() -> Bool {
+            outer == .inline
+        }
+
+        func isFlowInside() -> Bool {
+            inner == .flow
+        }
+
         var description: String {
             var result = "\(outer)"
             if let inner {

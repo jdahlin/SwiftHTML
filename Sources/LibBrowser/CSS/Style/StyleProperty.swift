@@ -98,11 +98,11 @@ extension CSS {
             preconditionFailure()
         }
 
-        func color() -> Color? {
+        func color(fallback: Color? = nil) -> Color? {
             if case let .color(value) = value {
                 return value
             }
-            return nil
+            return fallback
         }
 
         func padding() -> Padding {

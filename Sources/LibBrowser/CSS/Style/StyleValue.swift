@@ -11,8 +11,8 @@ extension CSS {
         case lineHeight(LineHeight)
         case length(Length)
         case percentage(Number)
-        case width(Width)
-        case height(Height)
+        case width(Size)
+        case height(Size)
         case auto
 
         var description: String {
