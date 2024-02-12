@@ -39,15 +39,15 @@ extension CSS {
                 {
                     return value
                 }
-                return nil
+                return Value(projectedValue.initial)
             }
             set {
                 value = newValue?.styleValue()
             }
         }
 
-        init(_ id: PropertyID, inherited: Bool = false) {
-            projectedValue = StyleProperty(id: id, inherited: inherited)
+        init(_ id: PropertyID, initial: StyleValue, inherited: Bool = false) {
+            projectedValue = StyleProperty(id: id, initial: initial, inherited: inherited)
         }
     }
 
@@ -58,20 +58,23 @@ extension CSS {
         static var initialValues: [PropertyID: StyleValue] = [:]
         static var inheritedValues: [PropertyID: Bool] = [:]
 
-        init(id: PropertyID, important: Bool = false, value: StyleValue? = nil, inherited _: Bool = false) {
+        init(id: PropertyID,
+             important: Bool = false,
+             initial: StyleValue? = nil,
+             inherited: Bool = false)
+        {
             self.id = id
             self.important = important
-            self.value = value
-            // if StyleProperty.initialValues.keys.contains(id) {
-            //     assert(StyleProperty.initialValues[id] == initial)
-            // } else {
-            //     StyleProperty.initialValues[id] = initial
-            // }
-            // if StyleProperty.inheritedValues.keys.contains(id) {
-            //     assert(StyleProperty.inheritedValues[id] == inherited)
-            // } else {
-            //     StyleProperty.inheritedValues[id] = inherited
-            // }
+            if StyleProperty.initialValues.keys.contains(id) {
+                assert(StyleProperty.initialValues[id] == initial)
+            } else {
+                StyleProperty.initialValues[id] = initial
+            }
+            if StyleProperty.inheritedValues.keys.contains(id) {
+                assert(StyleProperty.inheritedValues[id] == inherited)
+            } else {
+                StyleProperty.inheritedValues[id] = inherited
+            }
         }
 
         var initial: StyleValue { StyleProperty.initialValues[id]! }

@@ -56,10 +56,10 @@ extension CSS.StyleProperties {
         case 1:
             // it applies to all sides.
             if let padding = parsePadding(declaration[0]) {
-                paddingTop = CSS.Length(padding)
-                paddingRight = CSS.Length(padding)
-                paddingBottom = CSS.Length(padding)
-                paddingLeft = CSS.Length(padding)
+                paddingTop = CSS.LengthOrPercentage(padding)
+                paddingRight = CSS.LengthOrPercentage(padding)
+                paddingBottom = CSS.LengthOrPercentage(padding)
+                paddingLeft = CSS.LengthOrPercentage(padding)
             }
 
         // If there are two values,
@@ -70,10 +70,10 @@ extension CSS.StyleProperties {
             if let topBottom = parsePadding(declaration[0]),
                let leftRight = parsePadding(declaration[1])
             {
-                paddingTop = CSS.Length(topBottom)
-                paddingRight = CSS.Length(leftRight)
-                paddingBottom = CSS.Length(topBottom)
-                paddingLeft = CSS.Length(leftRight)
+                paddingTop = CSS.LengthOrPercentage(topBottom)
+                paddingRight = CSS.LengthOrPercentage(leftRight)
+                paddingBottom = CSS.LengthOrPercentage(topBottom)
+                paddingLeft = CSS.LengthOrPercentage(leftRight)
             }
 
         // If there are three values,
@@ -86,10 +86,10 @@ extension CSS.StyleProperties {
                let leftRight = parsePadding(declaration[1]),
                let bottom = parsePadding(declaration[2])
             {
-                paddingTop = CSS.Length(top)
-                paddingRight = CSS.Length(leftRight)
-                paddingBottom = CSS.Length(bottom)
-                paddingLeft = CSS.Length(leftRight)
+                paddingTop = CSS.LengthOrPercentage(top)
+                paddingRight = CSS.LengthOrPercentage(leftRight)
+                paddingBottom = CSS.LengthOrPercentage(bottom)
+                paddingLeft = CSS.LengthOrPercentage(leftRight)
             }
 
         // Note: comments missing from spec
@@ -102,10 +102,10 @@ extension CSS.StyleProperties {
                let bottom = parsePadding(declaration[2]),
                let left = parsePadding(declaration[3])
             {
-                paddingTop = CSS.Length(top)
-                paddingRight = CSS.Length(right)
-                paddingBottom = CSS.Length(bottom)
-                paddingLeft = CSS.Length(left)
+                paddingTop = CSS.LengthOrPercentage(top)
+                paddingRight = CSS.LengthOrPercentage(right)
+                paddingBottom = CSS.LengthOrPercentage(bottom)
+                paddingLeft = CSS.LengthOrPercentage(left)
             }
 
         default:

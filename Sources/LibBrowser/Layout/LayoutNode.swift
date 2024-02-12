@@ -80,19 +80,27 @@ extension Layout {
         }
 
         func fontMeasurements() -> FontMeasurements {
-            DIE("")
-            // if let nodeWithStyle = self as? NodeWithStyle {
-            //     DIE("")
-            // }
-            // guard let rootElement = document.documentElement else {
-            //     DIE("")
-            // }
-            // let fontMeasurements = FontMeasurements(
-            //     viewportRect: document.navigable!.viewportRect(),
-            //     fontMetrics: FontMetrics(fontSize: computedValues().fontSize, pixelMetrics: firstAvailableFont().pixelMetrics()),
-            //     rootFontMetrics: FontMetrics(fontSize: CSS.Pixels(16), pixelMetrics: CTFontCreateUIFontForLanguage(.system, 12, nil).pixelMetrics())
-            // )
-            // return fontMeasurements
+            guard let nodeWithStyle = self as? NodeWithStyle else {
+                DIE("not a style node")
+            }
+            guard let rootElement = document.documentElement else {
+                DIE("no document element")
+            }
+            let ctFont = CTFontCreateUIFontForLanguage(.system, 12, nil)!
+            let fontMeasurements = FontMeasurements(
+                viewportRect: document.navigable!.viewportRect(),
+                fontMetrics: FontMetrics(fontSize: computedValues().fontSize,
+                                         pixelMetrics: nodeWithStyle.firstAvailableFont().pixelMetrics()),
+                rootFontMetrics: FontMetrics(fontSize: CSS.Pixels(16), pixelMetrics: ctFont.pixelMetrics())
+            )
+            return fontMeasurements
+        }
+
+        func isRootElement() -> Bool {
+            if isAnonymous() {
+                return false
+            }
+            return domNode is HTML.HtmlElement
         }
     }
 }

@@ -131,6 +131,10 @@ extension CSS {
         func isFlowInside() -> Bool { inner == .flow }
         func isBlockOutside() -> Bool { outer == .block }
         func isFlowRootInside() -> Bool { inner == .flowRoot }
+        func isInlineBlock() -> Bool { outer == .inline && inner == .flowRoot }
+        func isFlexInside() -> Bool { inner == .flex }
+        func isGridInside() -> Bool { inner == .grid }
+        func isTableInside() -> Bool { inner == .table }
 
         var description: String {
             var result = "\(outer)"

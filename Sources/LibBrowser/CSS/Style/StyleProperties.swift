@@ -8,29 +8,29 @@ protocol CSSPropertyValue {
 
 extension CSS {
     class StyleProperties {
-        @StylePropertyWrapper<CSS.Color>(.backgroundColor) var backgroundColor
-        @StylePropertyWrapper<CSS.Color>(.color, inherited: true) var color
-        @StylePropertyWrapper<CSS.Display>(.display) var display
-        @StylePropertyWrapper<CSS.FontSize>(.fontSize, inherited: true) var fontSize
-        @StylePropertyWrapper<CSS.Length>(.insetBlockStart) var insetBlockStart
-        @StylePropertyWrapper<CSS.Length>(.insetInlineStart) var insetInlineStart
-        @StylePropertyWrapper<CSS.Length>(.insetBlockEnd) var insetBlockEnd
-        @StylePropertyWrapper<CSS.Length>(.insetInlineEnd) var insetInlineEnd
-        @StylePropertyWrapper<CSS.LineHeight>(.lineHeight) var lineHeight
-        @StylePropertyWrapper<CSS.Length>(.marginTop) var marginTop
-        @StylePropertyWrapper<CSS.Length>(.marginRight) var marginRight
-        @StylePropertyWrapper<CSS.Length>(.marginBottom) var marginBottom
-        @StylePropertyWrapper<CSS.Length>(.marginLeft) var marginLeft
-        @StylePropertyWrapper<CSS.Length>(.paddingTop) var paddingTop
-        @StylePropertyWrapper<CSS.Length>(.paddingRight) var paddingRight
-        @StylePropertyWrapper<CSS.Length>(.paddingBottom) var paddingBottom
-        @StylePropertyWrapper<CSS.Length>(.paddingLeft) var paddingLeft
-        @StylePropertyWrapper<CSS.Length>(.top) var top
-        @StylePropertyWrapper<CSS.Length>(.right) var right
-        @StylePropertyWrapper<CSS.Length>(.bottom) var bottom
-        @StylePropertyWrapper<CSS.Length>(.left) var left
-        @StylePropertyWrapper<CSS.Size>(.width) var width
-        @StylePropertyWrapper<CSS.Size>(.height) var height
+        @StylePropertyWrapper<CSS.Color>(.backgroundColor, initial: .color(InitialValues.backgroundColor)) var backgroundColor
+        @StylePropertyWrapper<CSS.Color>(.color, initial: .color(InitialValues.color), inherited: true) var color
+        @StylePropertyWrapper<CSS.Display>(.display, initial: .display(InitialValues.display)) var display
+        @StylePropertyWrapper<CSS.FontSize>(.fontSize, initial: .fontSize(.length(.absolute(.px(InitialValues.fontSize.toDouble())))), inherited: true) var fontSize
+        @StylePropertyWrapper<CSS.Length>(.insetBlockStart, initial: .length(InitialValues.insetBlockStart)) var insetBlockStart
+        @StylePropertyWrapper<CSS.Length>(.insetInlineStart, initial: .length(InitialValues.insetInlineStart)) var insetInlineStart
+        @StylePropertyWrapper<CSS.Length>(.insetBlockEnd, initial: .length(InitialValues.insetBlockEnd)) var insetBlockEnd
+        @StylePropertyWrapper<CSS.Length>(.insetInlineEnd, initial: .length(InitialValues.insetInlineEnd)) var insetInlineEnd
+        @StylePropertyWrapper<CSS.LineHeight>(.lineHeight, initial: .lineHeight(InitialValues.lineHeight)) var lineHeight
+        @StylePropertyWrapper<CSS.Length>(.marginTop, initial: InitialValues.margin.top.styleValue()) var marginTop
+        @StylePropertyWrapper<CSS.Length>(.marginRight, initial: InitialValues.margin.right.styleValue()) var marginRight
+        @StylePropertyWrapper<CSS.Length>(.marginBottom, initial: InitialValues.margin.bottom.styleValue()) var marginBottom
+        @StylePropertyWrapper<CSS.Length>(.marginLeft, initial: InitialValues.margin.left.styleValue()) var marginLeft
+        @StylePropertyWrapper<CSS.LengthOrPercentage>(.paddingTop, initial: InitialValues.padding.top.styleValue()) var paddingTop
+        @StylePropertyWrapper<CSS.LengthOrPercentage>(.paddingRight, initial: InitialValues.padding.right.styleValue()) var paddingRight
+        @StylePropertyWrapper<CSS.LengthOrPercentage>(.paddingBottom, initial: InitialValues.padding.bottom.styleValue()) var paddingBottom
+        @StylePropertyWrapper<CSS.LengthOrPercentage>(.paddingLeft, initial: InitialValues.padding.left.styleValue()) var paddingLeft
+        @StylePropertyWrapper<CSS.LengthOrPercentageOrAuto>(.top, initial: InitialValues.top.styleValue()) var top
+        @StylePropertyWrapper<CSS.LengthOrPercentageOrAuto>(.right, initial: InitialValues.right.styleValue()) var right
+        @StylePropertyWrapper<CSS.LengthOrPercentageOrAuto>(.bottom, initial: InitialValues.bottom.styleValue()) var bottom
+        @StylePropertyWrapper<CSS.LengthOrPercentageOrAuto>(.left, initial: InitialValues.left.styleValue()) var left
+        @StylePropertyWrapper<CSS.Size>(.width, initial: .size(InitialValues.width)) var width
+        @StylePropertyWrapper<CSS.Size>(.height, initial: .size(InitialValues.height)) var height
 
         var computedFont: CTFont?
 
@@ -153,35 +153,35 @@ extension CSS {
                 parsePaddingShortHand(context: context)
             case "padding-top":
                 if let value = parsePadding(context: context) {
-                    paddingTop = CSS.Length(value)
+                    paddingTop = CSS.LengthOrPercentage(value)
                 }
             case "padding-right":
                 if let value = parsePadding(context: context) {
-                    paddingRight = CSS.Length(value)
+                    paddingRight = CSS.LengthOrPercentage(value)
                 }
             case "padding-bottom":
                 if let value = parsePadding(context: context) {
-                    paddingBottom = CSS.Length(value)
+                    paddingBottom = CSS.LengthOrPercentage(value)
                 }
             case "padding-left":
                 if let value = parsePadding(context: context) {
-                    paddingLeft = CSS.Length(value)
+                    paddingLeft = CSS.LengthOrPercentage(value)
                 }
             case "top":
                 if let value = parseLengthPercentageOrAuto(context: context) {
-                    top = CSS.Length(value)
+                    top = CSS.LengthOrPercentageOrAuto(value)
                 }
             case "right":
                 if let value = parseLengthPercentageOrAuto(context: context) {
-                    right = CSS.Length(value)
+                    right = CSS.LengthOrPercentageOrAuto(value)
                 }
             case "bottom":
                 if let value = parseLengthPercentageOrAuto(context: context) {
-                    bottom = CSS.Length(value)
+                    bottom = CSS.LengthOrPercentageOrAuto(value)
                 }
             case "left":
                 if let value = parseLengthPercentageOrAuto(context: context) {
-                    left = CSS.Length(value)
+                    left = CSS.LengthOrPercentageOrAuto(value)
                 }
             case "width":
                 if let value = parseWidth(context: context) {

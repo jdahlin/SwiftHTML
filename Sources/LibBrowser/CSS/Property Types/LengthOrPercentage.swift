@@ -27,13 +27,22 @@ extension CSS {
             }
         }
 
-        func length() -> CSS.Pixels {
+        func pixels() -> CSS.Pixels {
             switch self {
             case let .length(length):
                 return length.absoluteLengthToPx()
             case .percentage:
                 FIXME("LengthOrPercentage resolve percentage")
                 return CSS.Pixels(0)
+            }
+        }
+
+        func toPx(node _: Layout.Node, referenceValue: CSS.Pixels) -> CSS.Pixels {
+            switch self {
+            case let .length(length):
+                length.absoluteLengthToPx()
+            case let .percentage(number):
+                CSS.Pixels((number.toDouble() * referenceValue) / 100)
             }
         }
     }
@@ -98,5 +107,63 @@ extension CSS.StyleProperties {
             return value
         }
         return nil
+    }
+}
+
+extension CSS.LengthOrPercentage: CSSPropertyValue {
+    typealias T = CSS.LengthOrPercentage
+
+    init?(_ styleValue: CSS.StyleValue?) {
+        guard let styleValue else {
+            return nil
+        }
+        switch styleValue {
+        case let .length(length):
+            self = .length(length)
+        case let .percentage(number):
+            self = .percentage(number)
+        default:
+            return nil
+        }
+    }
+
+    func styleValue() -> CSS.StyleValue {
+        switch self {
+        case let .length(length):
+            .length(length)
+        case let .percentage(number):
+            .percentage(number)
+        }
+    }
+}
+
+extension CSS.LengthOrPercentageOrAuto: CSSPropertyValue {
+    typealias T = CSS.LengthOrPercentageOrAuto
+
+    init?(_ styleValue: CSS.StyleValue?) {
+        guard let styleValue else {
+            return nil
+        }
+        switch styleValue {
+        case let .length(length):
+            self = .length(length)
+        case let .percentage(number):
+            self = .percentage(number)
+        case .auto:
+            self = .auto
+        default:
+            return nil
+        }
+    }
+
+    func styleValue() -> CSS.StyleValue {
+        switch self {
+        case let .length(length):
+            .length(length)
+        case let .percentage(number):
+            .percentage(number)
+        case .auto:
+            .auto
+        }
     }
 }

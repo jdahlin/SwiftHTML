@@ -1,6 +1,13 @@
 import Foundation
 
+struct Point<T> {
+    var x: T
+    var y: T
+}
+
 extension CSS {
+    typealias PixelPoint = Point<Pixels>
+
     struct Pixels {
         static let fractionalBits: Int = 6
         static let fixedPointDenominator = 1 << fractionalBits
@@ -84,12 +91,20 @@ extension CSS {
             fromRaw(lhs.value &+ rhs.value)
         }
 
+        static func + (lhs: Self, rhs: Int) -> Self {
+            fromRaw(lhs.value &+ (rhs << fractionalBits))
+        }
+
         static func - (lhs: Self, rhs: Self) -> Self {
             fromRaw(lhs.value &- rhs.value)
         }
 
         static func / (lhs: Self, rhs: Int) -> Self {
             fromRaw(lhs.value / rhs)
+        }
+
+        func round() -> Self {
+            Pixels.fromRaw((value + Self.fixedPointDenominator / 2) & ~Self.radixMask)
         }
     }
 }

@@ -53,6 +53,7 @@ extension CSS {
         @NonInhertied var borderBottom = CSS.InitialValues.borderBottom
         @NonInhertied var borderLeft = CSS.InitialValues.borderLeft
         @NonInhertied var padding = CSS.InitialValues.padding
+        @NonInhertied var margin = CSS.InitialValues.margin
         @NonInhertied var fontSize = CSS.InitialValues.fontSize
 
         func cloneInheritedValues() -> Self {
@@ -73,6 +74,9 @@ extension CSS {
             if let width = style.width {
                 self.width = width
             }
+            // if let fontSize = style.fontSize {
+            //     self.fontSize = style.$fontSize.value?.absolutized()
+            // }
         }
     }
 }
@@ -94,6 +98,16 @@ extension CSS {
         static let borderLeft: CSS.BorderData = .init()
         static let padding: CSS.LengthBox = .init()
         static let fontSize = CSS.Pixels(16)
+        static let insetBlockStart: CSS.Length = .absolute(.px(0))
+        static let insetBlockEnd: CSS.Length = .absolute(.px(0))
+        static let insetInlineStart: CSS.Length = .absolute(.px(0))
+        static let insetInlineEnd: CSS.Length = .absolute(.px(0))
+        static let lineHeight: CSS.LineHeight = .normal
+        static let margin: CSS.LengthBox = .init()
+        static let top = CSS.LengthOrPercentageOrAuto.length(.absolute(.px(0)))
+        static let right = CSS.LengthOrPercentageOrAuto.length(.absolute(.px(0)))
+        static let bottom = CSS.LengthOrPercentageOrAuto.length(.absolute(.px(0)))
+        static let left = CSS.LengthOrPercentageOrAuto.length(.absolute(.px(0)))
     }
 }
 

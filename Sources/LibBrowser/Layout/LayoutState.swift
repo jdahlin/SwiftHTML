@@ -26,8 +26,21 @@ extension Layout {
         var insetBottom = CSS.Pixels(0)
         var insetLeft = CSS.Pixels(0)
 
-        // var lineBoxes: [LineBox] = []
+        var lineBoxes: [LineBox] = []
         var containingBlockUsedValues: UsedValues?
+
+        var widthContraint: SizeConstraint = .none
+        var heightContraint: SizeConstraint = .none
+
+        var borderBoxTop: CSS.Pixels { borderTopCollapsed + paddingBottom }
+
+        var borderTopCollapsed: CSS.Pixels { useCollapsingBordersModel ? (borderTop / 2).round() : borderTop }
+
+        var useCollapsingBordersModel: Bool { overrideBorderData != nil }
+
+        var overrideBorderData: Any?
+
+        var offset: CSS.PixelPoint = .init(x: CSS.Pixels(0), y: CSS.Pixels(0))
 
         func setNode(node: Layout.NodeWithStyle, containingBlockUsedValues: UsedValues?) {
             self.node = node
@@ -38,14 +51,14 @@ extension Layout {
                 // FIXME: Box-sizing
                 let borderAndPadding = if width {
                     computedValues.borderLeft.width +
-                        computedValues.padding.left.length() +
+                        computedValues.padding.left.pixels() +
                         computedValues.borderRight.width +
-                        computedValues.padding.right.length()
+                        computedValues.padding.right.pixels()
                 } else {
                     computedValues.borderTop.width +
-                        computedValues.padding.top.length() +
+                        computedValues.padding.top.pixels() +
                         computedValues.borderBottom.width +
-                        computedValues.padding.bottom.length()
+                        computedValues.padding.bottom.pixels()
                 }
 
                 return unadjustedPixels - borderAndPadding
@@ -123,6 +136,63 @@ extension Layout {
                 }
             }
         }
+
+        func availableWithInside() -> AvailableSize {
+            switch widthContraint {
+            case .minContent:
+                .minContent(CSS.Pixels(0))
+            case .maxContent:
+                .maxContent(CSS.Pixels(Int.max))
+            case .none where hasDefiniteWidth:
+                .definite(contentWidth)
+            default:
+                .indefinite(CSS.Pixels(Int.max))
+            }
+        }
+
+        func availableHeightInside() -> AvailableSize {
+            switch heightContraint {
+            case .minContent:
+                .minContent(CSS.Pixels(0))
+            case .maxContent:
+                .maxContent(CSS.Pixels(Int.max))
+            case .none where hasDefiniteHeight:
+                .definite(contentHeight)
+            default:
+                .indefinite(CSS.Pixels(Int.max))
+            }
+        }
+
+        func availableInnerSpaceOrConstraintsFrom(_ outerSpace: AvailableSpace) -> AvailableSpace {
+            var innerWidth = availableWithInside()
+            var innerHeight = availableHeightInside()
+            if case .indefinite = innerWidth, case .definite = outerSpace.width {
+                innerWidth = outerSpace.width
+            }
+            if case .indefinite = innerHeight, case .definite = outerSpace.height {
+                innerHeight = outerSpace.height
+            }
+            return AvailableSpace(width: innerWidth, height: innerHeight)
+        }
+
+        func setContentOffset(_ offset: CSS.PixelPoint) {
+            setContentX(offset.x)
+            setContentY(offset.y)
+        }
+
+        func setContentX(_ x: CSS.Pixels) {
+            offset.x = x
+        }
+
+        func setContentY(_ y: CSS.Pixels) {
+            offset.y = y
+        }
+    }
+
+    enum SizeConstraint {
+        case none
+        case minContent
+        case maxContent
     }
 
     class State {

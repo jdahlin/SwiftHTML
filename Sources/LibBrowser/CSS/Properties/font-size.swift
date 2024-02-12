@@ -103,7 +103,7 @@ extension CSS {
         case percent(Number)
         case math
 
-        init(value: String) {
+        init?(value: String) {
             if value.hasSuffix("%") {
                 self = .percent(.Number(Double(value.dropLast())!))
             } else if value.hasSuffix("px") {
@@ -117,7 +117,7 @@ extension CSS {
                 } else if let relative = FontSizeRelative(rawValue: value) {
                     self = .relative(relative)
                 } else {
-                    DIE("font-size: \(value) not implemented")
+                    return nil
                 }
             }
         }
@@ -158,7 +158,9 @@ extension CSS {
             case let .absolute(absoluteLength):
                 absoluteLength.toPx()
             default:
-                preconditionFailure()
+                preconditionFailure(
+                    "\(self) is not an absolute length"
+                )
             }
         }
     }
