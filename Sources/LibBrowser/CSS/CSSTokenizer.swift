@@ -133,7 +133,7 @@ extension CSS {
         case badUrl
         case delim(Codepoint)
         case number(number: Number)
-        case percentage(number: Number)
+        case percentage(Percentage)
         case dimension(number: Number, unit: String)
         case whitespace
         case cdo
@@ -491,7 +491,7 @@ extension CSS {
             // Otherwise, if the next input code point is U+0025 PERCENTAGE SIGN (%), consume it. Create a <percentage-token> with the same value as number, and return it.
         } else if let c = tokenizer.peek(), c == "%" {
             try tokenizer.consume()
-            return Token.percentage(number: number)
+            return Token.percentage(Percentage(number.toDouble()))
         }
 
         // Otherwise, create a <number-token> with the same value and type flag as number, and return it.

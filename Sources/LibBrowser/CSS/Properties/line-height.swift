@@ -2,7 +2,7 @@ extension CSS {
     enum LineHeight: CustomStringConvertible {
         case normal
         case length(Length)
-        case percentage(Number)
+        case percentage(Percentage)
 
         var description: String {
             switch self {
@@ -11,7 +11,7 @@ extension CSS {
             case let .length(length):
                 length.description
             case let .percentage(percentage):
-                "\(percentage)%"
+                percentage.description
             }
         }
     }

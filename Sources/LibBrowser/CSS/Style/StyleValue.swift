@@ -10,7 +10,7 @@ extension CSS {
         case fontSize(FontSize)
         case lineHeight(LineHeight)
         case length(Length)
-        case percentage(Number)
+        case percentage(Percentage)
         case size(Size)
         case auto
 

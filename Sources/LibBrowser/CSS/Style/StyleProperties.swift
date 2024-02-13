@@ -25,10 +25,10 @@ extension CSS {
         @StylePropertyWrapper<CSS.LengthOrPercentage>(.paddingRight, initial: InitialValues.padding.right.styleValue()) var paddingRight
         @StylePropertyWrapper<CSS.LengthOrPercentage>(.paddingBottom, initial: InitialValues.padding.bottom.styleValue()) var paddingBottom
         @StylePropertyWrapper<CSS.LengthOrPercentage>(.paddingLeft, initial: InitialValues.padding.left.styleValue()) var paddingLeft
-        @StylePropertyWrapper<CSS.LengthOrPercentageOrAuto>(.top, initial: InitialValues.top.styleValue()) var top
-        @StylePropertyWrapper<CSS.LengthOrPercentageOrAuto>(.right, initial: InitialValues.right.styleValue()) var right
-        @StylePropertyWrapper<CSS.LengthOrPercentageOrAuto>(.bottom, initial: InitialValues.bottom.styleValue()) var bottom
-        @StylePropertyWrapper<CSS.LengthOrPercentageOrAuto>(.left, initial: InitialValues.left.styleValue()) var left
+        @StylePropertyWrapper<CSS.LengthOrPercentageOrAuto>(.top, initial: InitialValues.inset.top.styleValue()) var top
+        @StylePropertyWrapper<CSS.LengthOrPercentageOrAuto>(.right, initial: InitialValues.inset.right.styleValue()) var right
+        @StylePropertyWrapper<CSS.LengthOrPercentageOrAuto>(.bottom, initial: InitialValues.inset.bottom.styleValue()) var bottom
+        @StylePropertyWrapper<CSS.LengthOrPercentageOrAuto>(.left, initial: InitialValues.inset.left.styleValue()) var left
         @StylePropertyWrapper<CSS.Size>(.width, initial: .size(InitialValues.width)) var width
         @StylePropertyWrapper<CSS.Size>(.height, initial: .size(InitialValues.height)) var height
 

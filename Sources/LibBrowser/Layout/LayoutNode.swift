@@ -102,5 +102,19 @@ extension Layout {
             }
             return domNode is HTML.HtmlElement
         }
+
+        func nonAnonymousContainingBlock() -> Node? {
+            var nearestAncestorBox = containingBlock()
+            assert(nearestAncestorBox != nil)
+            while nearestAncestorBox!.isAnonymous() {
+                nearestAncestorBox = nearestAncestorBox!.containingBlock()
+                assert(nearestAncestorBox != nil)
+            }
+            return nearestAncestorBox
+        }
+
+        func isInline() -> Bool {
+            display.isInlineOutside()
+        }
     }
 }

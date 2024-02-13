@@ -202,8 +202,8 @@ extension CSS {
             let fontSize = style.fontSize!.length().toPx(fontMeasurements: fontMeasurements)
             fontMetrics.fontSize = fontSize
 
-            if case let .percentage(number) = style.lineHeight {
-                style.lineHeight = CSS.LineHeight(.length(.absolute(.px(fontSize * number.toDouble()))))
+            if case let .percentage(percentage) = style.lineHeight {
+                style.lineHeight = CSS.LineHeight(.length(.absolute(.px(fontSize * percentage.asFraction()))))
             }
             let lineHeight = style.calculateLineHeight(fontMeasurements: fontMeasurements)
             fontMetrics.lineHeight = lineHeight

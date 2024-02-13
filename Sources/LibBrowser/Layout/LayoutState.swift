@@ -32,9 +32,11 @@ extension Layout {
         var widthContraint: SizeConstraint = .none
         var heightContraint: SizeConstraint = .none
 
+        var marginBoxLeft: CSS.Pixels { borderLeftCollapsed + paddingLeft }
         var borderBoxTop: CSS.Pixels { borderTopCollapsed + paddingBottom }
 
         var borderTopCollapsed: CSS.Pixels { useCollapsingBordersModel ? (borderTop / 2).round() : borderTop }
+        var borderLeftCollapsed: CSS.Pixels { useCollapsingBordersModel ? (borderLeft / 2).round() : borderLeft }
 
         var useCollapsingBordersModel: Bool { overrideBorderData != nil }
 
@@ -78,14 +80,14 @@ extension Layout {
                     // if node.parent.isFloating { return false }
                     if !nodeParent.display.isFlowRootInside(), nodeParent.display.isFlowInside() { return false }
                     if !containingBlockHasDefiniteSize { return false }
-                    let _ = containingBlockUsedValues?.contentWidth
-                    // resolvedDefiniteSize = availableWidth
-                    //     - marginLeft
-                    //     - marginRight
-                    //     - paddingLeft
-                    //     - paddingRight
-                    //     - borderLeft
-                    //     - borderRight
+                    let availableWidth = containingBlockUsedValues!.contentWidth
+                    resolvedDefiniteSize = availableWidth
+                    resolvedDefiniteSize -= marginLeft
+                    resolvedDefiniteSize -= marginRight
+                    resolvedDefiniteSize -= paddingLeft
+                    resolvedDefiniteSize -= paddingRight
+                    resolvedDefiniteSize -= borderLeft
+                    resolvedDefiniteSize -= borderRight
                     return true
                 }
                 // FIXME: Calculated
@@ -97,7 +99,7 @@ extension Layout {
                 }
                 if case let .percentage(percentage) = size {
                     let containingBlockSize = width ? containingBlockUsedValues?.contentWidth : containingBlockUsedValues?.contentHeight
-                    resolvedDefiniteSize = containingBlockSize! * CSS.Pixels(percentage.toDouble())
+                    resolvedDefiniteSize = containingBlockSize! * CSS.Pixels(percentage.asFraction())
                     FIXME("percentage resolution")
                     return true
                 }
@@ -186,6 +188,10 @@ extension Layout {
 
         func setContentY(_ y: CSS.Pixels) {
             offset.y = y
+        }
+
+        func setContentWidth(_ width: CSS.Pixels) {
+            contentWidth = width
         }
     }
 

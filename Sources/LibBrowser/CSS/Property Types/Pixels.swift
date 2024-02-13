@@ -95,12 +95,28 @@ extension CSS {
             fromRaw(lhs.value &+ (rhs << fractionalBits))
         }
 
+        static func + (lhs: Self, rhs: Double) -> Self {
+            fromRaw(lhs.value &+ Int(rhs * Double(fixedPointDenominator)))
+        }
+
         static func - (lhs: Self, rhs: Self) -> Self {
             fromRaw(lhs.value &- rhs.value)
         }
 
         static func / (lhs: Self, rhs: Int) -> Self {
             fromRaw(lhs.value / rhs)
+        }
+
+        static prefix func - (value: Self) -> Self {
+            fromRaw(-value.value)
+        }
+
+        static func += (lhs: inout CSS.Pixels, rhs: CSS.Pixels) {
+            lhs = lhs + rhs
+        }
+
+        static func -= (lhs: inout CSS.Pixels, rhs: CSS.Pixels) {
+            lhs = lhs - rhs
         }
 
         func round() -> Self {

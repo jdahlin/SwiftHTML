@@ -21,10 +21,10 @@ extension CSS {
     }
 
     struct LengthBox: Equatable {
-        var top: LengthOrPercentage = .length(.absolute(.px(0)))
-        var right: LengthOrPercentage = .length(.absolute(.px(0)))
-        var bottom: LengthOrPercentage = .length(.absolute(.px(0)))
-        var left: LengthOrPercentage = .length(.absolute(.px(0)))
+        var top: LengthOrPercentageOrAuto = .length(.absolute(.px(0)))
+        var right: LengthOrPercentageOrAuto = .length(.absolute(.px(0)))
+        var bottom: LengthOrPercentageOrAuto = .length(.absolute(.px(0)))
+        var left: LengthOrPercentageOrAuto = .length(.absolute(.px(0)))
     }
 
     struct ComputedValues {
@@ -55,6 +55,8 @@ extension CSS {
         @NonInhertied var padding = CSS.InitialValues.padding
         @NonInhertied var margin = CSS.InitialValues.margin
         @NonInhertied var fontSize = CSS.InitialValues.fontSize
+        @NonInhertied var boxSizing: CSS.BoxSizing = CSS.InitialValues.boxSizing
+        @NonInhertied var inset: CSS.LengthBox = CSS.InitialValues.inset
 
         func cloneInheritedValues() -> Self {
             var clone = self
@@ -104,10 +106,8 @@ extension CSS {
         static let insetInlineEnd: CSS.Length = .absolute(.px(0))
         static let lineHeight: CSS.LineHeight = .normal
         static let margin: CSS.LengthBox = .init()
-        static let top = CSS.LengthOrPercentageOrAuto.length(.absolute(.px(0)))
-        static let right = CSS.LengthOrPercentageOrAuto.length(.absolute(.px(0)))
-        static let bottom = CSS.LengthOrPercentageOrAuto.length(.absolute(.px(0)))
-        static let left = CSS.LengthOrPercentageOrAuto.length(.absolute(.px(0)))
+        static let inset: CSS.LengthBox = .init()
+        static let boxSizing = CSS.BoxSizing.contentBox
     }
 }
 

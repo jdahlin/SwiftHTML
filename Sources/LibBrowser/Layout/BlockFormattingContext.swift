@@ -1,4 +1,42 @@
 extension Layout {
+    enum AutoOr<T>: Equatable {
+        case auto
+        case value(T)
+
+        func toPx(layoutNode: Layout.Node) -> CSS.Pixels {
+            switch self {
+            case .auto:
+                return CSS.Pixels(0)
+            case let .value(value):
+                if T.self == CSS.Length.self {
+                    return (value as! CSS.Length).toPx(layoutNode: layoutNode)
+                }
+                DIE()
+            }
+        }
+
+        static func == (lhs: AutoOr<T>, rhs: AutoOr<T>) -> Bool {
+            switch (lhs, rhs) {
+            case (.auto, .auto):
+                return true
+            case let (.value(lhsValue), .value(rhsValue)):
+                if T.self == CSS.Length.self {
+                    return (lhsValue as! CSS.Length) == (rhsValue as! CSS.Length)
+                }
+                DIE()
+            default:
+                return false
+            }
+        }
+
+        func isAuto() -> Bool {
+            switch self {
+            case .auto: true
+            case .value: false
+            }
+        }
+    }
+
     enum Mode {
         // Normal layout. No min-content or max-content constraints applied.
         case normal
@@ -7,165 +45,6 @@ extension Layout {
         // by considering their containing block to be 0-sized or infinitely large in the relevant axis.
         // https://drafts.csswg.org/css-sizing-3/#intrinsic-sizing
         case intrinsicSizing
-    }
-
-    class FormattingContext {
-        var state: Layout.State
-        var contextBox: Layout.Box
-        var parent: FormattingContext?
-        init(state: Layout.State, contextBox: Layout.Box, parent: FormattingContext? = nil) {
-            self.state = state
-            self.contextBox = contextBox
-            self.parent = parent
-        }
-
-        func containingBlockWithFor(node: Layout.NodeWithStyleAndBoxModelMetrics) -> CSS.Pixels {
-            // FIXME: Immutable get
-            let containingBlockState = state.getMutable(node: node.containingBlock()!)
-            let nodeState = state.getMutable(node: node)
-            return switch nodeState.widthContraint {
-            case .none:
-                containingBlockState.contentWidth
-            case .minContent:
-                CSS.Pixels(0)
-            case .maxContent:
-                CSS.Pixels(Int.max)
-            }
-        }
-
-        // https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Block_formatting_context
-        func createsBlockFormattingContext(_ box: Box) -> Bool {
-            // NOTE: Replaced elements never create a BFC.
-            // if (box.is_replaced_box())
-            //     return false;
-
-            // display: table
-            // if (box.display().is_table_inside()) {
-            //     return false;
-            // }
-
-            // display: flex
-            if box.display.isFlexInside() {
-                return false
-            }
-
-            // display: grid
-            // if (box.display().is_grid_inside()) {
-            //     return false;
-            // }
-
-            // NOTE: This function uses MDN as a reference, not because it's authoritative,
-            //       but because they've gathered all the conditions in one convenient location.
-
-            // The root element of the document (<html>).
-            if box.isRootElement() {
-                return true
-            }
-
-            // Floats (elements where float isn't none).
-            // if (box.is_floating())
-            //     return true;
-
-            // Absolutely positioned elements (elements where position is absolute or fixed).
-            // if (box.is_absolutely_positioned())
-            //     return true;
-
-            // Inline-blocks (elements with display: inline-block).
-            if box.display.isInlineBlock() {
-                return true
-            }
-
-            // Table cells (elements with display: table-cell, which is the default for HTML table cells).
-            // if (box.display().is_table_cell())
-            //     return true;
-
-            // Table captions (elements with display: table-caption, which is the default for HTML table captions).
-            // if (box.display().is_table_caption())
-            //     return true;
-
-            // FIXME: Anonymous table cells implicitly created by the elements with display: table, table-row, table-row-group, table-header-group, table-footer-group
-            //        (which is the default for HTML tables, table rows, table bodies, table headers, and table footers, respectively), or inline-table.
-
-            // Block elements where overflow has a value other than visible and clip.
-            // CSS::Overflow overflow_x = box.computed_values().overflow_x();
-            // if ((overflow_x != CSS::Overflow::Visible) && (overflow_x != CSS::Overflow::Clip))
-            //     return true;
-            // CSS::Overflow overflow_y = box.computed_values().overflow_y();
-            // if ((overflow_y != CSS::Overflow::Visible) && (overflow_y != CSS::Overflow::Clip))
-            //     return true;
-
-            // display: flow-root.
-            if box.display.isFlowRootInside() {
-                return true
-            }
-
-            // FIXME: Elements with contain: layout, content, or paint.
-
-            if let parent = box.parent {
-                let parentDisplay = parent.display
-
-                // Flex items (direct children of the element with display: flex or inline-flex) if they are neither flex nor grid nor table containers themselves.
-                if parentDisplay.isFlexInside() {
-                    return true
-                }
-                // Grid items (direct children of the element with display: grid or inline-grid) if they are neither flex nor grid nor table containers themselves.
-                if parentDisplay.isGridInside() {
-                    return true
-                }
-            }
-
-            // FIXME: Multicol containers (elements where column-count or
-            // column-width isn't auto, including elements with column-count:
-            // 1).
-
-            // FIXME: column-span: all should always create a new formatting
-            // context, even when the column-span: all element isn't contained
-            // by a multicol container (Spec change, Chrome bug).
-
-            return false
-        }
-
-        enum ContextType {
-            case block
-            case inline
-            case flex
-            case grid
-            case table
-        }
-
-        func formattingContextTypeCreatedByBox(_ box: Box) -> FormattingContext.ContextType? {
-            // if !box.canHaveChildren {
-            //     return nil
-            // }
-
-            let display = box.display
-            if display.isFlexInside() {
-                return .flex
-            }
-            if display.isTableInside() {
-                return .table
-            }
-            if display.isGridInside() {
-                return .grid
-            }
-            if createsBlockFormattingContext(box) {
-                return .block
-            }
-            return nil
-        }
-
-        func createIndependentFormattingContextIfNeeded(_ state: Layout.State, _ childBox: Layout.Box) -> BlockFormattingContext? {
-            guard let contextType = formattingContextTypeCreatedByBox(childBox) else {
-                return nil
-            }
-
-            return switch contextType {
-            case .block:
-                BlockFormattingContext(state: state, contextBox: childBox, parent: self)
-            default:
-                DIE("\(contextType)")
-            }
-        }
     }
 
     enum AvailableSize: Equatable {
@@ -180,6 +59,15 @@ extension Layout {
             }
             return value
         }
+
+        func isIntrinsicSizingConstraint() -> Bool {
+            switch self {
+            case .minContent, .maxContent:
+                true
+            default:
+                false
+            }
+        }
     }
 
     struct AvailableSpace: Equatable {
@@ -190,6 +78,7 @@ extension Layout {
     struct BlockMarginState {
         var currentCollapsibleMargins: [CSS.Pixels]
         var blockContainerYPositionUpdateCallback: ((CSS.Pixels) -> Void)?
+        var boxLastInFlowChildMarginBottomCollapsed = false
 
         mutating func addMargin(_ margin: CSS.Pixels) {
             currentCollapsibleMargins.append(margin)
@@ -250,23 +139,72 @@ extension Layout {
             contextBox as! BlockContainer
         }
 
-        func run(box _: Layout.Box, mode: Mode, availableSpace: AvailableSpace) {
+        override func run(box _: Layout.Box, mode: Mode, availableSpace: AvailableSpace) {
             let blockContainer = root()
             if blockContainer.childrenAreInline {
-                layoutInlineChildren(blockContainer: blockContainer, mode, availableSpace)
+                layoutInlineChildren(blockContainer: blockContainer, mode: mode, availableSpace: availableSpace)
             } else {
-                layoutBlockLevelChildren(blockContainer: blockContainer, mode, availableSpace)
+                layoutBlockLevelChildren(blockContainer: blockContainer, mode: mode, availableSpace: availableSpace)
             }
         }
 
-        func layoutInlineChildren(blockContainer _: BlockContainer, _: Mode, _: AvailableSpace) {
-            DIE()
+        func layoutInlineChildren(blockContainer: BlockContainer, mode: Mode, availableSpace: AvailableSpace) {
+            assert(blockContainer.childrenAreInline)
+            let blockContainerState = state.getMutable(node: blockContainer)
+            let inlineContext = InlineFormattingContext(state: state, contextBox: blockContainer, parent: self)
+
+            inlineContext.run(box: blockContainer, mode: mode, availableSpace: availableSpace)
+
+            if !blockContainerState.hasDefiniteWidth {
+                var usedWidthPx = inlineContext.automaticContentWidth
+                let containingBlockWidth = state.getMutable(node: blockContainer).contentWidth
+                let availableWidth = AvailableSize.definite(containingBlockWidth)
+                if !shouldTreatMaxWidthAsNone(box: blockContainer, availableWidth: availableSpace.width) {
+                    let maxWidthPx = calculateInnerWidth(
+                        box: blockContainer,
+                        availableWidth: availableWidth,
+                        width: blockContainer.computedValues.maxWidth
+                    )
+                    if usedWidthPx > maxWidthPx {
+                        usedWidthPx = maxWidthPx
+                    }
+                }
+
+                let shouldTreatMinWidthAsAuto = switch (blockContainer.computedValues.minWidth, availableSpace.width) {
+                case (.auto, _):
+                    true
+                case let (.fitContent, availableWidth) where availableWidth.isIntrinsicSizingConstraint():
+                    true
+                case (.maxContent, .maxContent):
+                    true
+                case (.minContent, .minContent):
+                    true
+                default: false
+                }
+
+                if shouldTreatMinWidthAsAuto {
+                    let minWidthPx = calculateInnerWidth(
+                        box: blockContainer,
+                        availableWidth: availableWidth,
+                        width: blockContainer.computedValues.minWidth
+                    )
+                    if usedWidthPx < minWidthPx {
+                        usedWidthPx = minWidthPx
+                    }
+                }
+
+                blockContainerState.contentWidth = usedWidthPx
+            }
+
+            if !blockContainerState.hasDefiniteHeight {
+                blockContainerState.contentHeight = inlineContext.automaticContentHeight
+            }
         }
 
-        func layoutBlockLevelChildren(blockContainer: BlockContainer, _ mode: Mode, _ availableSpace: AvailableSpace) {
+        func layoutBlockLevelChildren(blockContainer: BlockContainer, mode: Mode, availableSpace: AvailableSpace) {
             assert(mode == .normal)
 
-            var bottomOfLowestMarginBox = 0
+            var bottomOfLowestMarginBox = CSS.Pixels(0)
             blockContainer.children
                 .filter { $0 is Box }
                 .forEach { box in
@@ -284,10 +222,10 @@ extension Layout {
         func layoutBlockLevelBox(box: Layout.Box,
                                  blockContainer _: BlockContainer,
                                  mode: Mode,
-                                 bottomOfLowestMarginBox _: inout Int,
+                                 bottomOfLowestMarginBox: inout CSS.Pixels,
                                  availableSpace: AvailableSpace)
         {
-            var boxState = state.getMutable(node: box)
+            let boxState = state.getMutable(node: box)
 
             // FIXME: absolute
             // FIXME: list-item-marker-box
@@ -298,7 +236,7 @@ extension Layout {
             let y = yOffsetOfCurrentBlockContainer ?? CSS.Pixels(0)
 
             // FIXME: quirks
-            var boxIsHtmlElementInQuirksMode = false
+            let boxIsHtmlElementInQuirksMode = false
             if boxState.hasDefiniteHeight || boxIsHtmlElementInQuirksMode {
                 computeHeight(box: box, availableSpace: availableSpace)
             }
@@ -316,26 +254,69 @@ extension Layout {
 
             placeBlockLevelElementInNormalFlowVertically(childBox: box, y: y + marginTop)
             computeWidth(box: box, availableSpace: availableSpace, mode: mode)
-            DIE()
+            placeBlockLevelElementInNormalFlowHorizontally(childBox: box, availableSpace: availableSpace)
+
+            // FIXME: replaced/flex
+
+            if independentFormattingContext != nil {
+                independentFormattingContext!.run(box: box, mode: mode, availableSpace: availableSpace)
+            } else {
+                if box.childrenAreInline {
+                    let innerSpace = boxState.availableInnerSpaceOrConstraintsFrom(availableSpace)
+                    layoutInlineChildren(
+                        blockContainer: box as! BlockContainer,
+                        mode: mode,
+                        availableSpace: innerSpace
+                    )
+                } else {
+                    DIE("!independentFormattingContext !inline")
+                }
+            }
+
+            // FIXME: table
+
+            if independentFormattingContext != nil /* || marginsCollapseThrough(box, state) */ {
+                yOffsetOfCurrentBlockContainer = boxState.offset.y + boxState.contentHeight
+            }
+            marginState.boxLastInFlowChildMarginBottomCollapsed = false
+            marginState.addMargin(boxState.marginBottom)
+            marginState.updateBlockWaitingForFinalYPosition()
+            computeInset(box: box)
+
+            // FIXME: list item box
+
+            bottomOfLowestMarginBox = max(bottomOfLowestMarginBox, boxState.offset.y + boxState.contentHeight)
+            if independentFormattingContext != nil {
+                DIE()
+            }
         }
 
         func placeBlockLevelElementInNormalFlowVertically(childBox: Box, y: CSS.Pixels) {
             let boxState = state.getMutable(node: childBox)
-            var newY = y + boxState.borderBoxTop
+            let newY = y + boxState.borderBoxTop
             boxState.setContentOffset(CSS.PixelPoint(x: boxState.offset.x, y: newY))
+        }
+
+        func placeBlockLevelElementInNormalFlowHorizontally(childBox: Box, availableSpace: AvailableSpace) {
+            let boxState = state.getMutable(node: childBox)
+            var x = availableSpace.width.toPxOrZero()
+            // FIXME: float
+            // FIME: text-align
+            x += boxState.marginBoxLeft
+            boxState.setContentOffset(CSS.PixelPoint(x: x, y: boxState.offset.y))
         }
 
         func resolveVerticalBoxModelMetrics(box: Layout.Box) {
             let boxState = state.getMutable(node: box)
             let computedValues = box.computedValues
-            let widthOfContainingBlock = containingBlockWithFor(node: box)
+            let widthOfContainingBlock = containingBlockWidthFor(node: box)
 
-            boxState.marginTop = computedValues.margin.top.toPx(node: box, referenceValue: widthOfContainingBlock)
-            boxState.marginBottom = computedValues.margin.bottom.toPx(node: box, referenceValue: widthOfContainingBlock)
+            boxState.marginTop = computedValues.margin.top.toPx(layoutNode: box, referenceValue: widthOfContainingBlock)
+            boxState.marginBottom = computedValues.margin.bottom.toPx(layoutNode: box, referenceValue: widthOfContainingBlock)
             boxState.borderTop = computedValues.borderTop.width
             boxState.borderBottom = computedValues.borderBottom.width
-            boxState.paddingTop = computedValues.padding.top.toPx(node: box, referenceValue: widthOfContainingBlock)
-            boxState.paddingBottom = computedValues.padding.bottom.toPx(node: box, referenceValue: widthOfContainingBlock)
+            boxState.paddingTop = computedValues.padding.top.toPx(layoutNode: box, referenceValue: widthOfContainingBlock)
+            boxState.paddingBottom = computedValues.padding.bottom.toPx(layoutNode: box, referenceValue: widthOfContainingBlock)
         }
 
         func computeHeight(box: Layout.Box, availableSpace: AvailableSpace) {
@@ -344,7 +325,7 @@ extension Layout {
             // FIXME: Replaced Element
             if shouldTreatHeightAsAuto(box: box, availableSpace: availableSpace) {
                 let newAvailableSpace = state.getMutable(node: box).availableInnerSpaceOrConstraintsFrom(availableSpace)
-                computeAutoHeightForBlockLevelElement(box: box, availableSpace: newAvailableSpace)
+                height = computeAutoHeightForBlockLevelElement(box: box, availableSpace: newAvailableSpace)
             }
 
             switch computedValues.minHeight {
@@ -364,11 +345,11 @@ extension Layout {
             // FIXME: replaced
             let computedValues = box.computedValues
             let widthOfContainingBlock = remainingAvailableSpace.width.toPxOrZero()
-            let zeroValue = CSS.Pixels(0)
+            let zeroValue = CSS.Length(0.0)
             var marginLeft: CSS.LengthOrPercentageOrAuto = .auto
             var marginRight: CSS.LengthOrPercentageOrAuto = .auto
-            let paddingLeft = computedValues.padding.left.toPx(node: box, referenceValue: widthOfContainingBlock)
-            let paddingRight = computedValues.padding.right.toPx(node: box, referenceValue: widthOfContainingBlock)
+            let paddingLeft = computedValues.padding.left.toPx(layoutNode: box, referenceValue: widthOfContainingBlock)
+            let paddingRight = computedValues.padding.right.toPx(layoutNode: box, referenceValue: widthOfContainingBlock)
 
             let boxState = state.getMutable(node: box)
             boxState.borderLeft = computedValues.borderLeft.width
@@ -381,14 +362,120 @@ extension Layout {
                 return
             }
 
-            func tryComputeWidth(aWidth _: CSS.Length) {}
+            func tryComputeWidth(inputWidth: AutoOr<CSS.Length>) -> AutoOr<CSS.Length> {
+                var width = inputWidth
+                var marginLeft = computedValues.margin.left.resolved(layoutNode: box, referenceValue: widthOfContainingBlock)
+                var marginRight = computedValues.margin.right.resolved(layoutNode: box, referenceValue: widthOfContainingBlock)
+                var totalPx = CSS.Pixels(0)
+                totalPx += computedValues.borderLeft.width
+                totalPx += marginLeft.toPx(layoutNode: box)
+                totalPx += paddingLeft
+                totalPx += width.toPx(layoutNode: box)
+                totalPx += paddingRight
+                totalPx += marginRight.toPx(layoutNode: box)
+                totalPx += computedValues.borderRight.width
 
-            let inputWidth: CSS.LengthOrPercentageOrAuto = {
+                if !box.isInline() {
+                    // 10.3.3 Block-level, non-replaced elements in normal flow
+                    // If 'width' is not 'auto' and 'border-left-width' + 'padding-left' + 'width' + 'padding-right' + 'border-right-width' (plus any of 'margin-left' or 'margin-right' that are not 'auto') is larger than the width of the containing block, then any 'auto' values for 'margin-left' or 'margin-right' are, for the following rules, treated as zero.
+                    if width != .auto, totalPx > widthOfContainingBlock {
+                        if case .auto = marginLeft {
+                            marginLeft = .value(zeroValue)
+                        }
+                        if marginRight.isAuto() {
+                            marginRight = .value(zeroValue)
+                        }
+                    }
+
+                    // 10.3.3 cont'd.
+                    var underflowPx = widthOfContainingBlock - totalPx
+                    if availableSpace.width.isIntrinsicSizingConstraint() {
+                        underflowPx = CSS.Pixels(0)
+                    }
+
+                    if width.isAuto() {
+                        if case .auto = marginLeft {
+                            marginLeft = .value(zeroValue)
+                        }
+                        if marginRight.isAuto() {
+                            marginRight = .value(zeroValue)
+                        }
+
+                        if case .definite = availableSpace.width {
+                            if underflowPx >= CSS.Pixels(0) {
+                                width = .value(CSS.Length(underflowPx))
+                            } else {
+                                width = .value(zeroValue)
+                                marginRight = .value(CSS.Length(marginRight.toPx(layoutNode: box) + underflowPx))
+                            }
+                        }
+                    } else {
+                        switch (marginLeft, marginRight) {
+                        case (.auto, .auto):
+                            let half: AutoOr<CSS.Length> = .value(CSS.Length(underflowPx / 2))
+                            marginLeft = half
+                            marginRight = half
+                        case (.auto, _):
+                            marginLeft = .value(CSS.Length(underflowPx))
+                        case (_, .auto):
+                            marginRight = .value(CSS.Length(underflowPx))
+                        case (_, _):
+                            marginRight = .value(CSS.Length(marginRight.toPx(layoutNode: box) + underflowPx))
+                        }
+                    }
+                }
+                return width
+            }
+
+            let inputWidth: AutoOr<CSS.Length> = {
                 if shouldTreatHeightAsAuto(box: box, availableSpace: remainingAvailableSpace) {
                     return .auto
                 }
-                return .length(.absolute(.px(calculateInnerWidth(box: box, availableSpace: remainingAvailableSpace, width: computedValues.width))))
+                let innerWidth = self.calculateInnerWidth(
+                    box: box,
+                    availableWidth: remainingAvailableSpace.width,
+                    width: computedValues.width
+                )
+                let value = innerWidth.toDouble()
+                return .value(.absolute(.px(value)))
             }()
+
+            // 1. The tentative used width is calculated (without 'min-width' and 'max-width')
+            var usedWidth = tryComputeWidth(inputWidth: inputWidth)
+
+            // 2. The tentative used width is greater than 'max-width', the rules above are applied again,
+            //    but this time using the computed value of 'max-width' as the computed value for 'width'.
+            if !shouldTreatMaxWidthAsNone(box: box, availableWidth: availableSpace.width) {
+                let maxWidth = calculateInnerWidth(box: box, availableWidth: remainingAvailableSpace.width, width: computedValues.maxWidth)
+                let usedWidthPx = if case .auto = usedWidth {
+                    CSS.Pixels(0)
+                } else {
+                    usedWidth.toPx(layoutNode: box)
+                }
+                if usedWidthPx > maxWidth {
+                    usedWidth = tryComputeWidth(inputWidth: .value(CSS.Length(maxWidth)))
+                }
+            }
+
+            // 3. If the resulting width is smaller than 'min-width', the rules above are applied again,
+            //    but this time using the value of 'min-width' as the computed value for 'width'.
+            if computedValues.minWidth != .auto {
+                let minWidth = calculateInnerWidth(box: box, availableWidth: remainingAvailableSpace.width, width: computedValues.minWidth)
+                let usedWidthPx = if case .auto = usedWidth {
+                    remainingAvailableSpace.width
+                } else {
+                    AvailableSize.definite(usedWidth.toPx(layoutNode: box))
+                }
+                if usedWidthPx.toPxOrZero() < minWidth {
+                    usedWidth = tryComputeWidth(inputWidth: .value(CSS.Length(minWidth)))
+                }
+            }
+
+            if true {
+                boxState.setContentWidth(usedWidth.toPx(layoutNode: box))
+            }
+            boxState.marginLeft = marginLeft.toPx(layoutNode: box)
+            boxState.marginRight = marginRight.toPx(layoutNode: box)
         }
 
         func shouldTreatHeightAsAuto(box: Layout.Box, availableSpace: AvailableSpace) -> Bool {
@@ -420,7 +507,7 @@ extension Layout {
 
         // https://www.w3.org/TR/CSS22/visudet.html#root-height
         func computeAutoHeightForBlockFormattingContextRoot(_ root: Box) -> CSS.Pixels {
-            var top: CSS.Pixels?
+            let top: CSS.Pixels?
             let bottom: CSS.Pixels?
 
             if root.childrenAreInline {
@@ -435,9 +522,29 @@ extension Layout {
             DIE("continue")
         }
 
-        func calculateInnerWidth(box _: Layout.Box, availableSpace _: AvailableSpace, width _: CSS.Size) -> Double {
-            // return width.toPx(node: box, referenceValue: availableSpace.width.toPxOrZero()).toDouble()
-            DIE()
+        func calculateInnerWidth(box: Layout.Box, availableWidth: AvailableSize, width: CSS.Size) -> CSS.Pixels {
+            let widthOfContainingBlock = availableWidth.toPxOrZero()
+            switch width {
+            case .auto:
+                DIE("width cannot be auto here")
+            case .fitContent:
+                FIXME("fit-content not implemented")
+                return CSS.Pixels(0)
+            case .maxContent:
+                FIXME("max-content not implemented")
+                return CSS.Pixels(0)
+            case .minContent:
+                FIXME("min-content not implemented")
+                return CSS.Pixels(0)
+            default:
+                break
+            }
+            let computedValues = box.computedValues
+            if computedValues.boxSizing == CSS.BoxSizing.borderBox {
+                FIXME("border box")
+                return CSS.Pixels(0)
+            }
+            return width.toPx(node: box, referenceValue: widthOfContainingBlock)
         }
     }
 }

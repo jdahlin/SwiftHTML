@@ -200,8 +200,12 @@ extension CSS {
         case relative(RelativeLength)
         case absolute(AbsoluteLength)
 
-        init(pixels: CSS.Pixels) {
+        init(_ pixels: CSS.Pixels) {
             self = .absolute(.px(pixels.toDouble()))
+        }
+
+        init(_ double: Double) {
+            self = .absolute(.px(double))
         }
 
         init(number: Double, unit: String) {
@@ -275,6 +279,15 @@ extension CSS {
                 let pixels = toPx(fontMeasurements: fontMeasurements)
                 let value = pixels.toDouble()
                 return .absolute(.px(value))
+            }
+        }
+
+        func percentageOf(_ percentage: Percentage) -> Self {
+            switch self {
+            case let .absolute(.px(value)):
+                .absolute(.px(percentage.asFraction() * value))
+            default:
+                DIE("")
             }
         }
 

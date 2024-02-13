@@ -1,7 +1,7 @@
 extension CSS {
     enum LengthOrPercentage: CustomStringConvertible, EnumStringInit, Equatable {
         case length(Length)
-        case percentage(Number)
+        case percentage(Percentage)
 
         static func zero() -> LengthOrPercentage {
             .length(.absolute(.px(0)))
@@ -9,7 +9,7 @@ extension CSS {
 
         init(value: String) {
             if value.hasSuffix("%") {
-                self = .percentage(.Number(Double(value.dropLast())!))
+                self = .percentage(Percentage(Double(value.dropLast())!))
             } else if value.hasSuffix("px") {
                 let number = Double(value.dropLast(2))!
                 self = .length(Length(number: number, unit: "px"))
@@ -37,19 +37,23 @@ extension CSS {
             }
         }
 
-        func toPx(node _: Layout.Node, referenceValue: CSS.Pixels) -> CSS.Pixels {
+        func resolved(layoutNode _: Layout.Node, referenceValue: CSS.Pixels) -> CSS.Length {
             switch self {
             case let .length(length):
-                length.absoluteLengthToPx()
-            case let .percentage(number):
-                CSS.Pixels((number.toDouble() * referenceValue) / 100)
+                length
+            case let .percentage(percentage):
+                .absolute(.px(percentage.asFraction() * referenceValue.toDouble()))
             }
+        }
+
+        func toPx(layoutNode: Layout.Node, referenceValue: CSS.Pixels) -> CSS.Pixels {
+            resolved(layoutNode: layoutNode, referenceValue: referenceValue).toPx(layoutNode: layoutNode)
         }
     }
 
     enum LengthOrPercentageOrAuto: CustomStringConvertible, Equatable {
         case length(Length)
-        case percentage(Number)
+        case percentage(Percentage)
         case auto
 
         static func zero() -> LengthOrPercentageOrAuto {
@@ -64,6 +68,44 @@ extension CSS {
                 "\(number)%"
             case .auto:
                 "auto"
+            }
+        }
+
+        func toPx(layoutNode: Layout.Node, referenceValue: CSS.Pixels) -> CSS.Pixels {
+            resolved(layoutNode: layoutNode, referenceValue: referenceValue).toPx(layoutNode: layoutNode)
+        }
+
+        func toPx(layoutNode: Layout.Node) -> CSS.Pixels {
+            switch self {
+            case let .length(length):
+                return length.toPx(layoutNode: layoutNode)
+            default:
+                FIXME("LengthOrPercentageOrAuto toPx")
+                return CSS.Pixels(0)
+            }
+        }
+
+        func resolved(layoutNode _: Layout.Node, referenceValue: CSS.Pixels) -> Layout.AutoOr<CSS.Length> {
+            switch self {
+            case let .length(length):
+                .value(length)
+            case let .percentage(percentage):
+                .value(.absolute(.px(percentage.asFraction() * referenceValue.toDouble())))
+            case .auto:
+                .value(CSS.Length(0))
+            }
+        }
+
+        func pixels() -> CSS.Pixels {
+            switch self {
+            case let .length(length):
+                return length.absoluteLengthToPx()
+            case .percentage:
+                FIXME("LengthOrPercentage resolve percentage")
+                return CSS.Pixels(0)
+            case .auto:
+                FIXME("LengthOrPercentage resolve auto")
+                return CSS.Pixels(0)
             }
         }
     }
@@ -120,8 +162,8 @@ extension CSS.LengthOrPercentage: CSSPropertyValue {
         switch styleValue {
         case let .length(length):
             self = .length(length)
-        case let .percentage(number):
-            self = .percentage(number)
+        case let .percentage(percentage):
+            self = .percentage(percentage)
         default:
             return nil
         }

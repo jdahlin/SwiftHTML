@@ -1,7 +1,7 @@
 extension CSS {
     enum Size: Equatable {
         case length(Length)
-        case percentage(Number)
+        case percentage(Percentage)
         case auto
         case none
         case maxContent
@@ -10,6 +10,30 @@ extension CSS {
 
         init(pixels: CSS.Pixels) {
             self = .length(.absolute(.px(pixels.toDouble())))
+        }
+
+        func toPx(node: Layout.Node, referenceValue: CSS.Pixels) -> CSS.Pixels {
+            switch self {
+            case let .length(length):
+                length.absoluteLengthToPx()
+            case let .percentage(percentage):
+                CSS.Pixels(percentage.value * referenceValue.toDouble())
+            case .auto, .none, .maxContent, .minContent:
+                DIE()
+            case let .fitContent(lengthOrPercentage):
+                lengthOrPercentage?.toPx(layoutNode: node, referenceValue: referenceValue) ?? CSS.Pixels(0)
+            }
+        }
+
+        func containsPercentage() -> Bool {
+            switch self {
+            case .length:
+                false
+            case .percentage:
+                true
+            case .auto, .none, .maxContent, .minContent, .fitContent:
+                false
+            }
         }
     }
 }
