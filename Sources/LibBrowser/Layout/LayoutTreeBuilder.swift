@@ -31,7 +31,7 @@ extension Layout {
             var layoutNode: Layout.Node?
             if let element = domNode as? DOM.Element {
                 style = element.computedCSSValues!
-                if let display = style.display, display.isNone() {
+                if style.display!.isNone() {
                     return
                 }
                 layoutNode = element.createLayoutNode(style: style)

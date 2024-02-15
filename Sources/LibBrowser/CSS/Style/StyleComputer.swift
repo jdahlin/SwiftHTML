@@ -47,9 +47,9 @@ extension CSS {
 
         func cascadeDeclarations(
             style: inout StyleProperties,
-            element: DOM.Element,
+            element _: DOM.Element,
             rules: [CSSOM.CSSStyleRule],
-            cascadeOrigin: CSS.CascadeOrigin,
+            cascadeOrigin _: CSS.CascadeOrigin,
             important: Bool
         ) {
             var properties: [(CSS.StyleProperty, CSSOM.CSSStyleDeclaration)] = []
@@ -74,7 +74,7 @@ extension CSS {
                     continue
                 }
 
-                print("\(element): \(property.id)=\(property.value) \(cascadeOrigin)")
+//                print("\(element): \(property.id)=\(property.value) \(cascadeOrigin)")
                 setProperty(
                     style: &style,
                     property: property,
@@ -270,7 +270,7 @@ extension CSS {
         }
 
         func computeDefaultedPropertyValue(style: inout StyleProperties, element: DOM.Element?, property: inout StyleProperty) {
-            if !property.hasValue() {
+            if case .unresolved = property.value {
                 if property.inherited {
                     if let value = getInheritValue(style: style, element: element, property: property) {
                         style.setProperty(id: property.id, value: value)

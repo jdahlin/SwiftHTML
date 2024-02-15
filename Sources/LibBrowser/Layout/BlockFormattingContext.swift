@@ -269,7 +269,16 @@ extension Layout {
                         availableSpace: innerSpace
                     )
                 } else {
-                    DIE("!independentFormattingContext !inline")
+                    if boxState.borderTop > CSS.Pixels(0) || boxState.paddingTop > CSS.Pixels(0) {
+                        marginState.reset()
+                    } else if marginState.hasBlockContainerWaitingForFinalYPosition() {
+                        FIXME("margin top")
+                    }
+                    layoutBlockLevelChildren(
+                        blockContainer: box as! BlockContainer,
+                        mode: mode,
+                        availableSpace: boxState.availableInnerSpaceOrConstraintsFrom(availableSpace)
+                    )
                 }
             }
 
@@ -287,7 +296,7 @@ extension Layout {
 
             bottomOfLowestMarginBox = max(bottomOfLowestMarginBox, boxState.offset.y + boxState.contentHeight)
             if independentFormattingContext != nil {
-                DIE()
+                FIXME("parent_context_did_dimension_child_root_box")
             }
         }
 
@@ -526,7 +535,8 @@ extension Layout {
             let widthOfContainingBlock = availableWidth.toPxOrZero()
             switch width {
             case .auto:
-                DIE("width cannot be auto here")
+                FIXME("width cannot be auto here")
+                return CSS.Pixels(0)
             case .fitContent:
                 FIXME("fit-content not implemented")
                 return CSS.Pixels(0)

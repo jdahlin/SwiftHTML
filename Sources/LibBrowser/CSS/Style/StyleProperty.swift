@@ -49,7 +49,7 @@ extension CSS {
         }
     }
 
-    struct StyleProperty: CustomStringConvertible {
+    class StyleProperty: CustomStringConvertible {
         let id: PropertyID
         var important: Bool = false
         var value: StyleValue = .unresolved
@@ -82,19 +82,11 @@ extension CSS {
             "\(id): \(value)\(important ? " !important" : "")"
         }
 
-        func hasValue() -> Bool {
-            unresolved()
-        }
-
         func resolved() -> Bool {
             if case .unresolved = value {
                 return false
             }
             return true
-        }
-
-        func unresolved() -> Bool {
-            !resolved()
         }
 
         func isRevert() -> Bool {

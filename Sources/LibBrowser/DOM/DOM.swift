@@ -56,6 +56,11 @@ extension Layout {
             }
         }
 
+        if let text = layoutNode.domNode as? DOM.Text {
+            let data = text.data.replacingOccurrences(of: "\n", with: "\\n")
+            identifier.append(" \"\(data)\"")
+        }
+
         var builder = ""
         builder.append("\(type(of: layoutNode))<\(tagName)\(identifier)>")
         if let box = layoutNode as? Layout.Box {
@@ -100,7 +105,7 @@ extension Layout {
             }
             builder.append(" children: \(box.childrenAreInline ? "inline" : "not-inline")")
         }
-        builder.append("\n")
+        // builder.append("\n")
 
         // FIXME: fragments (textnode, blockcontainer, inline)
 
