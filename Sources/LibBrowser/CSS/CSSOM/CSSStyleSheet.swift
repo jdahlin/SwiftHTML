@@ -47,3 +47,13 @@ extension CSSOM {
         }
     }
 }
+
+extension CSSOM.CSSStyleSheet: CustomStringConvertible {
+    var description: String {
+        var result = ""
+        for rule in rules {
+            result.append("\(rule)\n")
+        }
+        return result
+    }
+}

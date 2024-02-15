@@ -1,12 +1,22 @@
 extension CSS {
     // 6.2. Cascading Origins
     // https://drafts.csswg.org/css-cascade/#cascading-origins
-    enum CascadeOrigin {
+    enum CascadeOrigin: CustomStringConvertible {
         case userAgent
         case user
         case author
         case transition
         case animation
+
+        var description: String {
+            switch self {
+            case .userAgent: "user agent"
+            case .user: "user"
+            case .author: "author"
+            case .transition: "transition"
+            case .animation: "animation"
+            }
+        }
     }
 
     // 6.3. Important Declarations: the !important annotation

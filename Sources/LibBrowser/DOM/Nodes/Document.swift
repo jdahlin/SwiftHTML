@@ -369,6 +369,7 @@ extension DOM {
                     height: .definite(viewportRect.height)
                 )
             )
+            // Layout.printTree(layoutNode: layoutRoot!)
 
             layoutState.commit()
         }

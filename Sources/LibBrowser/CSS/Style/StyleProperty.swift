@@ -30,19 +30,17 @@ extension CSS {
 
     @propertyWrapper
     struct StylePropertyWrapper<Value: CSSPropertyValue> {
-        private var value: StyleValue?
         private(set) var projectedValue: StyleProperty
         var wrappedValue: Value? {
             get {
-                if let styleValue = value,
-                   let value = Value(styleValue)
-                {
-                    return value
+                let value = switch projectedValue.value {
+                case .unresolved: projectedValue.initial
+                default: projectedValue.value
                 }
-                return Value(projectedValue.initial)
+                return Value(value)
             }
             set {
-                value = newValue?.styleValue()
+                projectedValue.value = newValue?.styleValue() ?? .unresolved
             }
         }
 
@@ -54,7 +52,7 @@ extension CSS {
     struct StyleProperty: CustomStringConvertible {
         let id: PropertyID
         var important: Bool = false
-        var value: StyleValue?
+        var value: StyleValue = .unresolved
         static var initialValues: [PropertyID: StyleValue] = [:]
         static var inheritedValues: [PropertyID: Bool] = [:]
 
@@ -81,14 +79,22 @@ extension CSS {
         var inherited: Bool { StyleProperty.inheritedValues[id]! }
 
         var description: String {
-            if let value {
-                return "\(id): \(value)\(important ? " !important" : "")"
-            }
-            return "\(id): <not set>\(important ? " !important" : "")"
+            "\(id): \(value)\(important ? " !important" : "")"
         }
 
         func hasValue() -> Bool {
-            value != nil
+            unresolved()
+        }
+
+        func resolved() -> Bool {
+            if case .unresolved = value {
+                return false
+            }
+            return true
+        }
+
+        func unresolved() -> Bool {
+            !resolved()
         }
 
         func isRevert() -> Bool {
@@ -111,4 +117,22 @@ extension CSS {
     }
 
     func layout(style _: StyleProperties) {}
+}
+
+protocol AnyPropertyValue {
+    var id: CSS.PropertyID { get }
+    var valueAsAny: Any? { get }
+    var property: CSS.StyleProperty { get }
+}
+
+extension CSS.StylePropertyWrapper: AnyPropertyValue {
+    var valueAsAny: Any? {
+        switch projectedValue.value {
+        case .unresolved: nil
+        default: projectedValue.value
+        } as Any?
+    }
+
+    var id: CSS.PropertyID { projectedValue.id }
+    var property: CSS.StyleProperty { projectedValue }
 }

@@ -53,7 +53,7 @@ extension CSS {
             }
         }
 
-        func setProperty(id: PropertyID, value: StyleValue?) {
+        func setProperty(id: PropertyID, value: StyleValue) {
             guard var property = getProperty(id: id) else {
                 DIE("setProperty: \(id) not implemented")
             }
@@ -208,8 +208,10 @@ extension CSS {
             var dict: [PropertyID: StyleValue] = [:]
             let mirror = Mirror(reflecting: self)
             for child in mirror.children {
-                if let property = child.value as? StyleProperty {
-                    dict[property.id] = property.value
+                if let propertyWrapper = child.value as? AnyPropertyValue {
+                    if let value = propertyWrapper.valueAsAny as? StyleValue {
+                        dict[propertyWrapper.id] = propertyWrapper.property.value
+                    }
                 }
             }
             return dict
@@ -234,14 +236,16 @@ extension CSS {
 extension CSS.StyleProperties: Sequence {
     func makeIterator() -> AnyIterator<CSS.StyleProperty> {
         let mirror = Mirror(reflecting: self)
-        let properties = mirror.children.compactMap { $0.value as? CSS.StyleProperty }
-        var index = 0
+        let iterator = mirror.children.makeIterator()
         return AnyIterator {
-            guard index < properties.count else {
-                return nil
+            while let child = iterator.next() {
+                if let propertyWrapper = child.value as? AnyPropertyValue {
+                    if let _ = propertyWrapper.valueAsAny as? CSS.StyleValue {
+                        return propertyWrapper.property
+                    }
+                }
             }
-            defer { index += 1 }
-            return properties[index]
+            return nil
         }
     }
 }

@@ -39,63 +39,80 @@ extension CSS {
             document _: DOM.Document,
             declaration _: CSSOM.CSSStyleDeclaration
         ) {
-            if property.isRevert() {}
-            if let value = property.value {
-                style.setProperty(id: property.id, value: value)
+            if property.isRevert() {
+                FIXME("revert")
             }
+            style.setProperty(id: property.id, value: property.value)
         }
 
         func cascadeDeclarations(
             style: inout StyleProperties,
+            element: DOM.Element,
             rules: [CSSOM.CSSStyleRule],
-            cascadeOrigin _: CSS.CascadeOrigin,
+            cascadeOrigin: CSS.CascadeOrigin,
             important: Bool
         ) {
+            var properties: [(CSS.StyleProperty, CSSOM.CSSStyleDeclaration)] = []
             for rule in rules {
                 let declaration = rule.declarations
-                for property in declaration.propertyValues {
-                    guard property.important == important else {
-                        continue
-                    }
-
-                    if property.id == .all {
-                        print("\(#function): FIXME: set all")
-                    }
-
-                    setProperty(
-                        style: &style,
-                        property: property,
-                        document: document,
-                        declaration: declaration
-                    )
+                for property in declaration {
+                    properties.append((property, declaration))
                 }
+            }
+
+            // if properties.count > 0 {
+            //     print("cascadeDeclarations: \(element) \(cascadeOrigin) \(important) \(properties)")
+            // }
+
+            for (property, declaration) in properties {
+                guard property.important == important else {
+                    continue
+                }
+
+                if property.id == .all {
+                    print("\(#function): FIXME: set all")
+                    continue
+                }
+
+                print("\(element): \(property.id)=\(property.value) \(cascadeOrigin)")
+                setProperty(
+                    style: &style,
+                    property: property,
+                    document: document,
+                    declaration: declaration
+                )
             }
         }
 
-        func computeCascadedValues(style: inout StyleProperties, element: DOM.Element?) {
+        func computeCascadedValues(style: inout StyleProperties, element: DOM.Element) {
+            // print("\(#function): \(element)")
+
             // First, we collect all the CSS rules whose selectors match `element`:
             let userAgentRules = collectMatchingRules(element: element, cascadeOrigin: .userAgent)
             let userRules = collectMatchingRules(element: element, cascadeOrigin: .user)
             let authorRules = collectMatchingRules(element: element, cascadeOrigin: .author)
             // FIXME: sort according to order and specificity
-
             // Then we resolve all the CSS custom properties ("variables") for this element:
+            // print("rules: agent: \(userAgentRules.count) user: \(userRules.count) author: \(authorRules.count)")
 
             // Then we apply the declarations from the matched rules in cascade order:
             cascadeDeclarations(
                 style: &style,
+                element: element,
                 rules: userAgentRules,
                 cascadeOrigin: .userAgent,
                 important: false
             )
             cascadeDeclarations(
                 style: &style,
+                element: element,
                 rules: userRules,
                 cascadeOrigin: .user,
                 important: false
             )
             cascadeDeclarations(
                 style: &style,
+                element: element,
                 rules: authorRules,
                 cascadeOrigin: .author,
                 important: false
@@ -105,21 +122,24 @@ extension CSS {
 
             cascadeDeclarations(
                 style: &style,
+                element: element,
                 rules: userAgentRules,
                 cascadeOrigin: .userAgent,
-                important: false
+                important: true
             )
             cascadeDeclarations(
                 style: &style,
+                element: element,
                 rules: userRules,
                 cascadeOrigin: .user,
-                important: false
+                important: true
             )
             cascadeDeclarations(
                 style: &style,
+                element: element,
                 rules: authorRules,
                 cascadeOrigin: .author,
-                important: false
+                important: true
             )
 
             // FIXME: Transition declarations [css-transitions-1]
@@ -129,7 +149,9 @@ extension CSS {
             var style = StyleProperties()
 
             // 1. Perform the cascade. This produces the "specified style"
-            computeCascadedValues(style: &style, element: element)
+            if let element {
+                computeCascadedValues(style: &style, element: element)
+            }
 
             // 2. Compute the math-depth property, since that might affect the font-size
             // compute_math_depth(style, &element, pseudo_element);
@@ -212,8 +234,9 @@ extension CSS {
                 FIXME("set lineHeight")
             }
             for property in style {
-                guard let value = property.value else { continue }
-                let newValue = value.absolutized(fontMeasurements: fontMeasurements)
+                guard property.resolved() else { continue }
+
+                let newValue = property.value.absolutized(fontMeasurements: fontMeasurements)
                 // print("absolutizeValues: \(property.id) \(value) -> \(newValue)")
                 style.setProperty(id: property.id, value: newValue)
             }
@@ -231,7 +254,9 @@ extension CSS {
             // In the color property, the used value of currentcolor is the inherited value.
             if case .currentColor = style.color {
                 let color = getInheritValue(style: style, element: element, property: style.$color)
-                style.setProperty(id: .color, value: color)
+                if let color {
+                    style.setProperty(id: .color, value: color)
+                }
             }
         }
 
@@ -247,8 +272,9 @@ extension CSS {
         func computeDefaultedPropertyValue(style: inout StyleProperties, element: DOM.Element?, property: inout StyleProperty) {
             if !property.hasValue() {
                 if property.inherited {
-                    let value = getInheritValue(style: style, element: element, property: property)
-                    style.setProperty(id: property.id, value: value)
+                    if let value = getInheritValue(style: style, element: element, property: property) {
+                        style.setProperty(id: property.id, value: value)
+                    }
                 } else {
                     style.setProperty(id: property.id, value: property.initial)
                 }
@@ -259,11 +285,13 @@ extension CSS {
             case .initial:
                 style.setProperty(id: property.id, value: property.initial)
             case .inherit:
-                let value = getInheritValue(style: style, element: element, property: property)
-                style.setProperty(id: property.id, value: value)
+                if let value = getInheritValue(style: style, element: element, property: property) {
+                    style.setProperty(id: property.id, value: value)
+                }
             case .unset where property.inherited:
-                let value = getInheritValue(style: style, element: element, property: property)
-                style.setProperty(id: property.id, value: value)
+                if let value = getInheritValue(style: style, element: element, property: property) {
+                    style.setProperty(id: property.id, value: value)
+                }
             case .unset where !property.inherited:
                 style.setProperty(id: property.id, value: property.initial)
             default:

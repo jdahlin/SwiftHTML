@@ -149,7 +149,7 @@ extension DOM {
             assert(parentNode != nil, "\(#function): parent node is nil")
 
             let newComputedCSSValues = ownerDocument!.styleComputer.computeStyle(element: self)
-            FIXME("invalidation of style")
+            // FIXME("invalidation of style")
             computedCSSValues = newComputedCSSValues
         }
 

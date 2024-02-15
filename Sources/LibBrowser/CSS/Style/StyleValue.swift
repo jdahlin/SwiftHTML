@@ -1,5 +1,6 @@
 extension CSS {
     enum StyleValue: CustomStringConvertible {
+        case unresolved
         case inherit
         case initial
         case revert
@@ -42,6 +43,8 @@ extension CSS {
                 "unset"
             case let .size(value):
                 "size(\(value))"
+            case .unresolved:
+                "unresolved"
             }
         }
 

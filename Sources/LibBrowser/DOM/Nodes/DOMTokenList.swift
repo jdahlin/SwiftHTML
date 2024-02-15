@@ -16,7 +16,7 @@
 import Collections
 
 extension DOM {
-    class TokenList {
+    class TokenList: Sequence {
         var tokenSet: OrderedSet<String.SubSequence> = []
         var element: DOM.Element
         var localName: DOM.String
@@ -47,6 +47,10 @@ extension DOM {
         // boolean contains(DOM.String token);
         func contains(_ token: DOM.String) -> Bool {
             tokenSet.contains(String.SubSequence(token))
+        }
+
+        func makeIterator() -> some IteratorProtocol {
+            tokenSet.makeIterator()
         }
     }
 }

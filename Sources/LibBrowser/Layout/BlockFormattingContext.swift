@@ -499,7 +499,7 @@ extension Layout {
         }
 
         func computeAutoHeightForBlockLevelElement(box: Layout.Box, availableSpace _: AvailableSpace) -> CSS.Pixels {
-            if createsBlockFormattingContext(box) {
+            if FormattingContext.createsBlockFormattingContext(box) {
                 return computeAutoHeightForBlockFormattingContextRoot(box)
             }
             DIE()

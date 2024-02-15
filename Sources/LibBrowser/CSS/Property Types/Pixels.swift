@@ -8,7 +8,7 @@ struct Point<T> {
 extension CSS {
     typealias PixelPoint = Point<Pixels>
 
-    struct Pixels {
+    struct Pixels: CustomStringConvertible {
         static let fractionalBits: Int = 6
         static let fixedPointDenominator = 1 << fractionalBits
         static let radixMask = fixedPointDenominator - 1
@@ -16,6 +16,10 @@ extension CSS {
         static let minIntegerValue = Int.min >> fractionalBits
 
         private(set) var value: Int = 0
+
+        var description: String {
+            "\(toDouble())"
+        }
 
         init() {}
 

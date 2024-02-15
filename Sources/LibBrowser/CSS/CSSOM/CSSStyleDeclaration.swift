@@ -13,14 +13,18 @@ extension CSSOM {
             propertyValues.toStringDict()
         }
 
+        var items: [CSS.Item] = []
+
         var propertyValues = CSS.StyleProperties()
         init(items: [CSS.Item]) {
+            self.items = items
             for item in items {
                 switch item {
                 case let .declaration(declaration):
                     switch declaration.name {
                     case let .token(.ident(name)):
                         propertyValues.parseCSSValue(name: name, componentValues: declaration.value)
+                    // print(propertyValues.toDict())
                     default:
                         FIXME("declaration name: \(declaration.name) not implemented")
                     }
@@ -52,5 +56,17 @@ extension CSSOM {
         var cssText: String {
             properties.map { "\($0.key): \($0.value);" }.joined(separator: " ")
         }
+    }
+}
+
+extension CSSOM.CSSStyleDeclaration: Sequence {
+    func makeIterator() -> AnyIterator<CSS.StyleProperty> {
+        propertyValues.makeIterator()
+    }
+}
+
+extension CSSOM.CSSStyleDeclaration: CustomStringConvertible {
+    var description: String {
+        cssText
     }
 }

@@ -50,6 +50,13 @@ extension CSSOM {
         init(parentStyleSheet: CSSOM.CSSStyleSheet) {
             self.parentStyleSheet = parentStyleSheet
         }
+
+        func getDeclaration() -> CSSOM.CSSStyleDeclaration? {
+            if let styleRule = self as? CSSOM.CSSStyleRule {
+                return styleRule.declarations
+            }
+            return nil
+        }
     }
 
     static func cssRuleFromRaw(rawRule: CSS.Rule, parentStyleSheet: CSSOM.CSSStyleSheet) -> CSSRule {

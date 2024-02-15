@@ -1,13 +1,17 @@
 import CoreText
 
 extension Layout {
-    class Node {
+    class Node: CustomStringConvertible {
         let document: DOM.Document
         let domNode: DOM.Node?
         var children: [Node] = []
         var childrenAreInline = false
         var hasStyle: Bool = false
         var parent: Node?
+
+        var description: String {
+            "\(type(of: self))(\(domNode?.nodeName ?? "nil"))"
+        }
 
         init(document: DOM.Document, domNode: DOM.Node?) {
             self.document = document
@@ -115,6 +119,10 @@ extension Layout {
 
         func isInline() -> Bool {
             display.isInlineOutside()
+        }
+
+        func isInlineBlock() -> Bool {
+            display.isInlineOutside() && display.isFlowInside()
         }
     }
 }

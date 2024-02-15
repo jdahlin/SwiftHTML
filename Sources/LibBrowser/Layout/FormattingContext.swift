@@ -50,7 +50,7 @@ extension Layout {
         }
 
         // https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Block_formatting_context
-        func createsBlockFormattingContext(_ box: Box) -> Bool {
+        static func createsBlockFormattingContext(_ box: Box) -> Bool {
             // NOTE: Replaced elements never create a BFC.
             // if (box.is_replaced_box())
             //     return false;
@@ -178,7 +178,7 @@ extension Layout {
                                      referenceForPercentage: containingBlockHeightFor(node: box))
         }
 
-        func formattingContextTypeCreatedByBox(_ box: Box) -> FormattingContext.ContextType? {
+        static func formattingContextTypeCreatedByBox(_ box: Box) -> FormattingContext.ContextType? {
             // if !box.canHaveChildren {
             //     return nil
             // }
@@ -200,7 +200,7 @@ extension Layout {
         }
 
         func createIndependentFormattingContextIfNeeded(_ state: Layout.State, _ childBox: Layout.Box) -> BlockFormattingContext? {
-            guard let contextType = formattingContextTypeCreatedByBox(childBox) else {
+            guard let contextType = FormattingContext.formattingContextTypeCreatedByBox(childBox) else {
                 return nil
             }
 
