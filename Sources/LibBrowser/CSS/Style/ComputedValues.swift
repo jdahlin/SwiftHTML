@@ -27,7 +27,7 @@ extension CSS {
         var left: LengthOrPercentageOrAuto = .length(.absolute(.px(0)))
     }
 
-    struct ComputedValues {
+    class ComputedValues {
         @propertyWrapper
         struct NonInhertied<Value> {
             var wrappedValue: Value
@@ -59,26 +59,13 @@ extension CSS {
         @NonInhertied var inset: CSS.LengthBox = CSS.InitialValues.inset
 
         func cloneInheritedValues() -> Self {
-            var clone = self
+            let clone = self
             clone.inherited = Inherited()
             return clone
         }
 
-        mutating func apply(style: CSS.StyleProperties) {
-            backgroundColor = style.backgroundColor ?? CSS.InitialValues.backgroundColor
-            color = style.color ?? CSS.InitialValues.color
-            if let display = style.display {
-                self.display = display
-            }
-            if let height = style.height {
-                self.height = height
-            }
-            if let width = style.width {
-                self.width = width
-            }
-            // if let fontSize = style.fontSize {
-            //     self.fontSize = style.$fontSize.value?.absolutized()
-            // }
+        func inheritFrom(_ parent: ComputedValues) {
+            inherited = parent.inherited
         }
     }
 }

@@ -169,7 +169,6 @@ extension CSS {
             if let element {
                 transformBoxTypeIfNeeded(style: &style, element: element)
             }
-
             return style
         }
 

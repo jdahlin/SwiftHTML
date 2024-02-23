@@ -249,7 +249,57 @@ extension Layout {
         }
 
         func commit() {
-            DIE("not implemented")
+            for usedValues in usedValuesPerLayoutNode.values {
+                print(usedValues, usedValues.node!)
+                guard let node = usedValues.node else {
+                    print("NOTE A NODE!")
+                    continue
+                }
+                guard let box = node as? Layout.NodeWithStyleAndBoxModelMetrics else {
+                    print("NOT A BOX!")
+                    continue
+                }
+
+                print("committing box model for \(box): \(usedValues)")
+                let boxModel = box.boxModel
+                boxModel.inset = PixelBox(
+                    top: usedValues.insetTop,
+                    right: usedValues.insetRight,
+                    bottom: usedValues.insetBottom,
+                    left: usedValues.insetLeft
+                )
+                boxModel.padding = PixelBox(
+                    top: usedValues.paddingTop,
+                    right: usedValues.paddingRight,
+                    bottom: usedValues.paddingBottom,
+                    left: usedValues.paddingLeft
+                )
+                boxModel.border = PixelBox(
+                    top: usedValues.borderTop,
+                    right: usedValues.borderRight,
+                    bottom: usedValues.borderBottom,
+                    left: usedValues.borderLeft
+                )
+                boxModel.margin = PixelBox(
+                    top: usedValues.marginTop,
+                    right: usedValues.marginRight,
+                    bottom: usedValues.marginBottom,
+                    left: usedValues.marginLeft
+                )
+                print(boxModel)
+            }
+            // DIE("not implemented")
         }
+    }
+}
+
+extension Layout.UsedValues: CustomStringConvertible {
+    var description: String {
+        var string = "content: \(contentWidth) \(contentHeight), "
+        string.append("margin: \(marginTop) \(marginRight) \(marginBottom) \(marginLeft), ")
+        string.append("border: \(borderTop) \(borderRight) \(borderBottom) \(borderLeft), ")
+        string.append("padding: \(paddingTop) \(paddingRight) \(paddingBottom) \(paddingLeft), ")
+        string.append("inset: \(insetTop) \(insetRight) \(insetBottom) \(insetLeft)")
+        return string
     }
 }

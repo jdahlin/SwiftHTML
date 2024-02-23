@@ -350,8 +350,8 @@ extension DOM {
                 parent: nil
             )
             let viewportState = layoutState.getMutable(node: viewPort as Layout.NodeWithStyle)
-            viewportState.contentHeight = viewportRect.height
             viewportState.contentWidth = viewportRect.width
+            viewportState.contentHeight = viewportRect.height
 
             if let documentElement,
                let layoutNode = documentElement.layoutNode,
@@ -369,9 +369,9 @@ extension DOM {
                     height: .definite(viewportRect.height)
                 )
             )
-            Layout.printTree(layoutNode: layoutRoot!)
-
             layoutState.commit()
+
+            Layout.printTree(layoutNode: layoutRoot!)
         }
     }
 }

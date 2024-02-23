@@ -208,6 +208,7 @@ extension Layout {
             blockContainer.children
                 .filter { $0 is Box }
                 .forEach { box in
+                    print("layoutBlockLevelBox: \(availableSpace)")
                     layoutBlockLevelBox(
                         box: box as! Layout.Box,
                         blockContainer: blockContainer,
@@ -216,7 +217,9 @@ extension Layout {
                         availableSpace: availableSpace
                     )
                 }
-            // marginState
+            if mode == .intrinsicSizing {
+                FIXME("intrinsic sizing")
+            }
         }
 
         func layoutBlockLevelBox(box: Layout.Box,
@@ -355,8 +358,8 @@ extension Layout {
             let computedValues = box.computedValues
             let widthOfContainingBlock = remainingAvailableSpace.width.toPxOrZero()
             let zeroValue = CSS.Length(0.0)
-            var marginLeft: CSS.LengthOrPercentageOrAuto = .auto
-            var marginRight: CSS.LengthOrPercentageOrAuto = .auto
+            let marginLeft: CSS.LengthOrPercentageOrAuto = .auto
+            let marginRight: CSS.LengthOrPercentageOrAuto = .auto
             let paddingLeft = computedValues.padding.left.toPx(layoutNode: box, referenceValue: widthOfContainingBlock)
             let paddingRight = computedValues.padding.right.toPx(layoutNode: box, referenceValue: widthOfContainingBlock)
 
@@ -528,6 +531,7 @@ extension Layout {
             } else {
                 DIE("!childrenAreInline")
             }
+
             DIE("continue")
         }
 

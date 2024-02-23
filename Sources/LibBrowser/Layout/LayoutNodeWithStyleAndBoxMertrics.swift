@@ -6,7 +6,7 @@ extension Layout {
         var left = CSS.Pixels(0)
     }
 
-    struct BoxModelMetrics {
+    class BoxModelMetrics {
         var margin: PixelBox = .init()
         var border: PixelBox = .init()
         var padding: PixelBox = .init()

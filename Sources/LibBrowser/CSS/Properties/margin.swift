@@ -57,10 +57,10 @@ extension CSS.StyleProperties {
         case 1:
             // it applies to all sides.
             if let value = parseMargin(declaration[0]) {
-                marginTop = CSS.Length(value)
-                marginRight = CSS.Length(value)
-                marginBottom = CSS.Length(value)
-                marginLeft = CSS.Length(value)
+                marginTop = CSS.LengthOrPercentageOrAuto(value)
+                marginRight = CSS.LengthOrPercentageOrAuto(value)
+                marginBottom = CSS.LengthOrPercentageOrAuto(value)
+                marginLeft = CSS.LengthOrPercentageOrAuto(value)
             }
 
         // If there are two values,
@@ -71,10 +71,10 @@ extension CSS.StyleProperties {
             if let topBottom = parseMargin(declaration[0]),
                let leftRight = parseMargin(declaration[1])
             {
-                marginTop = CSS.Length(topBottom)
-                marginRight = CSS.Length(leftRight)
-                marginBottom = CSS.Length(topBottom)
-                marginLeft = CSS.Length(leftRight)
+                marginTop = CSS.LengthOrPercentageOrAuto(topBottom)
+                marginRight = CSS.LengthOrPercentageOrAuto(leftRight)
+                marginBottom = CSS.LengthOrPercentageOrAuto(topBottom)
+                marginLeft = CSS.LengthOrPercentageOrAuto(leftRight)
             }
 
         // If there are three values
@@ -87,10 +87,10 @@ extension CSS.StyleProperties {
                let leftRight = parseMargin(declaration[1]),
                let bottom = parseMargin(declaration[2])
             {
-                marginTop = CSS.Length(top)
-                marginRight = CSS.Length(leftRight)
-                marginBottom = CSS.Length(bottom)
-                marginLeft = CSS.Length(leftRight)
+                marginTop = CSS.LengthOrPercentageOrAuto(top)
+                marginRight = CSS.LengthOrPercentageOrAuto(leftRight)
+                marginBottom = CSS.LengthOrPercentageOrAuto(bottom)
+                marginLeft = CSS.LengthOrPercentageOrAuto(leftRight)
             }
 
         // If there are four values
@@ -102,10 +102,10 @@ extension CSS.StyleProperties {
                let bottom = parseMargin(declaration[2]),
                let left = parseMargin(declaration[3])
             {
-                marginTop = CSS.Length(top)
-                marginRight = CSS.Length(right)
-                marginBottom = CSS.Length(bottom)
-                marginLeft = CSS.Length(left)
+                marginTop = CSS.LengthOrPercentageOrAuto(top)
+                marginRight = CSS.LengthOrPercentageOrAuto(right)
+                marginBottom = CSS.LengthOrPercentageOrAuto(bottom)
+                marginLeft = CSS.LengthOrPercentageOrAuto(left)
             }
 
         default:

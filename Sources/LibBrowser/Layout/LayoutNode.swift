@@ -101,10 +101,7 @@ extension Layout {
         }
 
         func isRootElement() -> Bool {
-            if isAnonymous() {
-                return false
-            }
-            return domNode is HTML.HtmlElement
+            domNode is HTML.HtmlElement
         }
 
         func nonAnonymousContainingBlock() -> Node? {

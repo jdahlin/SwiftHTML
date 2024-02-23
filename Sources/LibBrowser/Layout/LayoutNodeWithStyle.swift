@@ -6,12 +6,12 @@ extension Layout {
 
         init(document: DOM.Document,
              domNode: DOM.Node?,
-             style: CSS.StyleProperties)
+             computedStyle: CSS.StyleProperties)
         {
             computedValues = CSS.ComputedValues()
             super.init(document: document, domNode: domNode)
             hasStyle = true
-            applyStyle(style: style)
+            applyStyle(computedStyle: computedStyle)
         }
 
         init(document: DOM.Document,
@@ -23,8 +23,32 @@ extension Layout {
             hasStyle = true
         }
 
-        func applyStyle(style: CSS.StyleProperties) {
-            computedValues.apply(style: style)
+        func applyStyle(computedStyle: CSS.StyleProperties) {
+            print(domNode, computedStyle.toStringDict())
+
+            computedValues.backgroundColor = computedStyle.backgroundColor ?? CSS.InitialValues.backgroundColor
+            computedValues.color = computedStyle.color ?? CSS.InitialValues.color
+            if let display = computedStyle.display {
+                computedValues.display = display
+            }
+            if let height = computedStyle.height {
+                computedValues.height = height
+            }
+            if let width = computedStyle.width {
+                computedValues.width = width
+            }
+            if let fontSize = computedStyle.fontSize {
+                computedValues.fontSize = fontSize.length().toPx(layoutNode: self)
+            }
+            computedValues.inset = computedStyle.lengthBox(leftId: .left, rightId: .right, topId: .top, bottomId: .bottom, fallback: .auto)
+            computedValues.margin = computedStyle.lengthBox(leftId: .marginLeft, rightId: .marginRight, topId: .marginTop, bottomId: .marginBottom, fallback: .length(.absolute(.px(0))))
+            computedValues.padding = computedStyle.lengthBox(leftId: .paddingLeft, rightId: .paddingRight, topId: .paddingTop, bottomId: .paddingBottom, fallback: .length(.absolute(.px(0))))
+            for child in children {
+                guard let node = child as? NodeWithStyle else { continue }
+                guard node.isAnonymous() else { continue }
+                let childComputedValues = node.computedValues
+                childComputedValues.inheritFrom(computedValues)
+            }
         }
 
         func hasInFlowBlockChildren() -> Bool {

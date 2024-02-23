@@ -38,7 +38,7 @@ extension Layout {
             } else if let document = domNode as? DOM.Document {
                 style = styleComputer.createDocumentStyle()
                 display = style.display!
-                layoutNode = Layout.ViewPort(document: document, style: style)
+                layoutNode = Layout.ViewPort(document: document, computedStyle: style)
             } else if let textNode = domNode as? DOM.Text {
                 layoutNode = Layout.TextNode(document: domNode.ownerDocument!, domNode: textNode)
                 display = CSS.Display(outer: .inline, inner: .flow)
@@ -117,7 +117,7 @@ extension Layout {
                     guard let lastChild else {
                         return true
                     }
-                    if lastChild.isAnonymous() {
+                    if !lastChild.isAnonymous() {
                         return true
                     }
                     if !lastChild.childrenAreInline {
@@ -140,7 +140,7 @@ extension Layout {
                 return layoutParent
             }
 
-            if layoutParent.hasInFlowBlockChildren() || layoutParent.childrenAreInline {
+            if !layoutParent.hasInFlowBlockChildren() || layoutParent.childrenAreInline {
                 return layoutParent
             }
 
@@ -167,19 +167,19 @@ extension DOM.Element {
     {
         switch (display.inner, display.outer) {
         case (.flowRoot, .inline):
-            return Layout.BlockContainer(document: document, domNode: element, style: style)
+            return Layout.BlockContainer(document: document, domNode: element, computedStyle: style)
         case (.flow, .inline):
-            return Layout.InlineNode(document: document, domNode: element, style: style)
+            return Layout.InlineNode(document: document, domNode: element, computedStyle: style)
         case (_, .inline):
             break
         case (.flow, _), (.flowRoot, _):
-            return Layout.BlockContainer(document: document, domNode: element, style: style)
+            return Layout.BlockContainer(document: document, domNode: element, computedStyle: style)
         case _ where display.isContents():
-            return Layout.BlockContainer(document: document, domNode: element, style: style)
+            return Layout.BlockContainer(document: document, domNode: element, computedStyle: style)
         default:
             break
         }
         FIXME("display \(display) not implemented")
-        return Layout.InlineNode(document: document, domNode: element, style: style)
+        return Layout.InlineNode(document: document, domNode: element, computedStyle: style)
     }
 }

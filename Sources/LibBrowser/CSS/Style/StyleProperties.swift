@@ -17,10 +17,10 @@ extension CSS {
         @StylePropertyWrapper<CSS.Length>(.insetBlockEnd, initial: .length(InitialValues.insetBlockEnd)) var insetBlockEnd
         @StylePropertyWrapper<CSS.Length>(.insetInlineEnd, initial: .length(InitialValues.insetInlineEnd)) var insetInlineEnd
         @StylePropertyWrapper<CSS.LineHeight>(.lineHeight, initial: .lineHeight(InitialValues.lineHeight)) var lineHeight
-        @StylePropertyWrapper<CSS.Length>(.marginTop, initial: InitialValues.margin.top.styleValue()) var marginTop
-        @StylePropertyWrapper<CSS.Length>(.marginRight, initial: InitialValues.margin.right.styleValue()) var marginRight
-        @StylePropertyWrapper<CSS.Length>(.marginBottom, initial: InitialValues.margin.bottom.styleValue()) var marginBottom
-        @StylePropertyWrapper<CSS.Length>(.marginLeft, initial: InitialValues.margin.left.styleValue()) var marginLeft
+        @StylePropertyWrapper<CSS.LengthOrPercentageOrAuto>(.marginTop, initial: InitialValues.margin.top.styleValue()) var marginTop
+        @StylePropertyWrapper<CSS.LengthOrPercentageOrAuto>(.marginRight, initial: InitialValues.margin.right.styleValue()) var marginRight
+        @StylePropertyWrapper<CSS.LengthOrPercentageOrAuto>(.marginBottom, initial: InitialValues.margin.bottom.styleValue()) var marginBottom
+        @StylePropertyWrapper<CSS.LengthOrPercentageOrAuto>(.marginLeft, initial: InitialValues.margin.left.styleValue()) var marginLeft
         @StylePropertyWrapper<CSS.LengthOrPercentage>(.paddingTop, initial: InitialValues.padding.top.styleValue()) var paddingTop
         @StylePropertyWrapper<CSS.LengthOrPercentage>(.paddingRight, initial: InitialValues.padding.right.styleValue()) var paddingRight
         @StylePropertyWrapper<CSS.LengthOrPercentage>(.paddingBottom, initial: InitialValues.padding.bottom.styleValue()) var paddingBottom
@@ -54,7 +54,7 @@ extension CSS {
         }
 
         func setProperty(id: PropertyID, value: StyleValue) {
-            guard var property = getProperty(id: id) else {
+            guard let property = getProperty(id: id) else {
                 DIE("setProperty: \(id) not implemented")
             }
             property.value = value
@@ -135,19 +135,19 @@ extension CSS {
                 parseMarginShortHand(context: context)
             case "margin-top":
                 if let value = parseMargin(context: context) {
-                    marginTop = CSS.Length(value)
+                    marginTop = CSS.LengthOrPercentageOrAuto(value)
                 }
             case "margin-right":
                 if let value = parseMargin(context: context) {
-                    marginRight = CSS.Length(value)
+                    marginRight = CSS.LengthOrPercentageOrAuto(value)
                 }
             case "margin-bottom":
                 if let value = parseMargin(context: context) {
-                    marginBottom = CSS.Length(value)
+                    marginBottom = CSS.LengthOrPercentageOrAuto(value)
                 }
             case "margin-left":
                 if let value = parseMargin(context: context) {
-                    marginLeft = CSS.Length(value)
+                    marginLeft = CSS.LengthOrPercentageOrAuto(value)
                 }
             case "padding":
                 parsePaddingShortHand(context: context)
@@ -209,7 +209,7 @@ extension CSS {
             let mirror = Mirror(reflecting: self)
             for child in mirror.children {
                 if let propertyWrapper = child.value as? AnyPropertyValue {
-                    if let value = propertyWrapper.valueAsAny as? StyleValue {
+                    if propertyWrapper.valueAsAny as? StyleValue != nil {
                         dict[propertyWrapper.id] = propertyWrapper.property.value
                     }
                 }
@@ -229,6 +229,36 @@ extension CSS {
                 FIXME("lineHeight: \(String(describing: lineHeight)) not implemented, defaulting to normal")
                 return fontMeasurements.fontMetrics.lineHeight
             }
+        }
+
+        func lengthBox(leftId: PropertyID,
+                       rightId: PropertyID,
+                       topId: PropertyID,
+                       bottomId: PropertyID,
+                       fallback _: CSS.LengthOrPercentageOrAuto) -> CSS.LengthBox
+        {
+            // FIXME: support percentage
+            let top: CSS.LengthOrPercentageOrAuto = if let prop = getProperty(id: topId), case let .length(length) = prop.value {
+                .length(length)
+            } else {
+                .auto
+            }
+            let bottom: CSS.LengthOrPercentageOrAuto = if let prop = getProperty(id: bottomId), case let .length(length) = prop.value {
+                .length(length)
+            } else {
+                .auto
+            }
+            let left: CSS.LengthOrPercentageOrAuto = if let prop = getProperty(id: leftId), case let .length(length) = prop.value {
+                .length(length)
+            } else {
+                .auto
+            }
+            let right: CSS.LengthOrPercentageOrAuto = if let prop = getProperty(id: rightId), case let .length(length) = prop.value {
+                .length(length)
+            } else {
+                .auto
+            }
+            return CSS.LengthBox(top: top, right: right, bottom: bottom, left: left)
         }
     }
 }
