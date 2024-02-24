@@ -57,7 +57,7 @@ extension HTML.TreeBuilder {
         // Anything else
         default:
             // Insert an HTML element for a "head" start tag token with no attributes.
-            let headElement = insertHTMLElement(token)
+            let headElement = insertHTMLElement(.startTag(.init(name: "head", attributes: [])))
 
             // Set the head element pointer to the newly created head element.
             headElementPointer = headElement

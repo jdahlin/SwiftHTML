@@ -8,6 +8,7 @@ extension Layout {
         var childrenAreInline = false
         var hasStyle: Bool = false
         var parent: Node?
+        var paintable: Painting.Paintable?
 
         var description: String {
             "\(type(of: self))(\(domNode?.nodeName ?? "nil"))"
@@ -16,6 +17,29 @@ extension Layout {
         init(document: DOM.Document, domNode: DOM.Node?) {
             self.document = document
             self.domNode = domNode
+        }
+
+        func forEachChildOfType<T>(_: T.Type, _ closure: (T) -> Void) {
+            for child in children {
+                if let child = child as? T {
+                    closure(child)
+                }
+            }
+        }
+
+        func setPaintable(_ paintable: Painting.Paintable) {
+            self.paintable = paintable
+        }
+
+        func createPaintable() -> Painting.Paintable? {
+            nil
+        }
+
+        func paintableBox() -> Painting.PaintableBox? {
+            if let paintable, paintable as? Painting.PaintableBox != nil {
+                return paintable as! Painting.PaintableBox?
+            }
+            return nil
         }
 
         func appendChild(_ child: Node) {

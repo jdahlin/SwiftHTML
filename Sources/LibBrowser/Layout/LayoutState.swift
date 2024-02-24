@@ -32,10 +32,19 @@ extension Layout {
         var widthContraint: SizeConstraint = .none
         var heightContraint: SizeConstraint = .none
 
-        var marginBoxLeft: CSS.Pixels { borderLeftCollapsed + paddingLeft }
+        var marginBoxTop: CSS.Pixels { marginTop + borderTopCollapsed + paddingTop }
+        var marginBoxRight: CSS.Pixels { marginRight + borderRightCollapsed + paddingRight }
+        var marginBoxBottom: CSS.Pixels { marginBottom + borderBottomCollapsed + paddingBottom }
+        var marginBoxLeft: CSS.Pixels { marginLeft + borderLeftCollapsed + paddingLeft }
+
         var borderBoxTop: CSS.Pixels { borderTopCollapsed + paddingBottom }
+        var borderBoxRight: CSS.Pixels { borderRightCollapsed + paddingRight }
+        var borderBoxBottom: CSS.Pixels { borderBottomCollapsed + paddingBottom }
+        var borderBoxLeft: CSS.Pixels { borderLeftCollapsed + paddingLeft }
 
         var borderTopCollapsed: CSS.Pixels { useCollapsingBordersModel ? (borderTop / 2).round() : borderTop }
+        var borderRightCollapsed: CSS.Pixels { useCollapsingBordersModel ? (borderRight / 2).round() : borderRight }
+        var borderBottomCollapsed: CSS.Pixels { useCollapsingBordersModel ? (borderBottom / 2).round() : borderBottom }
         var borderLeftCollapsed: CSS.Pixels { useCollapsingBordersModel ? (borderLeft / 2).round() : borderLeft }
 
         var useCollapsingBordersModel: Bool { overrideBorderData != nil }
@@ -255,39 +264,41 @@ extension Layout {
                     print("NOTE A NODE!")
                     continue
                 }
-                guard let box = node as? Layout.NodeWithStyleAndBoxModelMetrics else {
-                    print("NOT A BOX!")
-                    continue
+                if let box = node as? Layout.NodeWithStyleAndBoxModelMetrics {
+                    print("committing box model for \(box): \(usedValues)")
+                    let boxModel = box.boxModel
+                    boxModel.inset = PixelBox(
+                        top: usedValues.insetTop, right: usedValues.insetRight,
+                        bottom: usedValues.insetBottom, left: usedValues.insetLeft
+                    )
+                    boxModel.padding = PixelBox(
+                        top: usedValues.paddingTop, right: usedValues.paddingRight,
+                        bottom: usedValues.paddingBottom, left: usedValues.paddingLeft
+                    )
+                    boxModel.border = PixelBox(
+                        top: usedValues.borderTop, right: usedValues.borderRight,
+                        bottom: usedValues.borderBottom, left: usedValues.borderLeft
+                    )
+                    boxModel.margin = PixelBox(
+                        top: usedValues.marginTop, right: usedValues.marginRight,
+                        bottom: usedValues.marginBottom, left: usedValues.marginLeft
+                    )
+                    print(boxModel)
                 }
 
-                print("committing box model for \(box): \(usedValues)")
-                let boxModel = box.boxModel
-                boxModel.inset = PixelBox(
-                    top: usedValues.insetTop,
-                    right: usedValues.insetRight,
-                    bottom: usedValues.insetBottom,
-                    left: usedValues.insetLeft
-                )
-                boxModel.padding = PixelBox(
-                    top: usedValues.paddingTop,
-                    right: usedValues.paddingRight,
-                    bottom: usedValues.paddingBottom,
-                    left: usedValues.paddingLeft
-                )
-                boxModel.border = PixelBox(
-                    top: usedValues.borderTop,
-                    right: usedValues.borderRight,
-                    bottom: usedValues.borderBottom,
-                    left: usedValues.borderLeft
-                )
-                boxModel.margin = PixelBox(
-                    top: usedValues.marginTop,
-                    right: usedValues.marginRight,
-                    bottom: usedValues.marginBottom,
-                    left: usedValues.marginLeft
-                )
-                print(boxModel)
+                if let paintable = node.createPaintable() {
+                    node.setPaintable(paintable)
+
+                    if let paintableBox = node.paintableBox() {
+                        paintableBox.setOffset(usedValues.offset)
+                        paintableBox.setContentSize(width: usedValues.contentWidth,
+                                                    height: usedValues.contentHeight)
+                        // FIXME: borders
+                        // FIXME: table
+                    }
+                }
             }
+
             // DIE("not implemented")
         }
     }

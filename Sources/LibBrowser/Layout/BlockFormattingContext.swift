@@ -285,7 +285,9 @@ extension Layout {
                 }
             }
 
-            // FIXME: table
+            if !box.display.isTableInside() {
+                computeHeight(box: box, availableSpace: availableSpace)
+            }
 
             if independentFormattingContext != nil /* || marginsCollapseThrough(box, state) */ {
                 yOffsetOfCurrentBlockContainer = boxState.offset.y + boxState.contentHeight
@@ -510,17 +512,56 @@ extension Layout {
             return false
         }
 
+        // https://www.w3.org/TR/CSS22/visudet.html#root-height
         func computeAutoHeightForBlockLevelElement(box: Layout.Box, availableSpace _: AvailableSpace) -> CSS.Pixels {
             if FormattingContext.createsBlockFormattingContext(box) {
                 return computeAutoHeightForBlockFormattingContextRoot(box)
             }
-            DIE()
+            let boxState = state.getMutable(node: box)
+
+            // https://www.w3.org/TR/CSS22/visudet.html#normal-block
+            // 10.6.3 Block-level non-replaced elements in normal flow when 'overflow' computes to 'visible'
+
+            // 1. the bottom edge of the last line box, if the box establishes a
+            //    inline formatting context with one or more lines
+            if box.childrenAreInline, !boxState.lineBoxes.isEmpty {
+                DIE("inline & lineBoxes")
+            }
+
+            // 2. the bottom edge of the bottom (possibly collapsed) margin of
+            //    its last in-flow child, if the child's bottom margin does not
+            //    collapse with the element's bottom margin
+            // 3. the bottom border edge of the last in-flow child whose top
+            //    margin doesn't collapse with the element's bottom margin
+            if !box.childrenAreInline {
+                for child in box.children.reversed() {
+                    guard let childBox = child as? Box else {
+                        continue
+                    }
+
+                    // FIXME: absolute
+                    // FIXME: float
+                    // FIXME: line-marker box
+                    let childBoxState = state.getMutable(node: childBox)
+                    // FIXME: margin-collapse
+                    var marginBottom = marginState.currentCollapsedMargin()
+                    if boxState.paddingBottom == CSS.Pixels(0), boxState.borderBottom == CSS.Pixels(0) {
+                        marginState.boxLastInFlowChildMarginBottomCollapsed = true
+                        marginBottom = CSS.Pixels(0)
+                    }
+                    return max(CSS.Pixels(0), childBoxState.offset.y + childBoxState.contentHeight + childBoxState.borderBoxBottom + marginBottom)
+                }
+            }
+
+            // 4. zero, otherwise
+            return CSS.Pixels(0)
         }
 
         // https://www.w3.org/TR/CSS22/visudet.html#root-height
         func computeAutoHeightForBlockFormattingContextRoot(_ root: Box) -> CSS.Pixels {
-            let top: CSS.Pixels?
-            let bottom: CSS.Pixels?
+            // 10.6.7 'Auto' heights for block formatting context roots
+            var top: CSS.Pixels?
+            var bottom: CSS.Pixels?
 
             if root.childrenAreInline {
                 let lineBoxes = state.getMutable(node: root).lineBoxes
@@ -529,10 +570,27 @@ extension Layout {
                     bottom = lineBoxes.last!.bottom
                 }
             } else {
-                DIE("!childrenAreInline")
+                // If it has block-level children, the height is the distance between
+                // the top margin-edge of the topmost block-level child box
+                // and the bottom margin-edge of the bottommost block-level child box.
+                root.forEachChildOfType(Box.self) { box in
+                    let childBoxState = state.getMutable(node: box)
+                    // FIXME: absolute
+                    // FIXME: float
+
+                    let childBoxTop = childBoxState.offset.y - childBoxState.marginBoxTop
+                    let childBoxBottom = childBoxState.offset.y + childBoxState.contentHeight + childBoxState.marginBoxBottom
+                    if top == nil || childBoxTop < top! {
+                        top = childBoxTop
+                    }
+                    if bottom == nil || childBoxBottom > bottom! {
+                        bottom = childBoxBottom
+                    }
+                }
             }
 
-            DIE("continue")
+            // FIXME: floating
+            return max(CSS.Pixels(0), (bottom ?? CSS.Pixels(0)) - (top ?? CSS.Pixels(0)))
         }
 
         func calculateInnerWidth(box: Layout.Box, availableWidth: AvailableSize, width: CSS.Size) -> CSS.Pixels {

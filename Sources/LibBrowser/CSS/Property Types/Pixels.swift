@@ -1,12 +1,18 @@
 import Foundation
 
-struct Point<T> {
-    var x: T
-    var y: T
-}
-
 extension CSS {
+    struct Point<T> {
+        var x: T
+        var y: T
+    }
+
+    struct SizeStruct<T> {
+        var width: T
+        var height: T
+    }
+
     typealias PixelPoint = Point<Pixels>
+    typealias PixelSize = SizeStruct<Pixels>
 
     struct Pixels: CustomStringConvertible {
         static let fractionalBits: Int = 6

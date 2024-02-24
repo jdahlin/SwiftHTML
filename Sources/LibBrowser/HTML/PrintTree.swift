@@ -57,30 +57,38 @@ extension Layout {
         }
 
         var builder = ""
-        builder.append("\(type(of: layoutNode))<\(tagName)\(identifier)>")
+        builder.append("\(type(of: layoutNode))<\(tagName)\(identifier)> ")
         if let box = layoutNode as? Layout.Box {
             // FIXME: paintable
+
+            // FIXME: Flex/table
+            let paintableBox = box.paintableBox()
+
+            if let b = paintableBox {
+                builder.append("at (\(b.absoluteX), \(b.absoluteY)) content-size \(b.contentWidth)x\(b.contentHeight)")
+            } else {
+                builder.append("(not painted)")
+            }
 
             if box.isInlineBlock() {
                 builder.append("(inline-block)")
             }
-            // FIXME: Flex/table
 
             if showBoxModel {
                 let boxModel = box.boxModel
                 let margin = boxModel.margin
                 let padding = boxModel.padding
                 let border = boxModel.border
-                builder.append("[")
-                builder.append("\(margin.left)+\(border.left)+\(padding.left)")
-                builder.append(" \(box.computedValues.width) ")
-                builder.append("\(padding.right)+\(border.right)+\(margin.right)")
+                builder.append(" [")
+                builder.append("\(margin.left.toInt())+\(border.left.toInt())+\(padding.left.toInt())")
+                builder.append(" \(paintableBox?.contentWidth ?? 0) ")
+                builder.append("\(padding.right.toInt())+\(border.right.toInt())+\(margin.right.toInt())")
                 builder.append("]")
 
                 builder.append(" [")
-                builder.append("\(margin.top)+\(border.top)+\(padding.top)")
-                builder.append(" ??? ")
-                builder.append("\(padding.bottom)+\(border.bottom)+\(margin.bottom)")
+                builder.append("\(margin.top.toInt())+\(border.top.toInt())+\(padding.top.toInt())")
+                builder.append(" \(paintableBox?.contentHeight ?? 0) ")
+                builder.append("\(padding.bottom.toInt())+\(border.bottom.toInt())+\(margin.bottom.toInt())")
                 builder.append("]")
             }
 
