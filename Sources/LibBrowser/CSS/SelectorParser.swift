@@ -237,6 +237,18 @@ extension CSS {
     static func consumeComplexSelectorList(_ values: inout CSS.ComponentValues) -> [ComplexSelector] {
         var selectors: [ComplexSelector] = []
         while true {
+            while values.peek() == .token(.whitespace) {
+                _ = values.next()
+            }
+
+            if values.peek() == .token(.comma) {
+                _ = values.next()
+            }
+
+            while values.peek() == .token(.whitespace) {
+                _ = values.next()
+            }
+
             if let selector = consumeComplexSelector(&values) {
                 selectors.append(selector)
             } else {

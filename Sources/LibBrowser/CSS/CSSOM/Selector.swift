@@ -1,3 +1,27 @@
+extension String {
+    func containsIgnoringCase(_ value: String) -> Bool {
+        compare(value, options: .caseInsensitive) == .orderedSame
+    }
+
+    func hasPrefixIgnoringCase(_ value: String) -> Bool {
+        guard !isEmpty, !value.isEmpty else {
+            return false
+        }
+
+        // FIXME: Implement efficiently
+        return lowercased().hasPrefix(value.lowercased())
+    }
+
+    func hasSuffixIgnoringCase(_ value: String) -> Bool {
+        guard !isEmpty, !value.isEmpty else {
+            return false
+        }
+
+        // FIXME: Implement efficiently
+        return lowercased().hasSuffix(value.lowercased())
+    }
+}
+
 extension CSS {
     struct Selector {
         var selectors: [CSS.ComplexSelector] = []
@@ -31,22 +55,22 @@ extension CSS {
             }
             for subclassSelector in compound.subclassSelectors {
                 switch subclassSelector {
-                case let .id(id) where element.id == id:
+                case let .id(id) where element.id.compare(id, options: .caseInsensitive) == .orderedSame:
                     return true
-                case let .class_(className) where element.classList.contains(className):
+                case let .class_(className) where element.classList.containsIgnoringCase(className):
                     return true
                 case let .attribute(attr):
                     if let elementAttribute = element.getAttribute(attr.name.name), let value = attr.value {
                         switch attr.attrMatcher {
                         case nil:
                             return true
-                        case .exact where elementAttribute == value:
+                        case .exact where elementAttribute.compare(value, options: .caseInsensitive) == .orderedSame:
                             return true
-                        case .contains where elementAttribute.contains(value):
+                        case .contains where elementAttribute.containsIgnoringCase(value):
                             return true
-                        case .startsWith where elementAttribute.hasPrefix(value):
+                        case .startsWith where elementAttribute.hasPrefixIgnoringCase(value):
                             return true
-                        case .endsWith where elementAttribute.hasSuffix(value):
+                        case .endsWith where elementAttribute.hasSuffixIgnoringCase(value):
                             return true
                         default:
                             continue

@@ -257,7 +257,9 @@ extension Layout {
             return newUsedValues
         }
 
-        func commit() {
+        func commit(root: Layout.Box) {
+            // FIXME: Clear paintables in old tree
+
             for usedValues in usedValuesPerLayoutNode.values {
                 print(usedValues, usedValues.node!)
                 guard let node = usedValues.node else {
@@ -297,9 +299,31 @@ extension Layout {
                         // FIXME: table
                     }
                 }
+
+                // FIXME: relative position
+                // FIXME: line boxes
+                // FIXME: text nodes
+                buildPaintTree(root)
+                // FIXME: relative
+                // FIXME: overflow
             }
 
             // DIE("not implemented")
+        }
+
+        func buildPaintTree(_ node: Layout.Node, parentPaintable: Painting.Paintable? = nil) {
+            if let paintable = node.paintable {
+                if let parentPaintable, !paintable.formsUnconnectedSubTree() {
+                    parentPaintable.appendChild(paintable)
+                }
+                paintable.domNode = node.domNode
+                if let domNode = node.domNode {
+                    // domNode.setPaintable(paintable)
+                }
+            }
+            for child in node.children {
+                buildPaintTree(child, parentPaintable: parentPaintable)
+            }
         }
     }
 }

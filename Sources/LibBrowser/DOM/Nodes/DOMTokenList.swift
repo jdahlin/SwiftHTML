@@ -45,8 +45,10 @@ extension DOM {
         }
 
         // boolean contains(DOM.String token);
-        func contains(_ token: DOM.String) -> Bool {
-            tokenSet.contains(String.SubSequence(token))
+        func containsIgnoringCase(_ token: DOM.String) -> Bool {
+            tokenSet.contains(where: { item in
+                item.compare(String.SubSequence(token), options: .caseInsensitive) == .orderedSame
+            })
         }
 
         func makeIterator() -> some IteratorProtocol {
