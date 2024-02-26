@@ -300,7 +300,7 @@ extension Layout {
 
         func placeBlockLevelElementInNormalFlowVertically(childBox: Box, y: CSS.Pixels) {
             let boxState = state.getMutable(node: childBox)
-            print("VERTICAL   \(childBox.domNode!.nodeName!) x: \(boxState.offset.x) y: \(y)")
+            // print("VERTICAL   \(childBox.domNode!.nodeName!) x: \(boxState.offset.x) y: \(y)")
             boxState.setContentOffset(CSS.PixelPoint(
                 x: boxState.offset.x,
                 y: y + boxState.borderBoxTop
@@ -314,7 +314,7 @@ extension Layout {
             // FIXME: text-align: center
             // FIXME: text-align: right
             x += boxState.marginBoxLeft
-            print("HORIZONTAL \(childBox.domNode!.nodeName!) x: \(x) y: \(boxState.offset.y)")
+            // print("HORIZONTAL \(childBox.domNode!.nodeName!) x: \(x) y: \(boxState.offset.y)")
             boxState.setContentOffset(CSS.PixelPoint(x: x, y: boxState.offset.y))
         }
 

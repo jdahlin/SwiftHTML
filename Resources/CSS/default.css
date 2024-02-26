@@ -1,23 +1,80 @@
+/* From https://github.com/SerenityOS/serenity/blob/master/Userland/Libraries/LibWeb/CSS/Default.css */
+/* ad-hoc */
 html {
     font-family: serif;
     color: CanvasText;
 }
-
-html {
+/* 15.3.2 The page
+ * https://html.spec.whatwg.org/multipage/rendering.html#the-page
+ */
+ 
+html, body {
     display: block;
 }
 
 body {
-    display: block;
-    margin: 8px;
+   margin: 8px;
 }
 
-area, base, basefont, datalist, head, link, meta, noembed,
-noframes, param, rp, script, style, template, title {
-    display: none;
-}
+/* 15.3.1 Hidden elements
+ * https://html.spec.whatwg.org/multipage/rendering.html#hidden-elements
+ */
+
+ area, base, basefont, datalist, head, link, meta, noembed,
+ noframes, param, rp, script, style, template, title {
+     display: none;
+ }
+ 
+ /* [hidden]:not([hidden=until-found i]) {
+     display: none;
+ }
+ 
+ [hidden=until-found i]:not(embed) {
+     content-visibility: hidden;
+ } */
+ 
+ embed[hidden] {
+     display: inline;
+     height: 0;
+     width: 0;
+ }
+ 
+ input[type=hidden i] {
+     display: none !important;
+ }
+ 
+ /* @media (scripting) {
+     noscript {
+         display: none !important;
+     }
+ } */
+
+ /* 15.3.3 Flow content
+  * https://html.spec.whatwg.org/multipage/rendering.html#flow-content-3
+  */
+
 
 address, blockquote, center, dialog, div, figure, figcaption, footer, form,
 header, hr, legend, listing, main, p, plaintext, pre, search, xmp {
     display: block;
 }
+
+blockquote, figure, listing, p, plaintext, pre, xmp {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+blockquote, figure {
+    margin-left: 40px;
+    margin-right: 40px;
+}
+
+address {
+    font-style: italic;
+}
+
+listing, plaintext, pre, xmp {
+    font-family: monospace;
+    white-space: pre;
+}
+

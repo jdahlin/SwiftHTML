@@ -261,13 +261,13 @@ extension Layout {
             // FIXME: Clear paintables in old tree
 
             for usedValues in usedValuesPerLayoutNode.values {
-                print(usedValues, usedValues.node!)
+                // print(usedValues, usedValues.node!)
                 guard let node = usedValues.node else {
                     print("NOTE A NODE!")
                     continue
                 }
                 if let box = node as? Layout.NodeWithStyleAndBoxModelMetrics {
-                    print("committing box model for \(box): \(usedValues)")
+                    // print("committing box model for \(box): \(usedValues)")
                     let boxModel = box.boxModel
                     boxModel.inset = PixelBox(
                         top: usedValues.insetTop, right: usedValues.insetRight,
@@ -285,7 +285,7 @@ extension Layout {
                         top: usedValues.marginTop, right: usedValues.marginRight,
                         bottom: usedValues.marginBottom, left: usedValues.marginLeft
                     )
-                    print(boxModel)
+                    // print(boxModel)
                 }
 
                 if let paintable = node.createPaintable() {
