@@ -260,5 +260,19 @@ extension Layout {
 
             return false
         }
+
+        func calculateInnerHeight(box: Box, availableHeight _: AvailableSize, height: CSS.Size) -> CSS.Pixels {
+            assert(height != .auto)
+            let containingBlock = box.nonAnonymousContainingBlock() as! Layout.NodeWithStyleAndBoxModelMetrics
+            let containingBlockState = state.getMutable(node: containingBlock)
+            let heightOfContainingBlock = containingBlockState.contentHeight
+            // FIXME: absolute
+
+            if box.computedValues.boxSizing == .borderBox {
+                DIE("box-sizing: border-box")
+            }
+
+            return height.resolved(layoutNode: box, referenceValue: heightOfContainingBlock).toPx(layoutNode: box)
+        }
     }
 }

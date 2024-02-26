@@ -35,6 +35,17 @@ extension CSS {
                 false
             }
         }
+
+        func resolved(layoutNode _: Layout.Node, referenceValue: CSS.Pixels) -> Length {
+            switch self {
+            case let .length(length):
+                length
+            case let .percentage(percentage):
+                .absolute(.px(percentage.value * referenceValue.toDouble() / 100))
+            case .auto, .none, .maxContent, .minContent, .fitContent:
+                DIE()
+            }
+        }
     }
 }
 
@@ -55,6 +66,8 @@ extension CSS.Size: CSSPropertyValue {
         switch styleValue {
         case let .size(size):
             self = size
+        case let .length(length):
+            self = .length(length)
         case nil:
             return nil
         default:

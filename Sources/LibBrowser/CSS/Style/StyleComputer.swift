@@ -55,7 +55,8 @@ extension CSS {
             var properties: [(CSS.StyleProperty, CSSOM.CSSStyleDeclaration)] = []
             for rule in rules {
                 let declaration = rule.declarations
-                for property in declaration {
+                // print(element, declaration.propertyValues.toStringDict())
+                for property in declaration.propertyValues {
                     properties.append((property, declaration))
                 }
             }

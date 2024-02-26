@@ -78,10 +78,10 @@ extension CSS {
         func toPx(layoutNode: Layout.Node) -> CSS.Pixels {
             switch self {
             case let .length(length):
-                return length.toPx(layoutNode: layoutNode)
+                length.toPx(layoutNode: layoutNode)
             default:
-                FIXME("LengthOrPercentageOrAuto toPx")
-                return CSS.Pixels(0)
+                // FIXME("LengthOrPercentageOrAuto toPx")
+                CSS.Pixels(0)
             }
         }
 
@@ -104,7 +104,7 @@ extension CSS {
                 FIXME("LengthOrPercentage resolve percentage")
                 return CSS.Pixels(0)
             case .auto:
-                FIXME("LengthOrPercentage resolve auto")
+                // FIXME("LengthOrPercentage resolve auto")
                 return CSS.Pixels(0)
             }
         }

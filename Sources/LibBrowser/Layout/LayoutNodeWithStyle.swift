@@ -24,7 +24,7 @@ extension Layout {
         }
 
         func applyStyle(computedStyle: CSS.StyleProperties) {
-            print(domNode, computedStyle.toStringDict())
+            // print(domNode!, computedStyle.toStringDict())
 
             computedValues.backgroundColor = computedStyle.backgroundColor ?? CSS.InitialValues.backgroundColor
             computedValues.color = computedStyle.color ?? CSS.InitialValues.color

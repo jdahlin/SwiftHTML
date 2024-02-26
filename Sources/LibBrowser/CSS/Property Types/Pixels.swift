@@ -24,7 +24,7 @@ extension CSS {
         private(set) var value: Int = 0
 
         var description: String {
-            "\(toDouble())"
+            "\(toInt())"
         }
 
         init() {}
@@ -105,10 +105,6 @@ extension CSS {
             fromRaw(lhs.value &+ (rhs << fractionalBits))
         }
 
-        static func + (lhs: Self, rhs: Double) -> Self {
-            fromRaw(lhs.value &+ Int(rhs * Double(fixedPointDenominator)))
-        }
-
         static func - (lhs: Self, rhs: Self) -> Self {
             fromRaw(lhs.value &- rhs.value)
         }
@@ -142,5 +138,11 @@ extension CSS.Pixels: Comparable {
 
     static func == (lhs: CSS.Pixels, rhs: CSS.Pixels) -> Bool {
         lhs.value == rhs.value
+    }
+}
+
+extension CSS.Pixels: Addable {
+    static func + (lhs: Self, rhs: Double) -> Self {
+        fromRaw(lhs.value &+ Int(rhs * Double(fixedPointDenominator)))
     }
 }

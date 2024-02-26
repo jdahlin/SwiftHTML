@@ -28,13 +28,6 @@ extension Layout {
                 return false
             }
         }
-
-        func isAuto() -> Bool {
-            switch self {
-            case .auto: true
-            case .value: false
-            }
-        }
     }
 
     enum Mode {
@@ -54,10 +47,10 @@ extension Layout {
         case maxContent(CSS.Pixels)
 
         func toPxOrZero() -> CSS.Pixels {
-            guard case let .definite(value) = self else {
-                return CSS.Pixels(0)
+            switch self {
+            case let .definite(value): value
+            default: CSS.Pixels(0)
             }
-            return value
         }
 
         func isIntrinsicSizingConstraint() -> Bool {
@@ -208,7 +201,7 @@ extension Layout {
             blockContainer.children
                 .filter { $0 is Box }
                 .forEach { box in
-                    print("layoutBlockLevelBox: \(availableSpace)")
+                    // print("layoutBlockLevelBox: \(availableSpace)")
                     layoutBlockLevelBox(
                         box: box as! Layout.Box,
                         blockContainer: blockContainer,
@@ -307,16 +300,21 @@ extension Layout {
 
         func placeBlockLevelElementInNormalFlowVertically(childBox: Box, y: CSS.Pixels) {
             let boxState = state.getMutable(node: childBox)
-            let newY = y + boxState.borderBoxTop
-            boxState.setContentOffset(CSS.PixelPoint(x: boxState.offset.x, y: newY))
+            print("VERTICAL   \(childBox.domNode!.nodeName!) x: \(boxState.offset.x) y: \(y)")
+            boxState.setContentOffset(CSS.PixelPoint(
+                x: boxState.offset.x,
+                y: y + boxState.borderBoxTop
+            ))
         }
 
-        func placeBlockLevelElementInNormalFlowHorizontally(childBox: Box, availableSpace: AvailableSpace) {
+        func placeBlockLevelElementInNormalFlowHorizontally(childBox: Box, availableSpace _: AvailableSpace) {
             let boxState = state.getMutable(node: childBox)
-            var x = availableSpace.width.toPxOrZero()
+            var x = CSS.Pixels(0)
             // FIXME: float
-            // FIME: text-align
+            // FIXME: text-align: center
+            // FIXME: text-align: right
             x += boxState.marginBoxLeft
+            print("HORIZONTAL \(childBox.domNode!.nodeName!) x: \(x) y: \(boxState.offset.y)")
             boxState.setContentOffset(CSS.PixelPoint(x: x, y: boxState.offset.y))
         }
 
@@ -340,6 +338,8 @@ extension Layout {
             if shouldTreatHeightAsAuto(box: box, availableSpace: availableSpace) {
                 let newAvailableSpace = state.getMutable(node: box).availableInnerSpaceOrConstraintsFrom(availableSpace)
                 height = computeAutoHeightForBlockLevelElement(box: box, availableSpace: newAvailableSpace)
+            } else {
+                height = calculateInnerHeight(box: box, availableHeight: availableSpace.height, height: computedValues.height)
             }
 
             switch computedValues.minHeight {
@@ -360,8 +360,8 @@ extension Layout {
             let computedValues = box.computedValues
             let widthOfContainingBlock = remainingAvailableSpace.width.toPxOrZero()
             let zeroValue = CSS.Length(0.0)
-            let marginLeft: CSS.LengthOrPercentageOrAuto = .auto
-            let marginRight: CSS.LengthOrPercentageOrAuto = .auto
+            var marginLeft: AutoOr<CSS.Length> = .auto
+            var marginRight: AutoOr<CSS.Length> = .auto
             let paddingLeft = computedValues.padding.left.toPx(layoutNode: box, referenceValue: widthOfContainingBlock)
             let paddingRight = computedValues.padding.right.toPx(layoutNode: box, referenceValue: widthOfContainingBlock)
 
@@ -378,8 +378,8 @@ extension Layout {
 
             func tryComputeWidth(inputWidth: AutoOr<CSS.Length>) -> AutoOr<CSS.Length> {
                 var width = inputWidth
-                var marginLeft = computedValues.margin.left.resolved(layoutNode: box, referenceValue: widthOfContainingBlock)
-                var marginRight = computedValues.margin.right.resolved(layoutNode: box, referenceValue: widthOfContainingBlock)
+                marginLeft = computedValues.margin.left.resolved(layoutNode: box, referenceValue: widthOfContainingBlock)
+                marginRight = computedValues.margin.right.resolved(layoutNode: box, referenceValue: widthOfContainingBlock)
                 var totalPx = CSS.Pixels(0)
                 totalPx += computedValues.borderLeft.width
                 totalPx += marginLeft.toPx(layoutNode: box)
@@ -396,7 +396,7 @@ extension Layout {
                         if case .auto = marginLeft {
                             marginLeft = .value(zeroValue)
                         }
-                        if marginRight.isAuto() {
+                        if case .auto = marginRight {
                             marginRight = .value(zeroValue)
                         }
                     }
@@ -407,11 +407,11 @@ extension Layout {
                         underflowPx = CSS.Pixels(0)
                     }
 
-                    if width.isAuto() {
+                    if case .auto = width {
                         if case .auto = marginLeft {
                             marginLeft = .value(zeroValue)
                         }
-                        if marginRight.isAuto() {
+                        if case .auto = marginRight {
                             marginRight = .value(zeroValue)
                         }
 

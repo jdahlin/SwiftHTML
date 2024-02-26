@@ -37,7 +37,7 @@ extension Layout {
         var marginBoxBottom: CSS.Pixels { marginBottom + borderBottomCollapsed + paddingBottom }
         var marginBoxLeft: CSS.Pixels { marginLeft + borderLeftCollapsed + paddingLeft }
 
-        var borderBoxTop: CSS.Pixels { borderTopCollapsed + paddingBottom }
+        var borderBoxTop: CSS.Pixels { borderTopCollapsed + paddingTop }
         var borderBoxRight: CSS.Pixels { borderRightCollapsed + paddingRight }
         var borderBoxBottom: CSS.Pixels { borderBottomCollapsed + paddingBottom }
         var borderBoxLeft: CSS.Pixels { borderLeftCollapsed + paddingLeft }

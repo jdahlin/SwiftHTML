@@ -28,6 +28,18 @@ extension DOM {
     }
 }
 
+func bold(_ string: String) -> String {
+    "\u{001B}[1m\(string)\u{001B}[22m"
+}
+
+func bold(_ value: Int) -> String {
+    if value < 0 {
+        bold("\(value)")
+    } else {
+        "\(value)"
+    }
+}
+
 extension Layout {
     static func printTree(layoutNode: Layout.Node,
                           indent: String = "",
@@ -79,15 +91,16 @@ extension Layout {
                 let margin = boxModel.margin
                 let padding = boxModel.padding
                 let border = boxModel.border
+
                 builder.append(" [")
                 builder.append("\(margin.left.toInt())+\(border.left.toInt())+\(padding.left.toInt())")
-                builder.append(" \(paintableBox?.contentWidth ?? 0) ")
+                builder.append(" \(bold(paintableBox?.contentWidth ?? 0)) ")
                 builder.append("\(padding.right.toInt())+\(border.right.toInt())+\(margin.right.toInt())")
                 builder.append("]")
 
                 builder.append(" [")
                 builder.append("\(margin.top.toInt())+\(border.top.toInt())+\(padding.top.toInt())")
-                builder.append(" \(paintableBox?.contentHeight ?? 0) ")
+                builder.append(" \(bold(paintableBox?.contentHeight ?? 0)) ")
                 builder.append("\(padding.bottom.toInt())+\(border.bottom.toInt())+\(margin.bottom.toInt())")
                 builder.append("]")
             }

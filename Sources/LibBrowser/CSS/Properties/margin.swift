@@ -56,11 +56,13 @@ extension CSS.StyleProperties {
         // body { margin: 2em }         /* all margins set to 2em */
         case 1:
             // it applies to all sides.
-            if let value = parseMargin(declaration[0]) {
-                marginTop = CSS.LengthOrPercentageOrAuto(value)
-                marginRight = CSS.LengthOrPercentageOrAuto(value)
-                marginBottom = CSS.LengthOrPercentageOrAuto(value)
-                marginLeft = CSS.LengthOrPercentageOrAuto(value)
+            if let value = parseMargin(declaration[0]),
+               let margin = CSS.LengthOrPercentageOrAuto(value)
+            {
+                marginTop = margin
+                marginRight = margin
+                marginBottom = margin
+                marginLeft = margin
             }
 
         // If there are two values,
