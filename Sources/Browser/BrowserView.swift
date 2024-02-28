@@ -28,11 +28,15 @@ class BrowserView: NSView {
 class BrowserViewController: NSViewController {
     override func loadView() {
         view = BrowserView()
+        guard let url = Bundle.libBrowser.url(forResource: "simple", withExtension: "html") else {
+            fatalError("Could not find index.html")
+        }
+        let document = LibBrowser.browserLoadUrl(url: url)
+        // call paint once the ui is finished setting up
+        DispatchQueue.main.async {
+            document.paint()
+        }
 
-        let url = URL(fileURLWithPath: "/Users/johandahlin/dev/SwiftHTML/Resources/HTML/simple.html")
-        LibBrowser.browserLoadUrl(url: url)
-        // terminate app immediately
-        NSApp.terminate(nil)
         view.wantsLayer = true
     }
 

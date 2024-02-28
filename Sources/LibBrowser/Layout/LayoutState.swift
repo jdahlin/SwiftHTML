@@ -318,7 +318,7 @@ extension Layout {
                 }
                 paintable.domNode = node.domNode
                 if let domNode = node.domNode {
-                    // domNode.setPaintable(paintable)
+                    domNode.setPaintable(paintable)
                 }
             }
             for child in node.children {

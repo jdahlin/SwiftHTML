@@ -1,12 +1,12 @@
 extension DOM.Node: Hashable {
-    func hash(into hasher: inout Hasher) {
+    public func hash(into hasher: inout Hasher) {
         hasher.combine(ObjectIdentifier(self))
     }
 }
 
 extension DOM.Node: Equatable {
     // https://dom.spec.whatwg.org/#concept-node-equals
-    static func == (a: DOM.Node, b: DOM.Node) -> Bool {
+    public static func == (a: DOM.Node, b: DOM.Node) -> Bool {
         // A node A equals a node B if all of the following conditions are true:
 
         // A and B implement the same interfaces.

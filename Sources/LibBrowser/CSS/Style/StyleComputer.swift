@@ -2,6 +2,16 @@ import Foundation
 
 import CoreText
 
+public extension Foundation.Bundle {
+    static let libBrowser: Bundle = {
+        let bundlePath = Bundle.main.bundleURL.appendingPathComponent("SwiftHTML_LibBrowser.bundle")
+        guard let bundle = Bundle(url: bundlePath) else {
+            fatalError("Could not load LibBrowser bundle")
+        }
+        return bundle
+    }()
+}
+
 extension CSS {
     struct StyleComputer {
         var styleSheets: [CSSOM.CSSStyleSheet] = []
@@ -19,7 +29,7 @@ extension CSS {
                 cascadeOrigin: CSS.CascadeOrigin.userAgent
             )
 
-            let defaultStyleSheetFilename = FileManager.default.currentDirectoryPath + "/Resources/CSS/default.css"
+            let defaultStyleSheetFilename = Bundle.libBrowser.path(forResource: "default", ofType: "css")!
             let content: String
             do {
                 content = try String(contentsOfFile: defaultStyleSheetFilename)

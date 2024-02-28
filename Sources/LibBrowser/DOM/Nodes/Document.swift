@@ -108,7 +108,7 @@ extension DOM {
 
     struct BrowsingContext {}
 
-    class Document: Node {
+    public class Document: Node {
         var mode: HTML.DocumentMode = .noQuirks
 
         var browsingContext: BrowsingContext?
@@ -372,6 +372,10 @@ extension DOM {
             layoutState.commit(root: viewPort)
 
             Layout.printTree(layoutNode: viewPort)
+        }
+
+        public func paint() {
+            updateLayout()
         }
     }
 }

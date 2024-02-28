@@ -1,0 +1,3 @@
+extension Painting {
+    class RecordingPainter {}
+}

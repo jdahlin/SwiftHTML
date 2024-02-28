@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "SwiftHTML",
     platforms: [
-        .macOS(.v12),
+        .macOS(.v13),
     ],
     products: [
         .library(name: "LibBrowser", targets: ["LibBrowser"]),
@@ -22,8 +22,12 @@ let package = Package(
                 dependencies: [
                     .product(name: "Collections", package: "swift-collections"),
                 ],
-                path: "Sources/LibBrowser"),
+                path: "Sources/LibBrowser",
+                resources: [
+                    .process("Resources/HTML"),
+                    .process("Resources/CSS"),
+                ]),
         .executableTarget(name: "Browser", dependencies: ["LibBrowser"], path: "Sources/Browser"),
-        // .testTarget(name: "CSSTests", dependencies: ["CSS"], path: "Sources/CSSTests"),
-    ]
+    ],
+    swiftLanguageVersions: [.v5]
 )

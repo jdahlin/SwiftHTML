@@ -111,7 +111,7 @@ extension Layout {
             guard let nodeWithStyle = self as? NodeWithStyle else {
                 DIE("not a style node")
             }
-            guard let rootElement = document.documentElement else {
+            guard document.documentElement != nil else {
                 DIE("no document element")
             }
             let ctFont = CTFontCreateUIFontForLanguage(.system, 12, nil)!

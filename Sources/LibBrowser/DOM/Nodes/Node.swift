@@ -62,7 +62,7 @@ enum DocumentPosition: UInt16 {
 
 // };
 
-extension DOM {
+public extension DOM {
     class Node: EventTarget {
         // [SameObject] readonly attribute NodeList childNodes;
         let childNodes: DOM.LiveNodeList<Node>
@@ -74,6 +74,8 @@ extension DOM {
         var parentNode: Node?
 
         var layoutNode: Layout.Node?
+
+        var paintable: Painting.Paintable?
 
         init(ownerDocument: DOM.Document? = nil, parentNode _: Node? = nil) {
             self.ownerDocument = ownerDocument
@@ -263,6 +265,10 @@ extension DOM {
 
         func parentOrShadowHost() -> Node? {
             parentNode
+        }
+
+        func setPaintable(_ paintable: Painting.Paintable) {
+            self.paintable = paintable
         }
     }
 }

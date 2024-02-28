@@ -1,6 +1,6 @@
 import Foundation
 
-public func browserLoadUrl(url: URL) {
+public func browserLoadUrl(url: URL) -> DOM.Document {
     var data: Data
     do {
         data = try Data(contentsOf: url)
@@ -9,15 +9,5 @@ public func browserLoadUrl(url: URL) {
     }
 
     let document = HTML.parseHTML(&data)
-    // DOM.printTree(node: document)
-    if document.documentElement != nil {
-        // print("------ HTML ------")
-        // let style = document.styleComputer.computeStyle(element: element)
-        // print(style.toStringDict())
-        // print("------ BODY ------")
-        // let style2 = document.styleComputer.computeStyle(element: document.body!)
-        // print(style2.toStringDict())
-
-        document.updateLayout()
-    }
+    return document
 }
