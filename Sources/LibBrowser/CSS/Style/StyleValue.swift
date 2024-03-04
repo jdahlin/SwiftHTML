@@ -1,19 +1,21 @@
 extension CSS {
     enum StyleValue: CustomStringConvertible {
-        case unresolved
-        case inherit
-        case initial
-        case revert
-        case unset
         case appearance(Appearance)
+        case auto
         case color(Color)
         case display(Display)
         case fontSize(FontSize)
-        case lineHeight(LineHeight)
+        case inherit
+        case initial
         case length(Length)
+        case lineHeight(LineHeight)
+        case lineStyle(LineStyle)
+        case lineWidth(LineWidth)
         case percentage(Percentage)
+        case revert
         case size(Size)
-        case auto
+        case unresolved
+        case unset
 
         var description: String {
             switch self {
@@ -35,6 +37,10 @@ extension CSS {
                 "length(\(value))"
             case let .lineHeight(value):
                 "lineHeight(\(value))"
+            case let .lineStyle(value):
+                "lineStyle(\(value))"
+            case let .lineWidth(value):
+                "lineWidth(\(value))"
             case let .percentage(value):
                 "percentage(\(value))"
             case .revert:

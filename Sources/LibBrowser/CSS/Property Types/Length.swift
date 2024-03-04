@@ -416,3 +416,23 @@ extension CSS.Length: CSSPropertyValue {
         .length(self)
     }
 }
+
+extension CSS.StyleProperties {
+    func parseLength(context: CSS.ParseContext) -> CSS.StyleValue? {
+        let declaration = context.parseDeclaration()
+        guard declaration.count == 1 else {
+            return nil
+        }
+        if declaration.count == 1 {
+            switch declaration[0] {
+            case let .token(.number(number)):
+                return .length(CSS.Length(number: number.toDouble(), unit: "px"))
+            case let .token(.dimension(number: number, unit: unit)):
+                return .length(CSS.Length(number: number.toDouble(), unit: unit))
+            default:
+                break
+            }
+        }
+        return nil
+    }
+}

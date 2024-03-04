@@ -9,6 +9,18 @@ protocol CSSPropertyValue {
 extension CSS {
     class StyleProperties {
         @StylePropertyWrapper<CSS.Color>(.backgroundColor, initial: .color(InitialValues.backgroundColor)) var backgroundColor
+        @StylePropertyWrapper<CSS.Color>(.borderTopColor, initial: .color(InitialValues.borderTopColor)) var borderTopColor
+        @StylePropertyWrapper<CSS.LineStyle>(.borderTopStyle, initial: .lineStyle(InitialValues.borderTopStyle)) var borderTopStyle
+        @StylePropertyWrapper<CSS.LineWidth>(.borderTopWidth, initial: .lineWidth(InitialValues.borderTopWidth)) var borderTopWidth
+        @StylePropertyWrapper<CSS.Color>(.borderRightColor, initial: .color(InitialValues.borderRightColor)) var borderRightColor
+        @StylePropertyWrapper<CSS.LineStyle>(.borderRightStyle, initial: .lineStyle(InitialValues.borderRightStyle)) var borderRightStyle
+        @StylePropertyWrapper<CSS.LineWidth>(.borderRightWidth, initial: .lineWidth(InitialValues.borderRightWidth)) var borderRightWidth
+        @StylePropertyWrapper<CSS.Color>(.borderBottomColor, initial: .color(InitialValues.borderBottomColor)) var borderBottomColor
+        @StylePropertyWrapper<CSS.LineStyle>(.borderBottomStyle, initial: .lineStyle(InitialValues.borderBottomStyle)) var borderBottomStyle
+        @StylePropertyWrapper<CSS.LineWidth>(.borderBottomWidth, initial: .lineWidth(InitialValues.borderBottomWidth)) var borderBottomWidth
+        @StylePropertyWrapper<CSS.Color>(.borderLeftColor, initial: .color(InitialValues.borderLeftColor)) var borderLeftColor
+        @StylePropertyWrapper<CSS.LineStyle>(.borderLeftStyle, initial: .lineStyle(InitialValues.borderLeftStyle)) var borderLeftStyle
+        @StylePropertyWrapper<CSS.LineWidth>(.borderLeftWidth, initial: .lineWidth(InitialValues.borderLeftWidth)) var borderLeftWidth
         @StylePropertyWrapper<CSS.Color>(.color, initial: .color(InitialValues.color), inherited: true) var color
         @StylePropertyWrapper<CSS.Display>(.display, initial: .display(InitialValues.display)) var display
         @StylePropertyWrapper<CSS.FontSize>(.fontSize, initial: .fontSize(.length(.absolute(.px(InitialValues.fontSize.toDouble())))), inherited: true) var fontSize
@@ -31,6 +43,9 @@ extension CSS {
         @StylePropertyWrapper<CSS.LengthOrPercentageOrAuto>(.left, initial: InitialValues.inset.left.styleValue()) var left
         @StylePropertyWrapper<CSS.Size>(.width, initial: .size(InitialValues.width)) var width
         @StylePropertyWrapper<CSS.Size>(.height, initial: .size(InitialValues.height)) var height
+        @StylePropertyWrapper<CSS.Color>(.outlineColor, initial: .color(InitialValues.outlineColor)) var outlineColor
+        @StylePropertyWrapper<CSS.LineStyle>(.outlineStyle, initial: .lineStyle(InitialValues.outlineStyle)) var outlineStyle
+        @StylePropertyWrapper<CSS.LineWidth>(.outlineWidth, initial: .lineWidth(InitialValues.outlineWidth)) var outlineWidth
 
         var computedFont: CTFont?
 
@@ -63,6 +78,18 @@ extension CSS {
         func getProperty(id: PropertyID) -> StyleProperty? {
             switch id {
             case .backgroundColor: return $backgroundColor
+            case .borderTopColor: return $borderTopColor
+            case .borderTopStyle: return $borderTopStyle
+            case .borderTopWidth: return $borderTopWidth
+            case .borderRightColor: return $borderRightColor
+            case .borderRightStyle: return $borderRightStyle
+            case .borderRightWidth: return $borderRightWidth
+            case .borderBottomColor: return $borderBottomColor
+            case .borderBottomStyle: return $borderBottomStyle
+            case .borderBottomWidth: return $borderBottomWidth
+            case .borderLeftColor: return $borderLeftColor
+            case .borderLeftStyle: return $borderLeftStyle
+            case .borderLeftWidth: return $borderLeftWidth
             case .color: return $color
             case .display: return $display
             case .fontSize: return $fontSize
@@ -79,6 +106,9 @@ extension CSS {
             case .insetBlockStart: return $insetBlockStart
             case .insetInlineEnd: return $insetInlineEnd
             case .insetInlineStart: return $insetInlineStart
+            case .outlineColor: return $outlineColor
+            case .outlineStyle: return $outlineStyle
+            case .outlineWidth: return $outlineWidth
             case .top: return $top
             case .right: return $right
             case .bottom: return $bottom
@@ -102,6 +132,54 @@ extension CSS {
             case "background-color":
                 if let value = parseColor(context: context) {
                     backgroundColor = CSS.Color(value)
+                }
+            case "border-top-color":
+                if let value = parseColor(context: context) {
+                    borderTopColor = CSS.Color(value)
+                }
+            case "border-top-style":
+                if let value = parseLineStyle(context: context) {
+                    borderTopStyle = CSS.LineStyle(value)
+                }
+            case "border-top-width":
+                if let value = parseLineWidth(context: context) {
+                    borderTopWidth = CSS.LineWidth(value)
+                }
+            case "border-right-color":
+                if let value = parseColor(context: context) {
+                    borderRightColor = CSS.Color(value)
+                }
+            case "border-right-style":
+                if let value = parseLineStyle(context: context) {
+                    borderRightStyle = CSS.LineStyle(value)
+                }
+            case "border-right-width":
+                if let value = parseLineWidth(context: context) {
+                    borderRightWidth = CSS.LineWidth(value)
+                }
+            case "border-bottom-color":
+                if let value = parseColor(context: context) {
+                    borderBottomColor = CSS.Color(value)
+                }
+            case "border-bottom-style":
+                if let value = parseLineStyle(context: context) {
+                    borderBottomStyle = CSS.LineStyle(value)
+                }
+            case "border-bottom-width":
+                if let value = parseLineWidth(context: context) {
+                    borderBottomWidth = CSS.LineWidth(value)
+                }
+            case "border-left-color":
+                if let value = parseColor(context: context) {
+                    borderLeftColor = CSS.Color(value)
+                }
+            case "border-left-style":
+                if let value = parseLineStyle(context: context) {
+                    borderLeftStyle = CSS.LineStyle(value)
+                }
+            case "border-left-width":
+                if let value = parseLineWidth(context: context) {
+                    borderLeftWidth = CSS.LineWidth(value)
                 }
             case "color":
                 if let value = parseColor(context: context) {
@@ -190,6 +268,19 @@ extension CSS {
             case "height":
                 if let value = parseHeight(context: context) {
                     height = CSS.Size(value)
+                }
+            case "outline-color":
+                // FIXME: implement strip() parsing
+                if let value = parseColor(context: context) {
+                    outlineColor = CSS.Color(value)
+                }
+            case "outline-style":
+                if let value = parseLineStyle(context: context) {
+                    outlineStyle = CSS.LineStyle(value)
+                }
+            case "outline-width":
+                if let value = parseLineWidth(context: context) {
+                    outlineWidth = CSS.LineWidth(value)
                 }
             default:
                 FIXME("parseCSSValue: \(name) not implemented")

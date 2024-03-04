@@ -2,6 +2,18 @@ extension CSS {
     enum PropertyID {
         case all
         case backgroundColor
+        case borderTopColor
+        case borderTopStyle
+        case borderTopWidth
+        case borderRightColor
+        case borderRightStyle
+        case borderRightWidth
+        case borderBottomColor
+        case borderBottomStyle
+        case borderBottomWidth
+        case borderLeftColor
+        case borderLeftStyle
+        case borderLeftWidth
         case color
         case display
         case fontSize
@@ -15,6 +27,9 @@ extension CSS {
         case marginRight
         case marginBottom
         case marginLeft
+        case outlineColor
+        case outlineStyle
+        case outlineWidth
         case padding
         case paddingTop
         case paddingRight

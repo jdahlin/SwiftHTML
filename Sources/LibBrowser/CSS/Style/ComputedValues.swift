@@ -1,19 +1,6 @@
 
 
 extension CSS {
-    enum LineStyle: Equatable {
-        case none
-        case hidden
-        case dotted
-        case dashed
-        case solid
-        case double
-        case groove
-        case ridge
-        case inset
-        case outset
-    }
-
     struct BorderData: Equatable {
         var color: Color = .transparent
         var style: LineStyle = .none
@@ -72,8 +59,24 @@ extension CSS {
 
 extension CSS {
     enum InitialValues {
-        static let color: CSS.Color = .named(.black)
         static let backgroundColor: CSS.Color = .transparent
+        static let borderTop: CSS.BorderData = .init()
+        static let borderTopColor: CSS.Color = .currentColor
+        static let borderTopStyle: CSS.LineStyle = .none
+        static let borderTopWidth: CSS.LineWidth = .thickness(.medium)
+        static let borderRight: CSS.BorderData = .init()
+        static let borderRightColor: CSS.Color = .currentColor
+        static let borderRightStyle: CSS.LineStyle = .none
+        static let borderRightWidth: CSS.LineWidth = .thickness(.medium)
+        static let borderBottom: CSS.BorderData = .init()
+        static let borderBottomColor: CSS.Color = .currentColor
+        static let borderBottomStyle: CSS.LineStyle = .none
+        static let borderBottomWidth: CSS.LineWidth = .thickness(.medium)
+        static let borderLeft: CSS.BorderData = .init()
+        static let borderLeftColor: CSS.Color = .currentColor
+        static let borderLeftStyle: CSS.LineStyle = .none
+        static let borderLeftWidth: CSS.LineWidth = .thickness(.medium)
+        static let color: CSS.Color = .named(.black)
         static let display: CSS.Display = .init(outer: .inline, inner: .flow)
         static let height: CSS.Size = .auto
         static let width: CSS.Size = .auto
@@ -81,12 +84,8 @@ extension CSS {
         static let maxWidth: CSS.Size = .none
         static let minHeight: CSS.Size = .auto
         static let maxHeight: CSS.Size = .none
-        static let borderTop: CSS.BorderData = .init()
-        static let borderRight: CSS.BorderData = .init()
-        static let borderBottom: CSS.BorderData = .init()
-        static let borderLeft: CSS.BorderData = .init()
         static let padding: CSS.LengthBox = .init()
-        static let fontSize = CSS.Pixels(16)
+        static let fontSize: CSS.Pixels = .init(16)
         static let insetBlockStart: CSS.Length = .absolute(.px(0))
         static let insetBlockEnd: CSS.Length = .absolute(.px(0))
         static let insetInlineStart: CSS.Length = .absolute(.px(0))
@@ -94,7 +93,10 @@ extension CSS {
         static let lineHeight: CSS.LineHeight = .normal
         static let margin: CSS.LengthBox = .init()
         static let inset: CSS.LengthBox = .init()
-        static let boxSizing = CSS.BoxSizing.contentBox
+        static let boxSizing: CSS.BoxSizing = .contentBox
+        static let outlineColor: CSS.Color = .currentColor
+        static let outlineStyle: CSS.LineStyle = .none
+        static let outlineWidth: CSS.LineWidth = .thickness(.medium)
     }
 }
 
