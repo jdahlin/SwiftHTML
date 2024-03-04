@@ -420,19 +420,22 @@ extension CSS.Length: CSSPropertyValue {
 extension CSS.StyleProperties {
     func parseLength(context: CSS.ParseContext) -> CSS.StyleValue? {
         let declaration = context.parseDeclaration()
-        guard declaration.count == 1 else {
-            return nil
-        }
         if declaration.count == 1 {
-            switch declaration[0] {
-            case let .token(.number(number)):
-                return .length(CSS.Length(number: number.toDouble(), unit: "px"))
-            case let .token(.dimension(number: number, unit: unit)):
-                return .length(CSS.Length(number: number.toDouble(), unit: unit))
-            default:
-                break
+            if let value = parseLength(value: declaration[0]) {
+                return .length(value)
             }
         }
         return nil
+    }
+
+    func parseLength(value: CSS.ComponentValue) -> CSS.Length? {
+        switch value {
+        case let .token(.number(number)):
+            CSS.Length(number: number.toDouble(), unit: "px")
+        case let .token(.dimension(number: number, unit: unit)):
+            CSS.Length(number: number.toDouble(), unit: unit)
+        default:
+            nil
+        }
     }
 }

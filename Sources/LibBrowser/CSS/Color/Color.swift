@@ -40,14 +40,23 @@ extension CSS.StyleProperties {
         guard declaration.count == 1 else {
             return nil
         }
-        if case let .token(.ident(ident)) = declaration[0] {
+        if let value = parseColor(value: declaration[0]) {
+            return .color(value)
+        }
+        return nil
+    }
+
+    func parseColor(value: CSS.ComponentValue) -> CSS.Color? {
+        switch value {
+        case let .token(.ident(ident)):
             if let named = CSS.Color.Named(string: ident) {
-                return .color(.named(named))
+                return .named(named)
             }
             if let system = CSS.Color.System(string: ident) {
-                return .color(.system(system))
+                return .system(system)
             }
-            FIXME("Don't know how to parse color: \(ident)")
+        default:
+            break
         }
         return nil
     }

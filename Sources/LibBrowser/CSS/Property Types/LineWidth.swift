@@ -88,17 +88,25 @@ extension CSS.LineWidth: CSSPropertyValue {
 
 extension CSS.StyleProperties {
     func parseLineWidth(context: CSS.ParseContext) -> CSS.StyleValue? {
-        if case let .length(length) = parseLength(context: context) {
-            return .lineWidth(.length(length))
-        }
         let declaration = context.parseDeclaration()
-        guard declaration.count == 1 else {
-            return nil
+        if declaration.count == 1 {
+            if let lineWidth = parseLineWidth(value: declaration[0]) {
+                return .lineWidth(lineWidth)
+            }
         }
-        if case let .token(.ident(ident)) = declaration[0],
-           let thickness = CSS.LineThickness(value: ident)
-        {
-            return .lineWidth(.thickness(thickness))
+        return nil
+    }
+
+    func parseLineWidth(value: CSS.ComponentValue) -> CSS.LineWidth? {
+        switch value {
+        case let .token(.ident(ident)):
+            if let thickness = CSS.LineThickness(value: ident) {
+                return .thickness(thickness)
+            }
+        default:
+            if let length = parseLength(value: value) {
+                return .length(length)
+            }
         }
         return nil
     }

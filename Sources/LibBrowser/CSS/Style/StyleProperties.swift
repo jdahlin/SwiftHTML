@@ -133,6 +133,8 @@ extension CSS {
                 if let value = parseColor(context: context) {
                     backgroundColor = CSS.Color(value)
                 }
+            case "border":
+                parseBorderShortHand(context: context)
             case "border-top-color":
                 if let value = parseColor(context: context) {
                     borderTopColor = CSS.Color(value)
@@ -269,6 +271,8 @@ extension CSS {
                 if let value = parseHeight(context: context) {
                     height = CSS.Size(value)
                 }
+            case "outline":
+                parseOutlineShortHand(context: context)
             case "outline-color":
                 // FIXME: implement strip() parsing
                 if let value = parseColor(context: context) {

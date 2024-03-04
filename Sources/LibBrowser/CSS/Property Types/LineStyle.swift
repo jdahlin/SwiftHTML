@@ -93,11 +93,18 @@ extension CSS.StyleProperties {
         guard declaration.count == 1 else {
             return nil
         }
-        if case let .token(.ident(ident)) = declaration[0],
-           let lineStyle = CSS.LineStyle(value: ident)
-        {
-            return .lineStyle(lineStyle)
+        if let value = parseLineStyle(value: declaration[0]) {
+            return .lineStyle(value)
         }
         return nil
+    }
+
+    func parseLineStyle(value: CSS.ComponentValue) -> CSS.LineStyle? {
+        switch value {
+        case let .token(.ident(ident)):
+            CSS.LineStyle(value: ident)
+        default:
+            nil
+        }
     }
 }
